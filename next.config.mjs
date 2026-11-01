@@ -1,1 +1,15 @@
-export default { serverExternalPackages: ['africastalking'], experimental: { serverActions: { bodySizeLimit: '12mb' } } };
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  serverExternalPackages: ['africastalking'],
+  experimental: {
+    serverActions: { bodySizeLimit: '12mb' }
+  },
+  webpack: (config, { dev }) => {
+    if (!dev) {
+      config.cache = false;
+    }
+    return config;
+  }
+};
+
+export default nextConfig;
