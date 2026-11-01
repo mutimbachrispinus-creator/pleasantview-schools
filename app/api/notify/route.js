@@ -13,9 +13,9 @@ export async function GET() {
         schoolEmail: process.env.SCHOOL_EMAIL || 'info@pleasantview.sc.ke'
       },
       africasTalking: {
-        configured: Boolean(process.env.AT_API_KEY),
-        username: process.env.AT_USERNAME || 'sandbox',
-        senderId: process.env.AT_SENDER_ID || '(default)'
+        configured: Boolean(process.env.AT_API_KEY || process.env.AFRICASTALKING_API_KEY),
+        username: process.env.AT_USERNAME || process.env.AFRICASTALKING_USERNAME || 'sandbox',
+        senderId: process.env.AT_SENDER_ID || process.env.AFRICASTALKING_SENDER_ID || '(default)'
       }
     },
     endpoints: {

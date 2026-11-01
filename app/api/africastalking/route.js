@@ -5,7 +5,7 @@ import { q } from '@/lib/db';
 export const dynamic = 'force-dynamic';
 
 export async function GET(req) {
-  const isConfigured = Boolean(process.env.AT_API_KEY);
+  const isConfigured = Boolean(process.env.AT_API_KEY || process.env.AFRICASTALKING_API_KEY);
   const { searchParams } = new URL(req.url);
 
   if (searchParams.get('inbound') === '1') {
@@ -19,8 +19,8 @@ export async function GET(req) {
     service: "Africa's Talking SMS Gateway",
     status: isConfigured ? 'configured' : 'missing_api_key',
     configured: isConfigured,
-    username: process.env.AT_USERNAME || 'sandbox',
-    senderId: process.env.AT_SENDER_ID || '(default)',
+    username: process.env.AT_USERNAME || process.env.AFRICASTALKING_USERNAME || 'sandbox',
+    senderId: process.env.AT_SENDER_ID || process.env.AFRICASTALKING_SENDER_ID || '(default)',
     inboundSmsCount: countRow ? Number(countRow.c) : 0,
     timestamp: new Date().toISOString()
   });
