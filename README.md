@@ -72,12 +72,10 @@ Central Admin can customize hero carousel slides for both the Group homepage and
 
 ## 🚀 Quick Start Guide
 
-### Option A: Next.js Full Stack Application
+### Pure Next.js Application
 
 ```bash
-cd nextjs-project
-
-# Install dependencies (if needed)
+# Install dependencies
 npm install
 
 # Run development server
@@ -90,20 +88,11 @@ npm start
 # Visit http://localhost:3000
 ```
 
-### Option B: Standalone Luxury SPA Preview (`index.html`)
-
-Open `index.html` directly in any modern browser or serve via any static HTTP server:
-```bash
-python3 -m http.server 8080
-# Visit http://localhost:8080/#/
-# Central Admin: http://localhost:8080/#/admin
-```
-
 ---
 
 ## 🔐 Administrative Credentials
 
-- **Central Admin Portal:** `/hidden-admin` (Next.js) or `#/admin` (Standalone Preview)
+- **Central Admin Portal:** `/hidden-admin`
 - **Staff Email:** `admin@pleasantview.sc.ke`
 - **Default Password:** `pleasantview2026`
 
