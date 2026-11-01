@@ -1,2 +1,24 @@
-{"name":"pleasantview-academy","private":true,"scripts":{"dev":"next dev","build":"next build && rm -rf .next/cache","start":"next start"},
-"dependencies":{"@libsql/client":"^0.14.0","africastalking":"^0.7.0","next":"^15.0.0","react":"^19.0.0","react-dom":"^19.0.0","resend":"^4.0.0"}}
+{
+  "name": "pleasantview-academy",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build && rm -rf .next/cache",
+    "build:worker": "opennextjs-cloudflare build",
+    "start": "next start",
+    "preview": "opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare deploy"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.14.0",
+    "africastalking": "^0.7.0",
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "resend": "^4.0.0"
+  },
+  "devDependencies": {
+    "@opennextjs/cloudflare": "^1.20.15",
+    "wrangler": "^4.156.0"
+  }
+}
