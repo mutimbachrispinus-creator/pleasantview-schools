@@ -17,7 +17,10 @@ import {
   replyEmail,
   simulateInboundSMS,
   simulateInboundEmail,
-  delInbound
+  delInbound,
+  addEmailAccount,
+  updateEmailAccount,
+  delEmailAccount
 } from '@/app/hidden-admin/actions';
 
 const LONG = ['welcome', 'about', 'mission', 'vision'];
@@ -50,13 +53,13 @@ export const LoginForm = ({ k = '', title = 'Staff & Admin Portal' }) => (
         <div className="admin-badge"><i className="fa-solid fa-lock" /> AUTHENTICATION</div>
         <h2>{title}</h2>
         <p style={{ fontSize: '14px', color: '#666', marginBottom: '20px' }}>
-          Please authenticate with your administrative credentials to manage schools, categories, populations, and campus content.
+          Please authenticate with your administrative credentials or authorized staff department email (e.g. <code>admin@...</code>, <code>support@...</code>, <code>info@...</code>, <code>admissions@...</code>).
         </p>
         <form action={login}>
           <input type="hidden" name="key" value={k} />
           <div className="form-group">
-            <label>Staff Email Address</label>
-            <input name="email" type="email" placeholder="admin@pleasantview.sc.ke" required />
+            <label>Staff / Department Email Address</label>
+            <input name="email" type="email" placeholder="e.g. support@pleasantview.sc.ke, info@..., admin@..." required />
           </div>
           <div className="form-group">
             <label>Password</label>
@@ -80,7 +83,7 @@ export default async function Panel({ scope, edit }) {
   const vals = es || (await S());
 
   const w = scope ? ' WHERE school_id=' + Number(scope) : '';
-  const [hero, posts, photos, vis, enqs, inboundSms, inboundEmails, commLogs] = await Promise.all([
+  const [hero, posts, photos, vis, enqs, inboundSms, inboundEmails, commLogs, emailAccountsList] = await Promise.all([
     q(
       `SELECT h.*, s.name sname FROM hero h LEFT JOIN schools s ON s.id=h.school_id${
         scope ? ' WHERE h.school_id=' + Number(scope) : ''
@@ -100,7 +103,8 @@ export default async function Panel({ scope, edit }) {
     ),
     q('SELECT * FROM inbound_sms ORDER BY id DESC LIMIT 50'),
     q('SELECT * FROM inbound_emails ORDER BY id DESC LIMIT 50'),
-    q('SELECT * FROM comm_logs ORDER BY id DESC LIMIT 50')
+    q('SELECT * FROM comm_logs ORDER BY id DESC LIMIT 50'),
+    q('SELECT * FROM email_accounts ORDER BY id ASC')
   ]);
 
   const Pick = () =>
@@ -320,6 +324,185 @@ export default async function Panel({ scope, edit }) {
             </div>
           </section>
 
+          {/* INSTITUTIONAL DEPARTMENT EMAIL ACCOUNTS & MAILBOXES (CENTRAL ADMIN) */}
+          {!scope && (
+            <section style={{ marginBottom: '45px', borderBottom: '2px solid var(--soft-bg)', paddingBottom: '35px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', marginBottom: '15px' }}>
+                <div>
+                  <h2 style={{ fontSize: '22px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <i className="fa-solid fa-at" style={{ color: 'var(--gold-accent)' }} />
+                    Institutional Email Accounts &amp; Department Mailboxes
+                    <span style={{ fontSize: '13px', background: 'var(--primary-navy)', color: '#fff', padding: '3px 8px', borderRadius: '4px', fontWeight: 600, marginLeft: '8px' }}>Central Admin</span>
+                  </h2>
+                  <p style={{ color: '#666', fontSize: '14px', marginTop: '4px' }}>
+                    Configure authorized institutional mailboxes (<code>support@pleasantview.sc.ke</code>, <code>info@pleasantview.sc.ke</code>, <code>admissions@...</code>, etc.). Staff assigned to these mailboxes can sign in to the portal with their own credentials, send/receive department messages, and configure automated replies.
+                  </p>
+                </div>
+              </div>
+
+              {/* LIST OF CONFIGURED ACCOUNTS */}
+              <div style={{ background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '22px', marginBottom: '25px' }}>
+                <h3 style={{ fontSize: '17px', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <i className="fa-solid fa-users-gear" style={{ color: 'var(--primary-navy)' }} />
+                  Active Department Accounts ({emailAccountsList.length})
+                </h3>
+                <div style={{ overflowX: 'auto' }}>
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Email Address</th>
+                        <th>Department / Unit</th>
+                        <th>Display Name</th>
+                        <th>Role</th>
+                        <th>Login Password</th>
+                        <th>Auto-Reply / Forwarding</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {emailAccountsList.map(acc => (
+                        <tr key={acc.id}>
+                          <td>
+                            <strong><code>{acc.email}</code></strong>
+                          </td>
+                          <td>{acc.department || 'General Desk'}</td>
+                          <td>{acc.display_name}</td>
+                          <td>
+                            <span style={{ background: 'var(--soft-bg)', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
+                              {acc.role || 'Staff'}
+                            </span>
+                          </td>
+                          <td>
+                            <code style={{ background: '#f8f9fa', padding: '2px 6px', borderRadius: '3px', fontSize: '11px' }}>
+                              {acc.password || '••••••••'}
+                            </code>
+                          </td>
+                          <td style={{ fontSize: '12px' }}>
+                            {acc.auto_reply && <div><i className="fa-solid fa-reply-all" style={{ color: '#28a745', marginRight: '4px' }} /> Auto-Reply: <em>{acc.auto_reply.slice(0, 30)}...</em></div>}
+                            {acc.forward_to && <div><i className="fa-solid fa-share" style={{ color: 'var(--medium-blue)', marginRight: '4px' }} /> Fwd: <code>{acc.forward_to}</code></div>}
+                            {!acc.auto_reply && !acc.forward_to && <span style={{ color: '#aaa' }}>Standard Inbox</span>}
+                          </td>
+                          <td>
+                            <span style={{
+                              background: acc.is_active ? '#d4edda' : '#f8d7da',
+                              color: acc.is_active ? '#155724' : '#721c24',
+                              padding: '2px 6px',
+                              borderRadius: '3px',
+                              fontSize: '11px',
+                              fontWeight: 700
+                            }}>
+                              {acc.is_active ? 'ACTIVE' : 'INACTIVE'}
+                            </span>
+                          </td>
+                          <td>
+                            <details style={{ display: 'inline-block' }}>
+                              <summary style={{ cursor: 'pointer', color: 'var(--medium-blue)', fontWeight: 600, fontSize: '12px' }}>
+                                Edit
+                              </summary>
+                              <form action={updateEmailAccount} style={{ marginTop: '8px', display: 'grid', gap: '8px', minWidth: '280px', background: 'var(--soft-bg)', padding: '12px', borderRadius: '4px' }}>
+                                <input type="hidden" name="id" value={acc.id} />
+                                <div className="form-group" style={{ marginBottom: '6px' }}>
+                                  <label style={{ fontSize: '11px' }}>Display Name</label>
+                                  <input name="display_name" defaultValue={acc.display_name} style={{ padding: '6px', fontSize: '12px' }} />
+                                </div>
+                                <div className="form-group" style={{ marginBottom: '6px' }}>
+                                  <label style={{ fontSize: '11px' }}>Department</label>
+                                  <input name="department" defaultValue={acc.department} style={{ padding: '6px', fontSize: '12px' }} />
+                                </div>
+                                <div className="form-group" style={{ marginBottom: '6px' }}>
+                                  <label style={{ fontSize: '11px' }}>New Password (Leave blank to keep)</label>
+                                  <input name="password" type="text" placeholder="New password" style={{ padding: '6px', fontSize: '12px' }} />
+                                </div>
+                                <div className="form-group" style={{ marginBottom: '6px' }}>
+                                  <label style={{ fontSize: '11px' }}>Forward To (Optional)</label>
+                                  <input name="forward_to" type="email" defaultValue={acc.forward_to} placeholder="staff.personal@gmail.com" style={{ padding: '6px', fontSize: '12px' }} />
+                                </div>
+                                <div className="form-group" style={{ marginBottom: '6px' }}>
+                                  <label style={{ fontSize: '11px' }}>Auto-Reply Template</label>
+                                  <textarea name="auto_reply" defaultValue={acc.auto_reply} rows={2} style={{ padding: '6px', fontSize: '12px' }} />
+                                </div>
+                                <div style={{ display: 'flex', gap: '10px', fontSize: '12px' }}>
+                                  <label><input type="checkbox" name="can_login" value="1" defaultChecked={Boolean(acc.can_login)} /> Allow Portal Login</label>
+                                  <label><input type="checkbox" name="is_active" value="1" defaultChecked={Boolean(acc.is_active)} /> Active</label>
+                                </div>
+                                <button type="submit" className="button button-primary" style={{ padding: '6px 12px', fontSize: '11px', marginTop: '6px' }}>
+                                  Save Account
+                                </button>
+                              </form>
+                            </details>
+                            <form action={delEmailAccount} style={{ display: 'inline', marginLeft: '8px' }}>
+                              <input type="hidden" name="id" value={acc.id} />
+                              <button type="submit" style={{ background: '#d9534f', color: '#fff', border: 0, padding: '4px 8px', borderRadius: '3px', cursor: 'pointer', fontSize: '11px' }}>
+                                Del
+                              </button>
+                            </form>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* CREATE NEW DEPARTMENT EMAIL FORM */}
+              <div style={{ background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '22px' }}>
+                <h3 style={{ fontSize: '17px', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <i className="fa-solid fa-plus-circle" style={{ color: 'var(--gold-accent)' }} />
+                  Create New Department Email Account
+                </h3>
+                <form action={addEmailAccount} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
+                  <div className="form-group">
+                    <label>Department Email Address <span style={{ color: 'red' }}>*</span></label>
+                    <input name="email" type="email" placeholder="e.g. support@pleasantview.sc.ke" required style={{ padding: '10px' }} />
+                    <small style={{ color: '#666' }}>e.g. <code>support@pleasantview.sc.ke</code>, <code>info@...</code>, <code>accounts@...</code></small>
+                  </div>
+                  <div className="form-group">
+                    <label>Department / Unit Name</label>
+                    <input name="department" type="text" placeholder="e.g. ICT &amp; Parent Support Helpdesk" required style={{ padding: '10px' }} />
+                  </div>
+                  <div className="form-group">
+                    <label>Staff Display Name</label>
+                    <input name="display_name" type="text" placeholder="e.g. Pleasantview Support Desk" required style={{ padding: '10px' }} />
+                  </div>
+                  <div className="form-group">
+                    <label>Portal Login Password</label>
+                    <input name="password" type="text" defaultValue="pleasantview2026" required style={{ padding: '10px' }} />
+                    <small style={{ color: '#666' }}>Password used by this staff/department to log in at <code>/hidden-admin</code></small>
+                  </div>
+                  <div className="form-group">
+                    <label>Role</label>
+                    <select name="role" style={{ padding: '10px' }}>
+                      <option value="Staff">Staff</option>
+                      <option value="Executive">Executive</option>
+                      <option value="Admissions">Admissions</option>
+                      <option value="Accounts">Accounts</option>
+                      <option value="Helpdesk">Helpdesk</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>External Forwarding Address (Optional)</label>
+                    <input name="forward_to" type="email" placeholder="e.g. onduty.staff@gmail.com" style={{ padding: '10px' }} />
+                    <small style={{ color: '#666' }}>Automatically forwards a copy of inbound messages to this email</small>
+                  </div>
+                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                    <label>Automatic Responder Template (Optional)</label>
+                    <textarea name="auto_reply" rows={2} placeholder="e.g. Thank you for contacting Pleasantview Support. We have received your inquiry and our team will get back to you within 2 hours." style={{ padding: '10px' }} />
+                  </div>
+                  <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}>
+                      <input type="checkbox" name="can_login" value="1" defaultChecked />
+                      <strong>Allow this department account to log into the Staff Portal</strong>
+                    </label>
+                    <button type="submit" className="button button-gold" style={{ padding: '12px 24px', fontSize: '14px' }}>
+                      <i className="fa-solid fa-plus" /> Provision Department Account
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </section>
+          )}
+
           {/* INBOUND COMMUNICATIONS & MESSAGES HUB (CENTRAL ADMIN) */}
           <section style={{ marginBottom: '45px', borderBottom: '2px solid var(--soft-bg)', paddingBottom: '35px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', marginBottom: '15px' }}>
@@ -497,6 +680,14 @@ export default async function Panel({ scope, edit }) {
                               <form action={replyEmail} style={{ marginTop: '8px', display: 'grid', gap: '6px', minWidth: '260px', background: 'var(--soft-bg)', padding: '10px', borderRadius: '4px' }}>
                                 <input type="hidden" name="to" value={e.sender_email} />
                                 <input type="hidden" name="email_id" value={e.id} />
+                                <select name="from_account" style={{ padding: '6px', fontSize: '12px' }}>
+                                  <option value="">Send From: Default ({e.recipient || 'info@pleasantview.sc.ke'})</option>
+                                  {emailAccountsList.map(acc => (
+                                    <option key={acc.id} value={acc.email}>
+                                      Send From: {acc.email} ({acc.department || acc.display_name})
+                                    </option>
+                                  ))}
+                                </select>
                                 <input name="subject" defaultValue={`Re: ${e.subject || 'Pleasantview Inquiry'}`} style={{ padding: '6px', fontSize: '12px' }} />
                                 <textarea name="message" placeholder="Type email reply..." rows={3} required style={{ padding: '6px', fontSize: '12px' }} />
                                 <button type="submit" className="button button-primary" style={{ padding: '5px 10px', fontSize: '11px' }}>
@@ -608,6 +799,15 @@ export default async function Panel({ scope, edit }) {
                   <strong style={{ fontSize: '13px', color: 'var(--primary-navy)' }}>+ Simulate Inbound Email (Resend)</strong>
                   <input name="name" placeholder="Sender Name" defaultValue="Mercy Mwangi" style={{ padding: '8px', fontSize: '13px' }} required />
                   <input name="email" type="email" placeholder="Sender Email" defaultValue="mercy.mwangi@example.com" style={{ padding: '8px', fontSize: '13px' }} required />
+                  <select name="recipient" style={{ padding: '8px', fontSize: '13px' }}>
+                    <option value="info@pleasantview.sc.ke">To: info@pleasantview.sc.ke (General Inquiries)</option>
+                    <option value="support@pleasantview.sc.ke">To: support@pleasantview.sc.ke (Support Desk)</option>
+                    <option value="admissions@pleasantview.sc.ke">To: admissions@pleasantview.sc.ke (Admissions)</option>
+                    <option value="accounts@pleasantview.sc.ke">To: accounts@pleasantview.sc.ke (Accounts)</option>
+                    {emailAccountsList.filter(a => !['info@pleasantview.sc.ke', 'support@pleasantview.sc.ke', 'admissions@pleasantview.sc.ke', 'accounts@pleasantview.sc.ke'].includes(a.email)).map(a => (
+                      <option key={a.id} value={a.email}>To: {a.email} ({a.department})</option>
+                    ))}
+                  </select>
                   <input name="subject" placeholder="Email Subject" defaultValue="Fee structure inquiry for JSS" style={{ padding: '8px', fontSize: '13px' }} required />
                   <textarea name="body" placeholder="Email body..." defaultValue="Please send me the term 1 fee structure for Grade 7." rows={2} style={{ padding: '8px', fontSize: '13px' }} required />
                   <button type="submit" className="button button-primary" style={{ padding: '8px', fontSize: '12px' }}>

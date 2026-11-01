@@ -51,14 +51,40 @@ export async function POST(req) {
       const text = body.text || body.body || '';
       const html = body.html || '';
 
+      const recipientStr = Array.isArray(recipient) ? recipient.join(', ') : String(recipient);
+
       await q(
         'INSERT INTO inbound_emails(sender_name, sender_email, recipient, subject, body, html, status) VALUES(?,?,?,?,?,?,?)',
-        [senderName, sender, Array.isArray(recipient) ? recipient.join(', ') : String(recipient), subject, text, html, 'received']
+        [senderName, sender, recipientStr, subject, text, html, 'received']
       );
       await q(
         'INSERT INTO comm_logs(type, direction, sender, recipient, subject, content, status) VALUES(?,?,?,?,?,?,?)',
-        ['email', 'inbound', sender, Array.isArray(recipient) ? recipient.join(', ') : String(recipient), subject, text, 'received']
+        ['email', 'inbound', sender, recipientStr, subject, text, 'received']
       );
+
+      // Check for automated routing, auto-responder, and forwarding
+      try {
+        const [acc] = await q('SELECT * FROM email_accounts WHERE lower(email)=? AND is_active=1', [recipientStr.toLowerCase().trim()]);
+        if (acc) {
+          if (acc.auto_reply && sender) {
+            await sendEmail({
+              to: sender,
+              from: `Pleasantview ${acc.department || 'Schools'} <${acc.email}>`,
+              subject: `Re: ${subject}`,
+              text: acc.auto_reply
+            });
+          }
+          if (acc.forward_to) {
+            await sendEmail({
+              to: acc.forward_to,
+              subject: `[FWD to ${acc.email}] ${subject}`,
+              text: `Forwarded inbound message from ${senderName} <${sender}> to ${acc.email}:\n\n${text}`
+            });
+          }
+        }
+      } catch (routingErr) {
+        console.warn('[Resend Routing] Auto-responder/forwarding note:', routingErr.message);
+      }
 
       return NextResponse.json({
         success: true,

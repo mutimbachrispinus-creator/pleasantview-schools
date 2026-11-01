@@ -22,11 +22,19 @@ const newKey = () => crypto.randomBytes(8).toString('hex');
 export async function login(fd) {
   if (limited('a' + ((await headers()).get('x-forwarded-for') || 'x'))) return;
   const key = fd.get('key') || '',
-    em = String(fd.get('email') || ''),
+    em = String(fd.get('email') || '').trim().toLowerCase(),
     pw = String(fd.get('password') || '');
   if (!key) {
-    if (eq(em, process.env.ADMIN_EMAIL || 'admin@pleasantview.sc.ke') && eq(pw, process.env.ADMIN_PASSWORD || 'pleasantview2026')) {
+    const masterEmail = (process.env.ADMIN_EMAIL || 'admin@pleasantview.sc.ke').trim().toLowerCase();
+    const masterPassword = (process.env.ADMIN_PASSWORD || 'pleasantview2026').trim();
+    if (eq(em, masterEmail) && eq(pw, masterPassword)) {
       await startSession(0);
+    } else {
+      // Dynamic departmental email accounts (support@, info@, etc.)
+      const [acc] = await q('SELECT * FROM email_accounts WHERE lower(email)=? AND is_active=1 AND can_login=1', [em]);
+      if (acc && acc.password && eq(pw, acc.password)) {
+        await startSession(0);
+      }
     }
   } else {
     const [s] = await q('SELECT * FROM schools WHERE admin_key=?', [key]);
@@ -236,14 +244,76 @@ export async function replySMS(fd) {
 export async function replyEmail(fd) {
   await A();
   const to = String(fd.get('to') || '').trim();
+  const fromAccount = String(fd.get('from_account') || '').trim();
   const subject = String(fd.get('subject') || 'Re: Pleasantview Schools Admissions').trim();
   const msg = String(fd.get('message') || '').trim();
   const emailId = Number(fd.get('email_id'));
   if (!to || !msg) return;
 
-  await sendEmail({ to, subject, text: msg });
+  await sendEmail({
+    to,
+    subject,
+    text: msg,
+    ...(fromAccount ? { from: `Pleasantview Schools <${fromAccount}>` } : {})
+  });
   if (emailId) {
     await q('UPDATE inbound_emails SET status="replied" WHERE id=?', [emailId]);
+  }
+  done();
+}
+
+export async function addEmailAccount(fd) {
+  await C();
+  const email = String(fd.get('email') || '').trim().toLowerCase();
+  const displayName = String(fd.get('display_name') || '').trim();
+  const department = String(fd.get('department') || 'General Desk').trim();
+  const role = String(fd.get('role') || 'Staff').trim();
+  const password = String(fd.get('password') || 'pleasantview2026').trim();
+  const forwardTo = String(fd.get('forward_to') || '').trim();
+  const autoReply = String(fd.get('auto_reply') || '').trim();
+  const canLogin = fd.get('can_login') === '0' ? 0 : 1;
+
+  if (!email || !email.includes('@')) return;
+
+  await q(
+    'INSERT INTO email_accounts(email, display_name, department, role, password, forward_to, auto_reply, can_login, is_active) VALUES(?,?,?,?,?,?,?,?,1)',
+    [email, displayName || email, department, role, password, forwardTo, autoReply, canLogin]
+  );
+  done();
+}
+
+export async function updateEmailAccount(fd) {
+  await C();
+  const id = Number(fd.get('id'));
+  if (!id) return;
+  const displayName = String(fd.get('display_name') || '').trim();
+  const department = String(fd.get('department') || '').trim();
+  const role = String(fd.get('role') || 'Staff').trim();
+  const password = String(fd.get('password') || '').trim();
+  const forwardTo = String(fd.get('forward_to') || '').trim();
+  const autoReply = String(fd.get('auto_reply') || '').trim();
+  const canLogin = fd.get('can_login') === '0' ? 0 : 1;
+  const isActive = fd.get('is_active') === '0' ? 0 : 1;
+
+  if (password) {
+    await q(
+      'UPDATE email_accounts SET display_name=?, department=?, role=?, password=?, forward_to=?, auto_reply=?, can_login=?, is_active=? WHERE id=?',
+      [displayName, department, role, password, forwardTo, autoReply, canLogin, isActive, id]
+    );
+  } else {
+    await q(
+      'UPDATE email_accounts SET display_name=?, department=?, role=?, forward_to=?, auto_reply=?, can_login=?, is_active=? WHERE id=?',
+      [displayName, department, role, forwardTo, autoReply, canLogin, isActive, id]
+    );
+  }
+  done();
+}
+
+export async function delEmailAccount(fd) {
+  await C();
+  const id = Number(fd.get('id'));
+  if (id) {
+    await q('DELETE FROM email_accounts WHERE id=?', [id]);
   }
   done();
 }
@@ -277,7 +347,7 @@ export async function simulateInboundEmail(fd) {
   const email = String(fd.get('email') || 'parent@example.com').trim();
   const subject = String(fd.get('subject') || 'Admission Inquiry').trim();
   const body = String(fd.get('body') || 'Hello Admissions, I would like to inquire about admission requirements.').trim();
-  const recipient = process.env.SCHOOL_EMAIL || 'info@pleasantview.sc.ke';
+  const recipient = String(fd.get('recipient') || process.env.SCHOOL_EMAIL || 'info@pleasantview.sc.ke').trim();
 
   await q('INSERT INTO inbound_emails(sender_name, sender_email, recipient, subject, body, status) VALUES(?,?,?,?,?,?)', [
     name,
