@@ -14,13 +14,13 @@ try {
   fs.rmSync('.next/cache', { recursive: true, force: true });
 } catch {}
 
-// 2. OpenNext Cloudflare bundle
+// 2. OpenNext Cloudflare bundle (using dedicated worker config)
 console.log('Generating OpenNext Cloudflare bundle...');
-run('npx @opennextjs/cloudflare build');
+run('npx @opennextjs/cloudflare build --config wrangler.worker.jsonc');
 
 // 3. Wrangler bundle into output directory
 console.log('Creating Pages distribution bundle with Wrangler...');
-run('npx wrangler deploy --dry-run --outdir .open-next/assets');
+run('npx wrangler deploy --dry-run --outdir .open-next/assets --config wrangler.worker.jsonc');
 
 // 4. Rename worker.js -> _worker.js for Cloudflare Pages Advanced Mode
 const workerPath = path.join('.open-next', 'assets', 'worker.js');
