@@ -37,13 +37,25 @@ try {
   fs.rmSync(path.join('.open-next', 'assets', 'worker.js.map'), { force: true });
 } catch {}
 
-// Create a fallback index.html if needed for asset validation
-const indexPath = path.join('.open-next', 'assets', 'index.html');
-if (!fs.existsSync(indexPath)) {
-  fs.writeFileSync(
-    indexPath,
-    '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Pleasantview Schools</title></head><body><script>window.location.reload();</script></body></html>'
-  );
-}
+// 5. Create _routes.json so Cloudflare Pages serves CSS and static assets natively
+const routesJson = {
+  version: 1,
+  include: ["/*"],
+  exclude: [
+    "/_next/static/*",
+    "/images/*",
+    "/favicon.ico"
+  ]
+};
+fs.writeFileSync(
+  path.join('.open-next', 'assets', '_routes.json'),
+  JSON.stringify(routesJson, null, 2)
+);
+console.log('✅ Created .open-next/assets/_routes.json (Bypasses worker for static assets)');
 
-console.log('✨ Build succeeded! Output directory .open-next/assets is ready with _worker.js.');
+// 6. Ensure no conflicting index.html exists in assets so _worker.js handles the root path /
+try {
+  fs.rmSync(path.join('.open-next', 'assets', 'index.html'), { force: true });
+} catch {}
+
+console.log('✨ Build succeeded! Output directory .open-next/assets is ready with _worker.js and _routes.json.');

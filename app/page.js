@@ -26,14 +26,31 @@ export default async function Home() {
       }))
     : [
         {
-          image: '/images/banner_1_a.webp',
-          headline: 'PLEASANTVIEW SCHOOLS',
-          sub: 'Competent · Confident · Compassionate — Our Aim is Victory'
+          image: '/images/hero_science_lab.jpg',
+          headline: 'WELCOME TO PLEASANTVIEW SCHOOLS',
+          sub: 'Seeking the Highest — Transforming Hearts, Minds, Bodies and Souls of Tomorrow’s Leaders',
+          button_text: 'Discover More',
+          button_link: '/#pillars',
+          button_alt_text: 'Book A Visit',
+          button_alt_link: '/contact#visit'
         },
         {
-          image: '/images/banner_2_a.webp',
-          headline: '24 YEARS OF ACADEMIC EXCELLENCE',
-          sub: 'Consistently exceeding 390/500 KCPE mean scores and B+ KCSE performance'
+          image: '/images/hero_sports_field.jpg',
+          headline: 'HOLISTIC CHARACTER & ADVENTURE',
+          sub: 'Cultivating sportsmanship, physical resilience, teamwork, and Christian leadership on expansive green grounds',
+          button_text: 'Sports & Co-Curricular',
+          button_link: '/about#sports',
+          button_alt_text: 'Our Campuses',
+          button_alt_link: '/#schools'
+        },
+        {
+          image: '/images/hero_library_learning.jpg',
+          headline: '24 YEARS OF ACADEMIC DISTINCTION',
+          sub: 'A sterling track record exceeding 390/500 KCPE mean scores and B+ KCSE university transition feats',
+          button_text: 'Academic Curriculum',
+          button_link: '/about#academics',
+          button_alt_text: 'Apply Now',
+          button_alt_link: '/contact'
         }
       ];
 
@@ -59,6 +76,53 @@ export default async function Home() {
     <>
       <Slider slides={slides} base="" />
 
+      {/* QUICK OVERVIEW GATEWAY BAR (St Andrew's Turi Exact) */}
+      <section className="quick-overview-bar" aria-label="Key Gateways">
+        <div className="wrapper" style={{ padding: 0 }}>
+          <div className="overview-grid">
+            <Link href="/#schools" className="overview-card">
+              <div className="overview-icon-box">
+                <i className="fa-solid fa-graduation-cap" />
+              </div>
+              <div className="overview-meta">
+                <h4>Academic Stages</h4>
+                <p>Early Years &bull; Primary &bull; JSS &bull; High School</p>
+              </div>
+            </Link>
+
+            <Link href="/about#boarding" className="overview-card">
+              <div className="overview-icon-box">
+                <i className="fa-solid fa-house-chimney-window" />
+              </div>
+              <div className="overview-meta">
+                <h4>Boarding Life</h4>
+                <p>Nurturing home-away-from-home from Grade 4</p>
+              </div>
+            </Link>
+
+            <Link href="/about#transport" className="overview-card">
+              <div className="overview-icon-box">
+                <i className="fa-solid fa-bus-simple" />
+              </div>
+              <div className="overview-meta">
+                <h4>School Transport</h4>
+                <p>Safe monitored routes across Kiambu &amp; Nairobi</p>
+              </div>
+            </Link>
+
+            <Link href="/contact#visit" className="overview-card">
+              <div className="overview-icon-box">
+                <i className="fa-regular fa-calendar-check" />
+              </div>
+              <div className="overview-meta">
+                <h4>Admissions &amp; Visits</h4>
+                <p>Book a personalized walking campus tour</p>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* TEXT INTRODUCTION (PLEASANTVIEW – SEEKING THE HIGHEST) */}
       <section className="text-component">
         <div className="wrapper">
@@ -71,6 +135,140 @@ export default async function Home() {
           <p className="body-text">
             Since inception in 1998, our KCPE classes have consistently maintained a distinguished mean score exceeding 390/500, ranking proudly among the top 10 schools in Kiambu County. Following this extraordinary record, our Girls’ High School and modern Junior Secondary School (JSS) continue to set benchmarks in academic competence, technical innovation, and moral integrity.
           </p>
+        </div>
+      </section>
+
+      {/* THE FOUR PILLARS SECTION (Hearts, Minds, Bodies and Souls - St Andrew's Turi Match) */}
+      <section className="four-pillars-section" id="pillars">
+        <div className="wrapper">
+          <div className="pillars-header">
+            <h5>HOLISTIC CHRISTIAN EDUCATION</h5>
+            <h2>Transforming Hearts, Minds, Bodies &amp; Souls</h2>
+            <div className="gold-divider" />
+            <p className="lead" style={{ fontSize: '17px', color: '#555', margin: 0 }}>
+              Guided by our motto &ldquo;Our Aim is Victory&rdquo;, we educate the whole child through four foundational pillars that equip every learner to thrive academically, spiritually, and socially.
+            </p>
+          </div>
+
+          <div className="pillars-grid">
+            {/* PILLAR 1: MINDS */}
+            <div className="pillar-card">
+              <div className="pillar-header-img" style={{ backgroundImage: `url('/images/banner_2_a.webp')` }}>
+                <div className="overlay" />
+                <span className="pillar-tag">Pillar I</span>
+                <div className="pillar-icon-badge">
+                  <i className="fa-solid fa-brain" />
+                </div>
+              </div>
+              <div className="pillar-body">
+                <h4>Minds &ndash; Academic Rigor</h4>
+                <p>
+                  A 24-year heritage exceeding 390/500 KCPE mean scores and B+ university transition feats, delivering progressive Competency Based Curriculum (CBC) and STEM mastery.
+                </p>
+                <Link href="/about#academics" className="pillar-link">
+                  Academic Curriculum <i className="fa-solid fa-arrow-right-long" />
+                </Link>
+              </div>
+            </div>
+
+            {/* PILLAR 2: HEARTS */}
+            <div className="pillar-card">
+              <div className="pillar-header-img" style={{ backgroundImage: `url('/images/gallery_2.webp')` }}>
+                <div className="overlay" />
+                <span className="pillar-tag">Pillar II</span>
+                <div className="pillar-icon-badge">
+                  <i className="fa-solid fa-heart" />
+                </div>
+              </div>
+              <div className="pillar-body">
+                <h4>Hearts &ndash; Pastoral Care</h4>
+                <p>
+                  Family-style boarding from Grade 4 upwards with resident houseparents, dedicated mentors, and individualized emotional support ensuring every child feels valued.
+                </p>
+                <Link href="/about#boarding" className="pillar-link">
+                  Pastoral Care <i className="fa-solid fa-arrow-right-long" />
+                </Link>
+              </div>
+            </div>
+
+            {/* PILLAR 3: BODIES */}
+            <div className="pillar-card">
+              <div className="pillar-header-img" style={{ backgroundImage: `url('/images/gallery_9.webp')` }}>
+                <div className="overlay" />
+                <span className="pillar-tag">Pillar III</span>
+                <div className="pillar-icon-badge">
+                  <i className="fa-solid fa-person-running" />
+                </div>
+              </div>
+              <div className="pillar-body">
+                <h4>Bodies &ndash; Sports &amp; Adventure</h4>
+                <p>
+                  Competitive athletics, football, basketball, swimming, and co-curricular outdoor exploration that cultivate physical resilience, teamwork, and sportsmanship.
+                </p>
+                <Link href="/about#sports" className="pillar-link">
+                  Sports &amp; Co-Curricular <i className="fa-solid fa-arrow-right-long" />
+                </Link>
+              </div>
+            </div>
+
+            {/* PILLAR 4: SOULS */}
+            <div className="pillar-card">
+              <div className="pillar-header-img" style={{ backgroundImage: `url('/images/gallery_8.webp')` }}>
+                <div className="overlay" />
+                <span className="pillar-tag">Pillar IV</span>
+                <div className="pillar-icon-badge">
+                  <i className="fa-solid fa-cross" />
+                </div>
+              </div>
+              <div className="pillar-body">
+                <h4>Souls &ndash; Christian Character</h4>
+                <p>
+                  Rooted in Christian faith and ethics, instilling unwavering courage, integrity, compassion, and servant leadership so pupils impact society with moral purpose.
+                </p>
+                <Link href="/about#christian" className="pillar-link">
+                  Christian Ethos <i className="fa-solid fa-arrow-right-long" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* DIRECTOR'S WELCOME & INSTITUTIONAL OVERVIEW */}
+      <section className="director-welcome-section">
+        <div className="wrapper">
+          <div className="director-container">
+            <div className="director-image-wrapper">
+              <img
+                src="/images/banner_3_a.webp"
+                alt="Pleasantview Leadership"
+                className="director-portrait"
+              />
+              <div className="director-frame-badge">
+                <i className="fa-solid fa-award" style={{ marginRight: '8px', color: 'var(--gold-accent)' }} />
+                24 Years of Leadership
+              </div>
+            </div>
+
+            <div className="director-content">
+              <h5>DIRECTOR&apos;S WELCOME</h5>
+              <h2>A Tradition of Victory &amp; Academic Distinction</h2>
+              <div className="gold-divider" style={{ margin: '0 0 25px 0' }} />
+              <div className="director-quote">
+                &ldquo;Our aim is victory &mdash; not merely in examinations, but in shaping disciplined, visionary young people who lead with wisdom, faith, and purpose.&rdquo;
+              </div>
+              <p>
+                Welcome to Pleasantview Schools. For over two decades, our community has stood as a beacon of academic excellence and character development in Kiambu County. We believe that true education nurtures the mind while fortifying the soul.
+              </p>
+              <p>
+                Whether in our early learning centre, thriving primary school, modern Junior Secondary (JSS), or distinguished Girls’ High School, we provide state-of-the-art science laboratories, extensive transport coverage, and world-class pastoral boarding. We warmly invite you to visit our campus and experience the Pleasantview difference firsthand.
+              </p>
+              <div className="director-signature">
+                Board of Directors &amp; Executive Principal
+              </div>
+              <span className="director-title">Pleasantview Schools Group</span>
+            </div>
+          </div>
         </div>
       </section>
 

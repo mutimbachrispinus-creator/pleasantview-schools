@@ -4,39 +4,38 @@ import Link from 'next/link';
 
 export default function Slider({ slides = [], base = '' }) {
   const defaultImages = [
-    '/images/banner_1_a.webp',
-    '/images/banner_2_a.webp',
-    '/images/banner_3_a.webp',
-    '/images/banner_4_a.webp'
+    '/images/hero_science_lab.jpg',
+    '/images/hero_sports_field.jpg',
+    '/images/hero_library_learning.jpg'
   ];
 
   const safeSlides = slides.length > 0 ? slides : [
     {
-      image: '/images/banner_1_a.webp',
-      headline: 'WELCOME TO PLEASANTVIEW SCHOOLS',
-      sub: 'Competent · Confident · Compassionate — Our Aim is Victory',
-      button_text: 'Explore Our Schools',
-      button_link: '/#schools',
-      button_alt_text: 'Book a Campus Tour',
+      image: '/images/hero_science_lab.jpg',
+      headline: 'PLEASANTVIEW SCHOOLS',
+      sub: 'Transforming Hearts, Minds, Bodies and Souls of Tomorrow’s Leaders',
+      button_text: 'Discover More',
+      button_link: '/#pillars',
+      button_alt_text: 'Book A Visit',
       button_alt_link: '/contact#visit'
     },
     {
-      image: '/images/banner_2_a.webp',
-      headline: '24 YEARS OF ACADEMIC EXCELLENCE',
-      sub: 'Consistently exceeding 390/500 KCPE mean scores and B+ KCSE performance',
-      button_text: 'Our Academics',
+      image: '/images/hero_sports_field.jpg',
+      headline: 'HOLISTIC CHARACTER & ADVENTURE',
+      sub: 'Cultivating sportsmanship, physical resilience, teamwork, and Christian leadership on expansive green grounds',
+      button_text: 'Sports & Co-Curricular',
+      button_link: '/about#sports',
+      button_alt_text: 'Our Campuses',
+      button_alt_link: '/#schools'
+    },
+    {
+      image: '/images/hero_library_learning.jpg',
+      headline: '24 YEARS OF ACADEMIC DISTINCTION',
+      sub: 'A sterling track record exceeding 390/500 KCPE mean scores and B+ KCSE university transition feats',
+      button_text: 'Academic Curriculum',
       button_link: '/about#academics',
-      button_alt_text: 'Admissions Desk',
+      button_alt_text: 'Apply Now',
       button_alt_link: '/contact'
-    },
-    {
-      image: '/images/banner_3_a.webp',
-      headline: 'HOLISTIC CHARACTER & MENTORSHIP',
-      sub: 'Nurturing innovators, athletes, and leaders guided by strong Christian values',
-      button_text: 'Campus Life',
-      button_link: '/about#life',
-      button_alt_text: 'Book a Campus Tour',
-      button_alt_link: '/contact#visit'
     }
   ];
 
@@ -116,21 +115,25 @@ export default function Slider({ slides = [], base = '' }) {
 
       <div className="hero-overlay" />
 
-      {/* ROTATED SIDE BUTTONS - Exactly like St Andrew's Turi */}
-      <div className="hero-buttons">
-        <Link className="hero-button light-blue" href={base ? base + '/visit' : '/contact#visit'}>
-          <i className="fa-regular fa-calendar-check" /> Book A Visit
-        </Link>
-        <Link className="hero-button dark-blue" href={base ? base + '/contact' : '/contact'}>
-          <i className="fa-solid fa-file-pen" /> Apply Now
-        </Link>
-      </div>
-
       <div className="wrapper" style={{ position: 'relative', zIndex: 12 }}>
         <div className="hero-content">
-          <h5>OUR AIM IS VICTORY &bull; ESTABLISHED 1998</h5>
-          <h1>{active.headline || 'WELCOME TO PLEASANTVIEW SCHOOLS'}</h1>
-          <p>{active.sub || 'A 24-year history of providing quality lifelong education that prepares children for success inside and outside the classroom.'}</p>
+          <span className="hero-lead-label">WELCOME TO</span>
+          <h1 className="hero-main-title">
+            {(active.headline || 'PLEASANTVIEW SCHOOLS').replace(/^WELCOME TO\s+/i, '')}
+            <span className="hero-sub-title">GITHUNGURI &bull; KIAMBU</span>
+          </h1>
+          <p className="hero-sub-text">
+            {active.sub || 'Transforming Hearts, Minds, Bodies and Souls — A 24-year legacy of academic distinction and Christian character.'}
+          </p>
+
+          {/* EXACT ST ANDREW'S TURI HIGHLIGHT LINK */}
+          <div className="hero-discover-wrap">
+            <Link className="hero-discover-link" href={primaryLink}>
+              <span>DISCOVER MORE</span>
+              <i className="fa-solid fa-arrow-right-long" />
+            </Link>
+          </div>
+
           <div className="hero-actions">
             <Link className="button button-primary" href={primaryLink}>
               {primaryText} <i className="fa-solid fa-arrow-right-long" style={{ marginLeft: '8px' }} />

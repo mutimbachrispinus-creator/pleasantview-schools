@@ -51,19 +51,25 @@ export default async function RootLayout({ children }) {
             <div className="nav-column">
               <div className="top-nav">
                 <ul>
+                  <li>
+                    <Link href="/about#academics" style={{ color: 'var(--gold-accent)', fontWeight: 700, letterSpacing: '0.5px' }}>
+                      KCSE &amp; CBC Inspection Report
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/news" style={{ color: '#ffffff', fontWeight: 600 }}>
+                      <i className="fa-solid fa-magnifying-glass" style={{ marginRight: '6px' }}></i> Search
+                    </Link>
+                  </li>
                   <li><a href={`tel:${phone}`}><i className="fa-solid fa-phone"></i> {phone}</a></li>
-                  <li><a href={`mailto:${email}`}><i className="fa-solid fa-envelope"></i> {email}</a></li>
-                  <li><span><i className="fa-solid fa-location-dot"></i> Githunguri, Kiambu</span></li>
-                  <li><Link href="/contact">Book a Visit</Link></li>
                   <li><Link href={adminPath} style={{ color: 'var(--gold-accent)' }}><i className="fa-solid fa-user-shield"></i> Staff Portal</Link></li>
                 </ul>
               </div>
 
               <div className="bottom-nav">
                 <ul>
-                  <li><Link href="/">Home</Link></li>
                   <li>
-                    <Link href="/about">About Us</Link>
+                    <Link href="/about">About</Link>
                     <ul className="sub-menu">
                       <li><Link href="/about">About Pleasantview</Link></li>
                       <li><Link href="/about#vision">Vision, Mission & Values</Link></li>
@@ -71,24 +77,11 @@ export default async function RootLayout({ children }) {
                       <li><Link href="/about#christian">Christian Ethos</Link></li>
                     </ul>
                   </li>
-                  <li>
-                    <Link href="/#schools">Our Schools</Link>
-                    <ul className="sub-menu">
-                      {schList.map(s => (
-                        <li key={s.id}>
-                          <Link href={`/s/${s.slug}`}>{s.name} ({s.category || 'School'})</Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </li>
-                  <li>
-                    <Link href="/about#academics">Academic Excellence</Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/about#academics">Competency Based Curriculum (CBC)</Link></li>
-                      <li><Link href="/about#kcpe">KCPE 390+ Mean Legacy</Link></li>
-                      <li><Link href="/about#highschool">Senior School B+ Feat</Link></li>
-                    </ul>
-                  </li>
+                  <li><Link href="/about#why-pleasantview">Why Pleasantview</Link></li>
+                  <li><Link href="/s/pleasantview-early-learning">Early Learning</Link></li>
+                  <li><Link href="/s/pleasantview-primary">Primary School</Link></li>
+                  <li><Link href="/s/pleasantview-jss">Junior Secondary</Link></li>
+                  <li><Link href="/s/pleasantview-senior">Senior School</Link></li>
                   <li>
                     <Link href="/about#life">School Life</Link>
                     <ul className="sub-menu">
@@ -104,7 +97,6 @@ export default async function RootLayout({ children }) {
                       <li><Link href="/contact#visit">Book Campus Tour</Link></li>
                     </ul>
                   </li>
-                  <li><Link href="/news">News</Link></li>
                   <li><Link href="/contact">Contact</Link></li>
                 </ul>
               </div>
@@ -112,15 +104,25 @@ export default async function RootLayout({ children }) {
           </div>
         </nav>
 
-        {/* ROTATED HERO SIDE BUTTONS (ST ANDREW'S TURI SIGNATURE) */}
+        {/* ROTATED HERO SIDE BUTTONS (ST ANDREW'S TURI SIGNATURE - Exact Order & Styling) */}
         <div className="hero-buttons">
-          <Link className="hero-button light-blue" href="/contact">
-            <i className="fa-brands fa-wpforms"></i> Contact
+          <Link className="hero-button dark-blue" href="/contact#visit" title="Book a Campus Visit">
+            <i className="fa-solid fa-location-dot"></i> VISIT
           </Link>
-          <Link className="hero-button dark-blue" href="/contact#visit">
-            <i className="fa-solid fa-location-dot"></i> Visit
+          <Link className="hero-button light-blue" href="/contact" title="Contact Us">
+            <i className="fa-regular fa-envelope"></i> CONTACT
           </Link>
         </div>
+
+        {/* FLOATING ACCESSIBILITY BUTTON (Exact St Andrew's Turi) */}
+        <button
+          type="button"
+          className="accessibility-floating-btn"
+          aria-label="Accessibility options"
+          title="Accessibility options"
+        >
+          <i className="fa-solid fa-universal-access"></i>
+        </button>
 
         {children}
 
