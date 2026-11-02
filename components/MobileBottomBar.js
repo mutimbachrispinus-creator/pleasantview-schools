@@ -1,0 +1,193 @@
+'use client';
+import { useState } from 'react';
+import Link from 'next/link';
+
+export default function MobileBottomBar({
+  phone = '+254 711 689 913',
+  mapsUrl = 'https://maps.app.goo.gl/iBXf1M86VKxqAEft5',
+  whatsappUrl = 'https://wa.me/254711689913?text=Hello%20Pleasant%20View%20Schools,%20I%20would%20like%20to%20inquire%20about%20admissions.',
+  schools = [],
+  quickLinks = []
+}) {
+  const [openDrawer, setOpenDrawer] = useState(null); // 'quick' | 'schools' | null
+
+  const toggleDrawer = (name) => {
+    setOpenDrawer(prev => (prev === name ? null : name));
+  };
+
+  const closeDrawer = () => setOpenDrawer(null);
+
+  return (
+    <>
+      {/* DRAWER BACKDROP */}
+      {openDrawer && (
+        <div
+          className="mobile-drawer-backdrop"
+          onClick={closeDrawer}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* QUICK LINKS BOTTOM DRAWER */}
+      <div className={`mobile-bottom-drawer ${openDrawer === 'quick' ? 'open' : ''}`}>
+        <div className="drawer-handle" />
+        <div className="drawer-header">
+          <h4><i className="fa-solid fa-bolt" style={{ color: 'var(--gold-accent)' }} /> Quick Links &amp; Portals</h4>
+          <button type="button" onClick={closeDrawer} className="drawer-close-btn">&times;</button>
+        </div>
+        <div className="drawer-grid">
+          {/* DIRECT WHATSAPP ACTION IN DRAWER */}
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={closeDrawer}
+            className="drawer-item"
+            style={{ borderLeftColor: '#25D366', background: '#f0fdf4' }}
+          >
+            <div className="drawer-item-title" style={{ color: '#15803d' }}>
+              <i className="fa-brands fa-whatsapp" style={{ marginRight: '6px' }} /> Chat on WhatsApp (0711 689 913)
+            </div>
+            <small>Direct Instant Response from Admissions</small>
+          </a>
+
+          {/* DIRECT SMS TO ADMIN IN DRAWER */}
+          <Link
+            href="/contact#admin-sms"
+            onClick={closeDrawer}
+            className="drawer-item"
+            style={{ borderLeftColor: 'var(--gold-accent)' }}
+          >
+            <div className="drawer-item-title">
+              <i className="fa-solid fa-comment-sms" style={{ marginRight: '6px', color: 'var(--gold-dark)' }} /> Send Direct SMS to Admin
+            </div>
+            <small>Dispatched straight to admin mobile phone</small>
+          </Link>
+
+          {quickLinks.map(l => (
+            <Link
+              key={l.id}
+              href={l.url}
+              onClick={closeDrawer}
+              className="drawer-item"
+            >
+              <div className="drawer-item-title">{l.title}</div>
+              <small>{l.category || 'Portal'}</small>
+            </Link>
+          ))}
+          <Link
+            href="/careers#tenders"
+            onClick={closeDrawer}
+            className="drawer-item"
+          >
+            <div className="drawer-item-title">Tenders and Bids</div>
+            <small>Procurement</small>
+          </Link>
+          <Link
+            href="/careers"
+            onClick={closeDrawer}
+            className="drawer-item"
+          >
+            <div className="drawer-item-title">Working at Pleasant View</div>
+            <small>Careers &amp; Opportunities</small>
+          </Link>
+          <Link
+            href="/staff-portal"
+            onClick={closeDrawer}
+            className="drawer-item"
+            style={{ borderLeftColor: 'var(--gold-accent)' }}
+          >
+            <div className="drawer-item-title">Staff Portal</div>
+            <small>Admin Management Console</small>
+          </Link>
+        </div>
+      </div>
+
+      {/* SCHOOLS BOTTOM DRAWER */}
+      <div className={`mobile-bottom-drawer ${openDrawer === 'schools' ? 'open' : ''}`}>
+        <div className="drawer-handle" />
+        <div className="drawer-header">
+          <h4><i className="fa-solid fa-graduation-cap" style={{ color: 'var(--gold-accent)' }} /> Academic Divisions</h4>
+          <button type="button" onClick={closeDrawer} className="drawer-close-btn">&times;</button>
+        </div>
+        <div className="drawer-grid">
+          {schools.map(s => (
+            <Link
+              key={s.id}
+              href={`/s/${s.slug}`}
+              onClick={closeDrawer}
+              className="drawer-item"
+              style={{ borderLeftColor: s.color || 'var(--primary-navy)' }}
+            >
+              <div className="drawer-item-title">{s.name}</div>
+              <small>{s.category} &bull; {s.level}</small>
+            </Link>
+          ))}
+          <Link
+            href="/about"
+            onClick={closeDrawer}
+            className="drawer-item"
+          >
+            <div className="drawer-item-title">Why Pleasant View Schools</div>
+            <small>24-Year Heritage, KPSEA, KJSEA &amp; CBC</small>
+          </Link>
+        </div>
+      </div>
+
+      {/* FIXED MOBILE BOTTOM BAR */}
+      <nav className="mobile-bottom-bar" aria-label="Quick mobile navigation">
+        <Link href="/" className="m-bar-btn" title="Home">
+          <i className="fa-solid fa-house" />
+          <span>Home</span>
+        </Link>
+
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="m-bar-btn"
+          title="Chat on WhatsApp"
+        >
+          <i className="fa-brands fa-whatsapp" style={{ color: '#25D366' }} />
+          <span>WhatsApp</span>
+        </a>
+
+        <a
+          href={mapsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="m-bar-btn"
+          title="Google Maps Campus Directions"
+        >
+          <i className="fa-solid fa-location-dot" style={{ color: 'var(--gold-accent)' }} />
+          <span>Visit/Map</span>
+        </a>
+
+        <a href={`tel:${phone.replace(/\s+/g, '')}`} className="m-bar-btn" title="Call Pleasant View Desk">
+          <i className="fa-solid fa-phone" />
+          <span>Call</span>
+        </a>
+
+        <button
+          type="button"
+          onClick={() => toggleDrawer('quick')}
+          className={`m-bar-btn ${openDrawer === 'quick' ? 'active' : ''}`}
+          title="Open Quick Links"
+        >
+          <i className="fa-solid fa-bolt" />
+          <span>Quick Links</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => toggleDrawer('schools')}
+          className={`m-bar-btn ${openDrawer === 'schools' ? 'active' : ''}`}
+          title="Browse School Divisions"
+        >
+          <i className="fa-solid fa-graduation-cap" />
+          <span>Schools</span>
+        </button>
+      </nav>
+    </>
+  );
+}

@@ -1,0 +1,25 @@
+{
+  "name": "Pleasant View Schools",
+  "short_name": "Pleasant View",
+  "description": "Pleasant View Schools — Our Aim is Victory. Leading Day and Boarding Schools in Githunguri, Kiambu County.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1E232A",
+  "theme_color": "#8B1E2D",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/images/pwa_icon_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/pwa_icon_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,16 +1,21 @@
 import Link from 'next/link';
 import Slider from '@/components/Slider';
 import VmvSlideshow from '@/components/VmvSlideshow';
-import { q, S, schools } from '@/lib/db';
+import VideoShowcase from '@/components/VideoShowcase';
+import { q, S, schools, getVideos, getLeadershipMessages, getQuickLinks, getSeniorAssessmentInfo } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const [hero, news, sch, st] = await Promise.all([
+  const seniorInfo = getSeniorAssessmentInfo();
+  const [hero, news, sch, st, vids, leadMessages, quickLinks] = await Promise.all([
     q('SELECT * FROM hero WHERE school_id=0 ORDER BY sort ASC, id ASC'),
     q('SELECT p.*, s.name sname FROM posts p LEFT JOIN schools s ON s.id=p.school_id ORDER BY p.id DESC LIMIT 3'),
     schools(),
-    S()
+    S(),
+    getVideos(0),
+    getLeadershipMessages(0),
+    getQuickLinks()
   ]);
 
   const slides = hero.length
@@ -27,8 +32,8 @@ export default async function Home() {
     : [
         {
           image: '/images/hero_science_lab.jpg',
-          headline: 'WELCOME TO PLEASANTVIEW SCHOOLS',
-          sub: 'Seeking the Highest — Transforming Hearts, Minds, Bodies and Souls of Tomorrow’s Leaders',
+          headline: 'PLEASANT VIEW SCHOOLS',
+          sub: 'Our Aim is Victory — Transforming Hearts, Minds, Bodies and Souls of Tomorrow’s Leaders',
           button_text: 'Discover More',
           button_link: '/#pillars',
           button_alt_text: 'Book A Visit',
@@ -39,20 +44,29 @@ export default async function Home() {
           headline: 'HOLISTIC CHARACTER & ADVENTURE',
           sub: 'Cultivating sportsmanship, physical resilience, teamwork, and Christian leadership on expansive green grounds',
           button_text: 'Sports & Co-Curricular',
-          button_link: '/about#sports',
+          button_link: '/quick-links/sports-fixtures',
           button_alt_text: 'Our Campuses',
           button_alt_link: '/#schools'
         },
         {
           image: '/images/hero_library_learning.jpg',
           headline: '24 YEARS OF ACADEMIC DISTINCTION',
-          sub: 'A sterling track record exceeding 390/500 KCPE mean scores and B+ KCSE university transition feats',
+          sub: 'Outstanding KPSEA (EE — Exceeding Expectations) and KJSEA (ME1) distinction, with maiden Senior School B+ university transition',
           button_text: 'Academic Curriculum',
           button_link: '/about#academics',
           button_alt_text: 'Apply Now',
           button_alt_link: '/contact'
         }
       ];
+
+  const primaryLeader = leadMessages[0] || {
+    name: 'Board of Directors & Executive Principal',
+    title: 'Pleasantview Schools Group',
+    role: 'Director',
+    quote: 'Our aim is victory — not merely in examinations, but in shaping disciplined, visionary young people who lead with wisdom, faith, and purpose.',
+    message: 'Welcome to Pleasantview Schools. For over two decades, our community has stood as a beacon of academic excellence and character development in Kiambu County. We believe that true education nurtures the mind while fortifying the soul. Whether in our early learning centre, thriving primary school, modern Junior Secondary (JSS), or distinguished Senior School, we provide state-of-the-art science laboratories, extensive transport coverage, and world-class pastoral boarding.',
+    image: '/images/banner_3_a.webp'
+  };
 
   const testimonials = [
     {
@@ -76,7 +90,7 @@ export default async function Home() {
     <>
       <Slider slides={slides} base="" />
 
-      {/* QUICK OVERVIEW GATEWAY BAR (St Andrew's Turi Exact) */}
+      {/* QUICK OVERVIEW GATEWAY BAR (St Andrew's Turi Match) */}
       <section className="quick-overview-bar" aria-label="Key Gateways">
         <div className="wrapper" style={{ padding: 0 }}>
           <div className="overview-grid">
@@ -115,25 +129,78 @@ export default async function Home() {
                 <i className="fa-regular fa-calendar-check" />
               </div>
               <div className="overview-meta">
-                <h4>Admissions &amp; Visits</h4>
-                <p>Book a personalized walking campus tour</p>
+                <h4>Book Campus Visit</h4>
+                <p>Personalized walking tour &amp; admissions consult</p>
               </div>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* TEXT INTRODUCTION (PLEASANTVIEW – SEEKING THE HIGHEST) */}
+      {/* PLEASANTVIEW AT A GLANCE (The Dunham School & The Walker School Signature Metrics) */}
+      <section className="at-a-glance-section" aria-label="Pleasantview at a Glance">
+        <div className="wrapper">
+          <div style={{ textAlign: 'center', marginBottom: '35px' }}>
+            <span style={{ color: 'var(--gold-accent)', fontSize: '12px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase' }}>
+              DISTINCTION BY NUMBERS
+            </span>
+            <h2 style={{ color: '#ffffff', fontSize: 'clamp(26px, 2.8vw, 36px)', fontFamily: 'Cinzel, serif', margin: '6px 0 0' }}>
+              Pleasantview at a Glance
+            </h2>
+            <div className="gold-divider" style={{ margin: '12px auto' }} />
+          </div>
+
+          <div className="at-a-glance-grid">
+            <div className="at-a-glance-card">
+              <div className="stat-num">24+</div>
+              <div className="stat-label">Years of Excellence</div>
+              <div className="stat-desc">Est. 1998 in Githunguri, Kiambu</div>
+            </div>
+
+            <div className="at-a-glance-card">
+              <div className="stat-num">EE &amp; ME1</div>
+              <div className="stat-label">KPSEA &amp; KJSEA Average</div>
+              <div className="stat-desc">Exceeding Expectations &amp; Level 1 Distinction</div>
+            </div>
+
+            <div className="at-a-glance-card">
+              <div className="stat-num">{seniorInfo.exam} B+</div>
+              <div className="stat-label">Senior School Transition</div>
+              <div className="stat-desc">{seniorInfo.subtext}</div>
+            </div>
+
+            <div className="at-a-glance-card">
+              <div className="stat-num">1:20</div>
+              <div className="stat-label">Teacher-Student Ratio</div>
+              <div className="stat-desc">Personalized CBC Competency Coaching</div>
+            </div>
+
+            <div className="at-a-glance-card">
+              <div className="stat-num">600+</div>
+              <div className="stat-label">Boarding Scholars</div>
+              <div className="stat-desc">Loving Pastoral Care from Grade 4+</div>
+            </div>
+
+            <div className="at-a-glance-card">
+              <div className="stat-num">100%</div>
+              <div className="stat-label">TSC Certified Faculty</div>
+              <div className="stat-desc">Trained CBC Facilitators &amp; Mentors</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TEXT INTRODUCTION (PLEASANT VIEW SCHOOLS – OUR AIM IS VICTORY) */}
       <section className="text-component">
         <div className="wrapper">
-          <span className="lead-badge">24 YEARS OF ACADEMIC DISTINCTION</span>
-          <h2>PLEASANTVIEW SCHOOLS &ndash; SEEKING THE HIGHEST</h2>
+          <span className="lead-badge">24 YEARS OF ACADEMIC EMINENCE</span>
+          <h2>PLEASANT VIEW SCHOOLS &ndash; OUR AIM IS VICTORY</h2>
           <div className="gold-divider" />
           <p className="lead">
-            {st.about || 'Pleasant View Schools is a premier Christian-ethos private academic institution based in Githunguri, Komothai Subcounty, Kiambu County.'}
+            Founded in 1998, Pleasant View Schools has grown from a visionary primary institution into one of Kenya&apos;s most celebrated Christian-ethos day and boarding academic institutions, situated amidst the peaceful green highlands of Githunguri, Komothai Subcounty, Kiambu County.
           </p>
-          <p className="body-text">
-            Since inception in 1998, our KCPE classes have consistently maintained a distinguished mean score exceeding 390/500, ranking proudly among the top 10 schools in Kiambu County. Following this extraordinary record, our Girls’ High School and modern Junior Secondary School (JSS) continue to set benchmarks in academic competence, technical innovation, and moral integrity.
+          <p className="body-text" style={{ fontSize: '16.5px', lineHeight: 1.85, color: '#444' }}>
+            Across our 24-year academic journey, Pleasant View has consistently maintained distinguished performance, achieving an institutional average of <strong>EE (Exceeding Expectations)</strong> in KPSEA and <strong>ME1 (Meeting Expectations &ndash; Top Tier)</strong> in KJSEA, positioning our scholars permanently among the top 10 academic institutions across Kiambu County. In 2016, answering the earnest appeal of our parent community, we established our celebrated Senior School, which achieved a historic maiden mean grade of <strong>B+</strong> in KCSE examinations. As the 8-4-4 system concludes at the end of next year, our Senior School is dynamically transitioning into the <strong>Kenya Senior School Education Assessment (KSSEA)</strong>, supported by state-of-the-art Pre-Technical, Integrated Science, Agriculture, and Digital STEM hubs designed to nurture each child&apos;s pathway into top university distinction and ethical global leadership.
           </p>
         </div>
       </section>
@@ -161,9 +228,9 @@ export default async function Home() {
                 </div>
               </div>
               <div className="pillar-body">
-                <h4>Minds &ndash; Academic Rigor</h4>
+                <h4>Minds &ndash; Academic Eminence</h4>
                 <p>
-                  A 24-year heritage exceeding 390/500 KCPE mean scores and B+ university transition feats, delivering progressive Competency Based Curriculum (CBC) and STEM mastery.
+                  Distinction averaging EE (Exceeding Expectations) in KPSEA and ME1 in KJSEA, with maiden Senior School B+ university transition and STEM mastery.
                 </p>
                 <Link href="/about#academics" className="pillar-link">
                   Academic Curriculum <i className="fa-solid fa-arrow-right-long" />
@@ -186,14 +253,14 @@ export default async function Home() {
                   Family-style boarding from Grade 4 upwards with resident houseparents, dedicated mentors, and individualized emotional support ensuring every child feels valued.
                 </p>
                 <Link href="/about#boarding" className="pillar-link">
-                  Pastoral Care <i className="fa-solid fa-arrow-right-long" />
+                  Pastoral Boarding <i className="fa-solid fa-arrow-right-long" />
                 </Link>
               </div>
             </div>
 
             {/* PILLAR 3: BODIES */}
             <div className="pillar-card">
-              <div className="pillar-header-img" style={{ backgroundImage: `url('/images/gallery_9.webp')` }}>
+              <div className="pillar-header-img" style={{ backgroundImage: `url('/images/hero_sports_field.jpg')` }}>
                 <div className="overlay" />
                 <span className="pillar-tag">Pillar III</span>
                 <div className="pillar-icon-badge">
@@ -203,10 +270,10 @@ export default async function Home() {
               <div className="pillar-body">
                 <h4>Bodies &ndash; Sports &amp; Adventure</h4>
                 <p>
-                  Competitive athletics, football, basketball, swimming, and co-curricular outdoor exploration that cultivate physical resilience, teamwork, and sportsmanship.
+                  Competitive athletics, football, basketball, volleyball, and co-curricular outdoor exploration cultivating physical stamina, grit, and teamwork.
                 </p>
-                <Link href="/about#sports" className="pillar-link">
-                  Sports &amp; Co-Curricular <i className="fa-solid fa-arrow-right-long" />
+                <Link href="/quick-links/sports-fixtures" className="pillar-link">
+                  Sports Fixtures &amp; Clubs <i className="fa-solid fa-arrow-right-long" />
                 </Link>
               </div>
             </div>
@@ -234,14 +301,65 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* DIRECTOR'S WELCOME & INSTITUTIONAL OVERVIEW */}
-      <section className="director-welcome-section">
+      {/* THE WALKER SCHOOL INSPIRED PROGRAM FINDER */}
+      <section className="program-finder-section" id="programs">
+        <div className="wrapper">
+          <div style={{ textAlign: 'center', maxWidth: '780px', margin: '0 auto' }}>
+            <span style={{ color: 'var(--gold-dark)', fontSize: '12px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase' }}>
+              CHOOSE YOUR CHILD&apos;S PATHWAY
+            </span>
+            <h2 style={{ fontSize: 'clamp(26px, 2.6vw, 36px)', fontFamily: 'Cinzel, serif', color: 'var(--primary-navy)', margin: '6px 0' }}>
+              Explore Programs by Academic Division
+            </h2>
+            <div className="gold-divider" style={{ margin: '12px auto' }} />
+            <p style={{ color: '#666', fontSize: '15px' }}>
+              From early childhood playgroup through senior high school graduation, discover our age-tailored CBC and 8.4.4 academic programs.
+            </p>
+          </div>
+
+          <div className="program-finder-grid">
+            {sch.map(s => (
+              <div key={s.id} className="program-card">
+                <div
+                  className="program-card-img"
+                  style={{ backgroundImage: `url('${s.image || '/images/banner_1_a.webp'}')` }}
+                >
+                  <span className="program-card-badge">{s.category || 'Division'}</span>
+                </div>
+                <div className="program-card-body">
+                  <h4>{s.name}</h4>
+                  <div className="program-level">{s.level}</div>
+                  <p>{s.tagline || s.about?.slice(0, 110) + '...' || 'Distinctive academic program tailored for holistic excellence.'}</p>
+                  <div className="program-card-meta">
+                    <span>Enrolled: <strong>{s.learners || 'Enrolled'}</strong></span>
+                    <span>Boarding: <strong>{s.boarders || 'Day & Boarding'}</strong></span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <Link href={`/s/${s.slug}`} className="button button-primary" style={{ flex: 1, padding: '8px', fontSize: '12.5px', textAlign: 'center' }}>
+                      Explore Campus
+                    </Link>
+                    <Link href={`/s/${s.slug}/contact`} className="button button-gold" style={{ padding: '8px 12px', fontSize: '12.5px' }}>
+                      Apply
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* VIDEO SHOWCASE SECTION (Admins upload / update video links) */}
+      <VideoShowcase videos={vids} />
+
+      {/* EXECUTIVE & LEADERSHIP MESSAGE (DIRECTOR / HOI) */}
+      <section className="director-welcome-section" id="leadership">
         <div className="wrapper">
           <div className="director-container">
             <div className="director-image-wrapper">
               <img
-                src="/images/banner_3_a.webp"
-                alt="Pleasantview Leadership"
+                src={primaryLeader.image || '/images/banner_3_a.webp'}
+                alt={primaryLeader.name}
                 className="director-portrait"
               />
               <div className="director-frame-badge">
@@ -251,62 +369,67 @@ export default async function Home() {
             </div>
 
             <div className="director-content">
-              <h5>DIRECTOR&apos;S WELCOME</h5>
-              <h2>A Tradition of Victory &amp; Academic Distinction</h2>
+              <h5>{primaryLeader.role ? primaryLeader.role.toUpperCase() : "EXECUTIVE LEADERSHIP MESSAGE"}</h5>
+              <h2>A Tradition of Victory &amp; Academic Eminence</h2>
               <div className="gold-divider" style={{ margin: '0 0 25px 0' }} />
-              <div className="director-quote">
-                &ldquo;Our aim is victory &mdash; not merely in examinations, but in shaping disciplined, visionary young people who lead with wisdom, faith, and purpose.&rdquo;
-              </div>
-              <p>
-                Welcome to Pleasantview Schools. For over two decades, our community has stood as a beacon of academic excellence and character development in Kiambu County. We believe that true education nurtures the mind while fortifying the soul.
-              </p>
-              <p>
-                Whether in our early learning centre, thriving primary school, modern Junior Secondary (JSS), or distinguished Girls’ High School, we provide state-of-the-art science laboratories, extensive transport coverage, and world-class pastoral boarding. We warmly invite you to visit our campus and experience the Pleasantview difference firsthand.
+              {primaryLeader.quote && (
+                <div className="director-quote">
+                  &ldquo;{primaryLeader.quote}&rdquo;
+                </div>
+              )}
+              <p style={{ whiteSpace: 'pre-line' }}>
+                {primaryLeader.message}
               </p>
               <div className="director-signature">
-                Board of Directors &amp; Executive Principal
+                {primaryLeader.name}
               </div>
-              <span className="director-title">Pleasantview Schools Group</span>
+              <span className="director-title">{primaryLeader.title}</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* SIGNPOSTING (CHOOSE YOUR SCHOOL - EXACT TURI CARDS) */}
-      <section className="signposting" id="schools">
+      {/* QUICK LINKS HUB RIBBON */}
+      <section style={{ background: '#ffffff', padding: '50px 0', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
         <div className="wrapper">
-          <div className="section-header">
-            <h5>OUR ACADEMIC DIVISIONS</h5>
-            <h3>Choose Your School</h3>
-            <div className="gold-divider" />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', flexWrap: 'wrap', gap: '15px' }}>
+            <div>
+              <span style={{ color: 'var(--gold-dark)', fontSize: '12px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase' }}>FAST DIRECTORY</span>
+              <h3 style={{ margin: 0, fontFamily: 'Cinzel, serif', color: 'var(--primary-navy)', fontSize: '24px' }}>Essential Quick Links</h3>
+            </div>
+            <Link href="/quick-links" className="button button-tertiary" style={{ padding: '8px 18px', fontSize: '13px' }}>
+              View All Portals &rarr;
+            </Link>
           </div>
 
-          <div className="signposts-grid">
-            {sch.map(s => (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
+            {quickLinks.slice(0, 6).map(l => (
               <Link
-                key={s.id}
-                className="signpost-card"
-                href={`/s/${s.slug}`}
-                style={{ backgroundImage: `url('${s.image || '/images/banner_1_a.webp'}')` }}
+                key={l.id}
+                href={l.url}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '14px',
+                  background: 'var(--soft-bg)',
+                  border: '1px solid #dde2ec',
+                  borderRadius: '6px',
+                  padding: '16px',
+                  textDecoration: 'none',
+                  color: 'inherit',
+                  transition: 'all 0.25s ease'
+                }}
+                className="quick-gateway-card"
               >
-                <div className="signpost-overlay" />
-                <span className="signpost-category">{s.category || 'Division'}</span>
-                <div className="signpost-title">{s.name}</div>
-                <div className="signpost-level">{s.level}</div>
-                <div className="signpost-stats-pill">
-                  <i className="fa-solid fa-users" style={{ marginRight: '6px' }} /> {s.learners || 'Enrolled'}
+                <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'var(--primary-navy)', color: 'var(--gold-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0 }}>
+                  <i className="fa-solid fa-arrow-up-right-from-square" />
                 </div>
-                <div className="signpost-link-text">
-                  Explore Campus <i className="fa-solid fa-arrow-right-long" />
+                <div>
+                  <h4 style={{ margin: 0, fontSize: '15px', color: 'var(--primary-navy)' }}>{l.title}</h4>
+                  <small style={{ color: '#777', fontSize: '12px' }}>{l.category}</small>
                 </div>
               </Link>
             ))}
-          </div>
-
-          <div className="signposting-bottom-link">
-            <Link href="/about" className="button button-tertiary">
-              Why Pleasantview Schools
-            </Link>
           </div>
         </div>
       </section>
@@ -319,45 +442,13 @@ export default async function Home() {
         motto={st.motto}
       />
 
-      {/* REALISTIC POPULATION & INSTITUTIONAL STATISTICS */}
-      <section className="stats-bar-section">
-        <div className="wrapper">
-          <div className="stats-grid">
-            <div className="stat-item">
-              <b>{st.learners || '1,700+'}</b>
-              <span>Registered Learners</span>
-            </div>
-            <div className="stat-item">
-              <b>{st.boarders || '600+'}</b>
-              <span>Boarding Scholars (Gr. 4+)</span>
-            </div>
-            <div className="stat-item">
-              <b>{st.teachers || '100%'}</b>
-              <span>TSC Certified Faculty</span>
-            </div>
-            <div className="stat-item">
-              <b>{st.ratio || '1:20'}</b>
-              <span>Learner : Teacher Ratio</span>
-            </div>
-            <div className="stat-item">
-              <b>{st.kcpe_mean || '390+'}</b>
-              <span>Historic KCPE Mean Score</span>
-            </div>
-            <div className="stat-item">
-              <b>24+</b>
-              <span>Years of Excellence</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* NEWS POSTS (TURI SPLIT SLIDER LAYOUT) */}
       <section className="news-posts-section">
         <div className="wrapper">
           <div className="news-split-container">
             <div className="news-static-box">
               <h5>WHAT&apos;S HAPPENING</h5>
-              <h3>Latest News</h3>
+              <h3>Latest News &amp; Stories</h3>
               <div className="line" />
               <p>Stay informed with updates on examinations, co-curricular highlights, academic symposiums, and admissions across all Pleasantview campuses.</p>
               <Link className="button button-secondary" href="/news">
@@ -394,7 +485,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* TESTIMONIALS (FROM NETLIFY CONTENT) */}
+      {/* TESTIMONIALS */}
       <section className="testimonials-section">
         <div className="wrapper">
           <div className="testimonials-header">

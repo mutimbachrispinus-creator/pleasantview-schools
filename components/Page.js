@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import BackButton from './BackButton';
 
 export default function Page({ title, subtitle, image = '/images/banner_3_a.webp', children }) {
   return (
@@ -12,6 +13,7 @@ export default function Page({ title, subtitle, image = '/images/banner_3_a.webp
       </div>
       <section className="subpage-body">
         <div className="wrapper">
+          <BackButton />
           <div style={{ maxWidth: '960px', margin: '0 auto' }}>
             {children}
           </div>

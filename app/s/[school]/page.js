@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Slider from '@/components/Slider';
-import { q, getSchool } from '@/lib/db';
+import BackButton from '@/components/BackButton';
+import { q, getSchool, getLeadershipMessages } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,11 +10,14 @@ export default async function SchoolHome({ params }) {
   if (!s) return null;
   const b = '/s/' + s.slug;
 
-  const [hero, news, pics] = await Promise.all([
+  const [hero, news, pics, leaders] = await Promise.all([
     q('SELECT * FROM hero WHERE school_id=? ORDER BY sort ASC, id ASC', [s.id]),
     q('SELECT * FROM posts WHERE school_id=? ORDER BY id DESC LIMIT 3', [s.id]),
-    q('SELECT * FROM photos WHERE school_id=? ORDER BY id DESC LIMIT 8', [s.id])
+    q('SELECT * FROM photos WHERE school_id=? ORDER BY id DESC LIMIT 8', [s.id]),
+    getLeadershipMessages(s.id)
   ]);
+
+  const leader = leaders.find(l => l.school_id === s.id) || leaders[0];
 
   const slides = hero.length
     ? hero.map(h => ({
@@ -69,6 +73,7 @@ export default async function SchoolHome({ params }) {
       {/* WELCOME / ABOUT DIVISION */}
       <section className="subpage-body">
         <div className="wrapper">
+          <BackButton fallback="/#schools" label="All Schools" />
           <div style={{ maxWidth: '960px', margin: '0 auto' }}>
             <span className="lead-badge">WELCOME TO {s.category || 'OUR DIVISION'}</span>
             <h2>Nurturing Distinction at {s.name}</h2>
@@ -79,7 +84,7 @@ export default async function SchoolHome({ params }) {
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '25px', margin: '35px 0' }}>
-              <div style={{ background: 'var(--soft-bg)', padding: '25px', borderRadius: '4px', borderLeft: `4px solid ${s.color || '#05286b'}` }}>
+              <div style={{ background: 'var(--soft-bg)', padding: '25px', borderRadius: '4px', borderLeft: `4px solid ${s.color || '#8B1E2D'}` }}>
                 <h4 style={{ marginBottom: '10px' }}>Division Vision</h4>
                 <p style={{ fontSize: '14.5px', color: '#555', lineHeight: 1.6 }}>{s.vision || 'Cultivating intellectual curiosity and moral character.'}</p>
               </div>

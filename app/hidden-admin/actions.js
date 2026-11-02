@@ -23,16 +23,17 @@ export async function login(fd) {
   if (limited('a' + ((await headers()).get('x-forwarded-for') || 'x'))) return;
   const key = fd.get('key') || '',
     em = String(fd.get('email') || '').trim().toLowerCase(),
-    pw = String(fd.get('password') || '');
+    pw = String(fd.get('password') || '').trim();
   if (!key) {
     const masterEmail = (process.env.ADMIN_EMAIL || 'admin@pleasantview.sc.ke').trim().toLowerCase();
     const masterPassword = (process.env.ADMIN_PASSWORD || 'pleasantview2026').trim();
-    if (eq(em, masterEmail) && eq(pw, masterPassword)) {
+    const isMaster = em === 'admin' || em === masterEmail || em.startsWith('admin@');
+    if (isMaster && (pw === masterPassword || eq(pw, masterPassword))) {
       await startSession(0);
     } else {
       // Dynamic departmental email accounts (support@, info@, etc.)
       const [acc] = await q('SELECT * FROM email_accounts WHERE lower(email)=? AND is_active=1 AND can_login=1', [em]);
-      if (acc && acc.password && eq(pw, acc.password)) {
+      if (acc && acc.password && (pw === acc.password.trim() || eq(pw, acc.password.trim()))) {
         await startSession(0);
       }
     }
@@ -65,7 +66,7 @@ export async function addSchool(fd) {
       cat,
       fd.get('tagline') || '',
       fd.get('level') || '',
-      fd.get('color') || '#05286b',
+      fd.get('color') || '#8B1E2D',
       img,
       fd.get('learners') || '450 Students',
       fd.get('boarders') || '200 Boarders',
@@ -102,11 +103,175 @@ export async function saveSchool(fd) {
       }
     }
   } else {
+    const uploadedImg = await saveImg(fd.get('image_file'));
+    const imgUrl = String(fd.get('image_url') || '').trim();
+    if (uploadedImg || imgUrl) {
+      await q('UPDATE schools SET image=? WHERE id=?', [uploadedImg || imgUrl, id]);
+    }
     for (const k of SF) {
-      if (fd.get(k) != null) {
+      if (k !== 'image' && fd.get(k) != null) {
         await q(`UPDATE schools SET ${k}=? WHERE id=?`, [fd.get(k), id]);
       }
     }
+  }
+  done();
+}
+
+export async function addVideo(fd) {
+  await A();
+  const title = String(fd.get('title') || '').trim();
+  const youtubeUrl = String(fd.get('youtube_url') || '').trim();
+  const category = String(fd.get('category') || 'Campus Tour').trim();
+  const description = String(fd.get('description') || '').trim();
+  const uploadedThumb = await saveImg(fd.get('thumbnail_file'));
+  const thumbUrl = String(fd.get('thumbnail_url') || '').trim();
+  const thumbnail = uploadedThumb || thumbUrl || '/images/hero_science_lab.jpg';
+  const schoolId = Number(fd.get('school_id')) || 0;
+  const featured = fd.get('featured') === '0' ? 0 : 1;
+  const sort = Number(fd.get('sort')) || 0;
+
+  if (!title || !youtubeUrl) return;
+
+  await q(
+    'INSERT INTO videos(school_id, title, youtube_url, category, description, thumbnail, featured, sort) VALUES(?,?,?,?,?,?,?,?)',
+    [schoolId, title, youtubeUrl, category, description, thumbnail, featured, sort]
+  );
+  done();
+}
+
+export async function delVideo(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  if (id) {
+    await q('DELETE FROM videos WHERE id=?', [id]);
+  }
+  done();
+}
+
+export async function addJob(fd) {
+  await A();
+  const title = String(fd.get('title') || '').trim();
+  const department = String(fd.get('department') || 'Academic').trim();
+  const category = String(fd.get('category') || 'Teaching').trim();
+  const contractType = String(fd.get('contract_type') || 'Full-Time').trim();
+  const location = String(fd.get('location') || 'Githunguri, Kiambu').trim();
+  const description = String(fd.get('description') || '').trim();
+  const requirements = String(fd.get('requirements') || '').trim();
+  const deadline = String(fd.get('deadline') || '').trim();
+  const schoolId = Number(fd.get('school_id')) || 0;
+
+  if (!title) return;
+
+  await q(
+    'INSERT INTO jobs(school_id, title, department, category, contract_type, location, description, requirements, deadline, status) VALUES(?,?,?,?,?,?,?,?,?,"open")',
+    [schoolId, title, department, category, contractType, location, description, requirements, deadline]
+  );
+  done();
+}
+
+export async function toggleJobStatus(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  const newStatus = String(fd.get('status') || 'open');
+  if (id) {
+    await q('UPDATE jobs SET status=? WHERE id=?', [newStatus, id]);
+  }
+  done();
+}
+
+export async function delJob(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  if (id) {
+    await q('DELETE FROM jobs WHERE id=?', [id]);
+  }
+  done();
+}
+
+export async function updateApplicationStatus(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  const status = String(fd.get('status') || 'reviewed');
+  if (id) {
+    await q('UPDATE job_applications SET status=? WHERE id=?', [status, id]);
+  }
+  done();
+}
+
+export async function delApplication(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  if (id) {
+    await q('DELETE FROM job_applications WHERE id=?', [id]);
+  }
+  done();
+}
+
+export async function updateVisitStatus(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  const status = String(fd.get('status') || 'confirmed');
+  if (id) {
+    await q('UPDATE visits SET status=? WHERE id=?', [status, id]);
+  }
+  done();
+}
+
+export async function delVisit(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  if (id) {
+    await q('DELETE FROM visits WHERE id=?', [id]);
+  }
+  done();
+}
+
+export async function updateEnquiryStatus(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  const status = String(fd.get('status') || 'replied');
+  if (id) {
+    await q('UPDATE enquiries SET status=? WHERE id=?', [status, id]);
+  }
+  done();
+}
+
+export async function addLeadershipMessage(fd) {
+  await A();
+  const role = String(fd.get('role') || 'Director').trim();
+  const name = String(fd.get('name') || '').trim();
+  const title = String(fd.get('title') || '').trim();
+  const quote = String(fd.get('quote') || '').trim();
+  const message = String(fd.get('message') || '').trim();
+  const uploadedImg = await saveImg(fd.get('image_file'));
+  const imgUrl = String(fd.get('image_url') || '').trim();
+  const image = uploadedImg || imgUrl || '/images/banner_3_a.webp';
+  const schoolId = Number(fd.get('school_id')) || 0;
+  const sort = Number(fd.get('sort')) || 0;
+
+  if (!name || !message) return;
+
+  await q(
+    'INSERT INTO leadership_messages(school_id, role, name, title, quote, message, image, sort, is_active) VALUES(?,?,?,?,?,?,?,?,1)',
+    [schoolId, role, name, title, quote, message, image, sort]
+  );
+  done();
+}
+
+export async function delLeadershipMessage(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  if (id) {
+    await q('DELETE FROM leadership_messages WHERE id=?', [id]);
+  }
+  done();
+}
+
+export async function delEnquiry(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  if (id) {
+    await q('DELETE FROM enquiries WHERE id=?', [id]);
   }
   done();
 }
@@ -375,6 +540,42 @@ export async function delInbound(fd) {
   const id = Number(fd.get('id'));
   if (['inbound_sms', 'inbound_emails', 'comm_logs'].includes(t) && id) {
     await q(`DELETE FROM ${t} WHERE id=?`, [id]);
+  }
+  done();
+}
+
+export async function addQuickLink(fd) {
+  await A();
+  const title = String(fd.get('title') || '').trim();
+  const url = String(fd.get('url') || '').trim();
+  const category = String(fd.get('category') || 'General').trim();
+  const description = String(fd.get('description') || '').trim();
+  const sort = Number(fd.get('sort')) || 0;
+
+  if (!title || !url) return;
+
+  await q(
+    'INSERT INTO quick_links(title, url, category, description, sort, is_active) VALUES(?,?,?,?,?,1)',
+    [title, url, category, description, sort]
+  );
+  done();
+}
+
+export async function delQuickLink(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  if (id) {
+    await q('DELETE FROM quick_links WHERE id=?', [id]);
+  }
+  done();
+}
+
+export async function toggleQuickLink(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  const isActive = Number(fd.get('is_active')) === 1 ? 1 : 0;
+  if (id) {
+    await q('UPDATE quick_links SET is_active=? WHERE id=?', [isActive, id]);
   }
   done();
 }

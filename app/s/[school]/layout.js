@@ -18,7 +18,7 @@ export default async function SchoolLayout({ children, params }) {
 
   return (
     <div>
-      <div className="school-subbar" style={{ backgroundColor: s.color || '#05286b' }}>
+      <div className="school-subbar" style={{ backgroundColor: s.color || '#8B1E2D' }}>
         <div className="wrapper">
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span style={{ background: 'rgba(255,255,255,0.2)', padding: '3px 8px', borderRadius: '3px', fontSize: '11px', fontWeight: 800, letterSpacing: '1px' }}>

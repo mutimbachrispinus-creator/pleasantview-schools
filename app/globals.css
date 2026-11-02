@@ -1,13 +1,28 @@
 :root {
-  --primary-navy: #05286b;
-  --dark-navy: #0a1e43;
-  --medium-blue: #335390;
-  --light-blue: #7c98b3;
-  --soft-bg: #ebeef4;
-  --gold-accent: #e0a82e;
-  --gold-dark: #c59124;
-  --text-dark: #222222;
-  --text-muted: rgba(68, 68, 68, 0.75);
+  /* Official School Palette: Institutional Crimson Red & Slate Charcoal Grey */
+  --primary-red: #8B1E2D;      /* Institutional Crimson Red from official crest ribbon */
+  --dark-red: #5E121C;         /* Deep Rich Wine / Maroon */
+  --light-red: #A82837;        /* Crisp Scarlet Accent */
+  --red-hover: #731522;
+  
+  --dark-grey: #1E232A;        /* Slate Charcoal Grey (replaces dark blue backgrounds) */
+  --slate-grey: #2B303A;       /* Primary Neutral Charcoal */
+  --medium-grey: #4A5568;      /* Mid Slate Grey */
+  --light-grey: #9CA3AF;       /* Soft Grey for subtle borders & subtext */
+  --soft-bg: #F4F5F7;          /* Clean Soft Grey card background */
+  --border-grey: #E5E7EB;      /* Clean neutral borders */
+  
+  --gold-accent: #D4AF37;      /* Metallic Gold from crest frame and letters */
+  --gold-dark: #B89228;
+  
+  /* Backward-compatible variables remapped to Red and Grey to eliminate blue backgrounds */
+  --primary-navy: var(--primary-red);
+  --dark-navy: var(--dark-grey);
+  --medium-blue: var(--primary-red);
+  --light-blue: #64748B;
+  
+  --text-dark: #1F2937;
+  --text-muted: #6B7280;
   --font-main: 'M PLUS 2', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-serif: 'Cinzel', Georgia, serif;
   --wrapper-max: calc(1600px + 6vw);
@@ -135,6 +150,30 @@ nav.main-nav .wrapper {
   gap: 16px;
   color: #ffffff;
   text-decoration: none;
+}
+.brand-crest-container {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--gold-accent);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1a0f0a;
+  flex-shrink: 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.brand-logo:hover .brand-crest-container {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(224, 168, 46, 0.45);
+}
+.brand-crest-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .brand-crest {
   width: 60px;
@@ -372,7 +411,7 @@ nav.main-nav .wrapper {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: #1e40af;
+  background: var(--primary-red);
   color: #ffffff;
   border: 2px solid rgba(255,255,255,0.85);
   box-shadow: 0 4px 14px rgba(0,0,0,0.35);
@@ -386,7 +425,7 @@ nav.main-nav .wrapper {
 }
 .accessibility-floating-btn:hover {
   transform: scale(1.1);
-  background: #1d4ed8;
+  background: var(--dark-red);
   box-shadow: 0 6px 18px rgba(0,0,0,0.45);
 }
 
@@ -405,12 +444,76 @@ nav.main-nav .wrapper {
   border-bottom: 2px solid var(--gold-accent);
   padding-bottom: 4px;
 }
-.hero-content h1 {
+.hero-content h1,
+.hero-content h1.hero-main-title {
   color: #ffffff;
-  margin-bottom: 24px;
+  margin-bottom: 14px;
   text-transform: uppercase;
-  font-size: clamp(34px, 4.2vw, 68px);
-  text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  font-size: clamp(30px, 3.8vw, 62px);
+  text-shadow: 0 4px 20px rgba(0,0,0,0.7);
+  line-height: 1.15;
+}
+.hero-brand-headline {
+  display: block;
+  font-family: var(--font-serif);
+  letter-spacing: 1.5px;
+  color: #ffffff;
+  font-weight: 800;
+}
+.hero-brand-name {
+  display: block !important;
+  font-family: var(--font-serif);
+  letter-spacing: 2px;
+  color: #ffffff;
+  font-weight: 800;
+}
+.hero-sub-division {
+  display: block !important;
+  font-family: var(--font-serif);
+  color: var(--gold-accent);
+  font-size: 0.62em;
+  letter-spacing: 2px;
+  margin-top: 6px;
+  font-weight: 700;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+.hero-sub-title {
+  display: block !important;
+  font-family: var(--font-main);
+  font-size: 0.35em;
+  letter-spacing: 5px;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 10px;
+  font-weight: 700;
+}
+/* HERO LOCATION & MOTTO SPACING - PREVENTS TEXT COLLISION */
+.hero-location-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  margin-bottom: 24px;
+}
+.hero-loc-pill,
+.hero-motto-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 16px;
+  background: rgba(30, 35, 42, 0.75);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  border-radius: 50px;
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.hero-motto-pill {
+  background: rgba(139, 30, 45, 0.85);
+  border-color: var(--gold-accent);
+  color: var(--gold-accent);
 }
 .hero-content p {
   font-size: clamp(17px, 1.35vw, 22px);
@@ -1655,6 +1758,403 @@ section.director-welcome-section {
   font-weight: 700;
   display: block;
   margin-top: 2px;
+}
+
+/* DROPDOWN SUBMENU POSITIONING & LUXURY ANIMATION */
+.bottom-nav ul li {
+  position: relative;
+}
+.bottom-nav ul li:nth-last-child(-n+4) .sub-menu {
+  left: auto;
+  right: 0;
+}
+.bottom-nav .sub-menu {
+  border-radius: 0 0 6px 6px;
+  backdrop-filter: blur(8px);
+  min-width: 260px;
+}
+.bottom-nav .sub-menu li a {
+  position: relative;
+  transition: all 0.25s ease;
+  border-left: 3px solid transparent;
+}
+.bottom-nav .sub-menu li a:hover {
+  border-left-color: var(--gold-accent);
+  background: rgba(224, 168, 46, 0.12);
+}
+
+/* SUBPAGE NAVIGATION & BACK BUTTON */
+.subpage-nav-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e1e7f0;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  color: var(--primary-navy);
+  border: 1px solid #c8d3e2;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+.back-btn:hover {
+  background: var(--primary-navy);
+  color: #ffffff;
+  border-color: var(--primary-navy);
+  transform: translateX(-2px);
+}
+.subpage-breadcrumbs {
+  font-size: 13px;
+  color: #777;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.crumb-home {
+  color: var(--medium-blue);
+  text-decoration: none;
+  font-weight: 600;
+}
+.crumb-home:hover {
+  color: var(--primary-navy);
+  text-decoration: underline;
+}
+.crumb-sep {
+  color: #bbb;
+}
+.crumb-current {
+  color: #444;
+  font-weight: 600;
+}
+
+/* MOBILE BOTTOM NAVIGATION BAR & DRAWERS */
+.mobile-bottom-bar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 62px;
+  background: var(--dark-navy);
+  border-top: 2px solid var(--gold-accent);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.35);
+  z-index: 9999;
+  justify-content: space-around;
+  align-items: center;
+  padding: 4px 6px;
+}
+.m-bar-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: #ffffff;
+  text-decoration: none;
+  background: none;
+  border: none;
+  padding: 4px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+  min-width: 52px;
+}
+.m-bar-btn i {
+  font-size: 17px;
+  color: #ffffff;
+}
+.m-bar-btn:hover,
+.m-bar-btn.active {
+  color: var(--gold-accent);
+}
+.m-bar-btn:hover i,
+.m-bar-btn.active i {
+  color: var(--gold-accent);
+}
+
+/* MOBILE BOTTOM DRAWERS */
+.mobile-drawer-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(3px);
+  z-index: 10000;
+  animation: fadeIn 0.25s ease;
+}
+.mobile-bottom-drawer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 82vh;
+  background: #ffffff;
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -10px 35px rgba(0,0,0,0.35);
+  z-index: 10001;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 16px 20px 80px;
+  overflow-y: auto;
+}
+.mobile-bottom-drawer.open {
+  transform: translateY(0);
+}
+.drawer-handle {
+  width: 44px;
+  height: 5px;
+  background: #ccc;
+  border-radius: 3px;
+  margin: 0 auto 14px;
+}
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  border-bottom: 1px solid #edf1f7;
+  padding-bottom: 10px;
+}
+.drawer-header h4 {
+  font-size: 17px;
+  margin: 0;
+  color: var(--primary-navy);
+}
+.drawer-close-btn {
+  background: none;
+  border: none;
+  font-size: 26px;
+  color: #888;
+  cursor: pointer;
+  line-height: 1;
+}
+.drawer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+.drawer-item {
+  display: block;
+  background: #f8fafd;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid var(--primary-navy);
+  border-radius: 6px;
+  padding: 12px 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+}
+.drawer-item:hover,
+.drawer-item:active {
+  background: #f8fafc;
+  border-color: var(--primary-red);
+}
+.drawer-item-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--primary-navy);
+  margin-bottom: 2px;
+}
+.drawer-item small {
+  color: #666;
+  font-size: 12px;
+}
+
+/* THE WALKER & DUNHAM SCHOOL INSPIRED AT-A-GLANCE COUNTERS */
+.at-a-glance-section {
+  background: linear-gradient(135deg, #1E232A 0%, #2B303A 60%, #8B1E2D 100%);
+  padding: 65px 0;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+.at-a-glance-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--gold-accent), #f3c25b, var(--gold-dark));
+}
+.at-a-glance-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+}
+.at-a-glance-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 24px 18px;
+  text-align: center;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+.at-a-glance-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--gold-accent);
+  background: rgba(255, 255, 255, 0.1);
+}
+.at-a-glance-card .stat-num {
+  font-family: var(--font-serif);
+  font-size: clamp(32px, 3.2vw, 44px);
+  font-weight: 800;
+  color: var(--gold-accent);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.at-a-glance-card .stat-label {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.at-a-glance-card .stat-desc {
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  margin-top: 4px;
+}
+
+/* THE WALKER SCHOOL INSPIRED PROGRAM FINDER */
+.program-finder-section {
+  padding: 70px 0;
+  background: #ffffff;
+}
+.program-finder-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-top: 35px;
+}
+.program-card {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #dde2ec;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: #ffffff;
+}
+.program-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(5, 40, 107, 0.15);
+}
+.program-card-img {
+  height: 180px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+.program-card-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: var(--gold-accent);
+  color: #000;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.program-card-body {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.program-card-body h4 {
+  font-size: 19px;
+  margin-bottom: 6px;
+  color: var(--primary-navy);
+}
+.program-card-body .program-level {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold-dark);
+  margin-bottom: 12px;
+}
+.program-card-body p {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 18px;
+  flex: 1;
+}
+.program-card-meta {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #eee;
+  padding-top: 14px;
+  margin-bottom: 16px;
+  font-size: 12.5px;
+  color: #666;
+}
+.program-card-meta strong {
+  color: var(--primary-navy);
+}
+
+/* FLOATING WHATSAPP BUTTON */
+.floating-whatsapp-btn {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #25D366;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  box-shadow: 0 4px 18px rgba(37, 211, 102, 0.45);
+  z-index: 9998;
+  text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.floating-whatsapp-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 24px rgba(37, 211, 102, 0.65);
+  color: #ffffff;
+}
+@media (max-width: 991px) {
+  .floating-whatsapp-btn {
+    bottom: 74px;
+    right: 18px;
+    width: 50px;
+    height: 50px;
+    font-size: 26px;
+  }
+}
+
+/* RESPONSIVE ADDITIONS FOR MOBILE BOTTOM BAR */
+@media (max-width: 991px) {
+  body {
+    padding-bottom: 64px !important;
+  }
+  .mobile-bottom-bar {
+    display: flex;
+  }
 }
 
 /* RESPONSIVE */

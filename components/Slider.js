@@ -4,6 +4,9 @@ import Link from 'next/link';
 
 export default function Slider({ slides = [], base = '' }) {
   const defaultImages = [
+    '/images/banner_1_a.webp',
+    '/images/banner_2_a.webp',
+    '/images/banner_3_a.webp',
     '/images/hero_science_lab.jpg',
     '/images/hero_sports_field.jpg',
     '/images/hero_library_learning.jpg'
@@ -12,8 +15,8 @@ export default function Slider({ slides = [], base = '' }) {
   const safeSlides = slides.length > 0 ? slides : [
     {
       image: '/images/hero_science_lab.jpg',
-      headline: 'PLEASANTVIEW SCHOOLS',
-      sub: 'Transforming Hearts, Minds, Bodies and Souls of Tomorrow’s Leaders',
+      headline: 'PLEASANT VIEW SCHOOLS',
+      sub: 'Our Aim is Victory — Transforming Hearts, Minds, Bodies and Souls of Tomorrow’s Leaders',
       button_text: 'Discover More',
       button_link: '/#pillars',
       button_alt_text: 'Book A Visit',
@@ -21,21 +24,21 @@ export default function Slider({ slides = [], base = '' }) {
     },
     {
       image: '/images/hero_sports_field.jpg',
-      headline: 'HOLISTIC CHARACTER & ADVENTURE',
-      sub: 'Cultivating sportsmanship, physical resilience, teamwork, and Christian leadership on expansive green grounds',
-      button_text: 'Sports & Co-Curricular',
-      button_link: '/about#sports',
-      button_alt_text: 'Our Campuses',
-      button_alt_link: '/#schools'
+      headline: '24 YEARS OF ACADEMIC EXCELLENCE',
+      sub: 'Outstanding KPSEA (EE — Exceeding Expectations) and KJSEA (ME1) distinction, with maiden KCSE B+ university transition',
+      button_text: 'Our Academics',
+      button_link: '/about#academics',
+      button_alt_text: 'Admissions Desk',
+      button_alt_link: '/contact'
     },
     {
       image: '/images/hero_library_learning.jpg',
-      headline: '24 YEARS OF ACADEMIC DISTINCTION',
-      sub: 'A sterling track record exceeding 390/500 KCPE mean scores and B+ KCSE university transition feats',
-      button_text: 'Academic Curriculum',
-      button_link: '/about#academics',
-      button_alt_text: 'Apply Now',
-      button_alt_link: '/contact'
+      headline: 'HOLISTIC CHARACTER & MENTORSHIP',
+      sub: 'Cultivating sportsmanship, physical resilience, teamwork, and Christian leadership on expansive green grounds',
+      button_text: 'Campus Life',
+      button_link: '/about#life',
+      button_alt_text: 'Book a Campus Tour',
+      button_alt_link: '/contact#visit'
     }
   ];
 
@@ -58,15 +61,16 @@ export default function Slider({ slides = [], base = '' }) {
     setCurrentIndex(idx);
   };
 
+  // Automatic slide background transitions (every 5 seconds)
   useEffect(() => {
     if (total <= 1 || isPaused) return;
     const timer = setInterval(() => {
       nextSlide();
-    }, 6000);
+    }, 5000);
     return () => clearInterval(timer);
   }, [total, isPaused, nextSlide]);
 
-  // Touch swipe support
+  // Touch swipe support on phones
   const handleTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX;
   };
@@ -88,6 +92,10 @@ export default function Slider({ slides = [], base = '' }) {
   const primaryLink = active?.button_link || (base ? base + '/contact' : '/#schools');
   const secondaryText = active?.button_alt_text || 'Book a Campus Tour';
   const secondaryLink = active?.button_alt_link || (base ? base + '/visit' : '/contact#visit');
+
+  // Clean, robust headline
+  const rawHeadline = String(active?.headline || '').trim();
+  const activeHeadline = rawHeadline || '24 YEARS OF ACADEMIC EXCELLENCE';
 
   return (
     <header
@@ -117,13 +125,25 @@ export default function Slider({ slides = [], base = '' }) {
 
       <div className="wrapper" style={{ position: 'relative', zIndex: 12 }}>
         <div className="hero-content">
-          <span className="hero-lead-label">WELCOME TO</span>
+          <span className="hero-lead-label">PLEASANT VIEW SCHOOLS &bull; EST. 1998</span>
           <h1 className="hero-main-title">
-            {(active.headline || 'PLEASANTVIEW SCHOOLS').replace(/^WELCOME TO\s+/i, '')}
-            <span className="hero-sub-title">GITHUNGURI &bull; KIAMBU</span>
+            <span className="hero-brand-headline">{activeHeadline}</span>
           </h1>
+
+          {/* DEDICATED LOCATION & MOTTO BAR WITH AMPLE SPACING (PREVENTS COLLISION) */}
+          <div className="hero-location-bar">
+            <span className="hero-loc-pill">
+              <i className="fa-solid fa-location-dot" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
+              GITHUNGURI &bull; KIAMBU
+            </span>
+            <span className="hero-motto-pill">
+              <i className="fa-solid fa-trophy" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
+              OUR AIM IS VICTORY
+            </span>
+          </div>
+
           <p className="hero-sub-text">
-            {active.sub || 'Transforming Hearts, Minds, Bodies and Souls — A 24-year legacy of academic distinction and Christian character.'}
+            {active.sub || 'Our Aim is Victory — Transforming Hearts, Minds, Bodies and Souls of Tomorrow’s Leaders.'}
           </p>
 
           {/* EXACT ST ANDREW'S TURI HIGHLIGHT LINK */}

@@ -44,7 +44,9 @@ const routesJson = {
   exclude: [
     "/_next/static/*",
     "/images/*",
-    "/favicon.ico"
+    "/favicon.ico",
+    "/manifest.json",
+    "/sw.js"
   ]
 };
 fs.writeFileSync(
