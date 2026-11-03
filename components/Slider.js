@@ -130,40 +130,25 @@ export default function Slider({ slides = [], base = '' }) {
 
       <div className="wrapper" style={{ position: 'relative', zIndex: 12 }}>
         <div className="hero-content">
-          <span className="hero-lead-label">PLEASANT VIEW SCHOOLS &bull; EST. 1998</span>
-          <h1 className="hero-main-title">
-            <span className="hero-brand-headline">{activeHeadline}</span>
-          </h1>
-
-          {/* DEDICATED LOCATION & MOTTO BAR WITH AMPLE SPACING (PREVENTS COLLISION) */}
-          <div className="hero-location-bar">
-            <span className="hero-loc-pill">
-              <i className="fa-solid fa-location-dot" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
-              GITHUNGURI &bull; KIAMBU
-            </span>
-            <span className="hero-motto-pill">
-              <i className="fa-solid fa-trophy" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
-              OUR AIM IS VICTORY
-            </span>
+          <div className="hero-eyebrow">
+            <span>ESTABLISHED 1998</span>
+            <span className="hero-eyebrow-sep">&bull;</span>
+            <span>GITHUNGURI, KIAMBU</span>
           </div>
+
+          <h1 className="hero-main-title">
+            {activeHeadline}
+          </h1>
 
           <p className="hero-sub-text">
             {activeSub || 'Our Aim is Victory — Transforming Hearts, Minds, Bodies and Souls of Tomorrow’s Leaders.'}
           </p>
 
-          {/* EXACT ST ANDREW'S TURI HIGHLIGHT LINK */}
-          <div className="hero-discover-wrap">
-            <Link className="hero-discover-link" href={primaryLink}>
-              <span>DISCOVER MORE</span>
-              <i className="fa-solid fa-arrow-right-long" />
-            </Link>
-          </div>
-
           <div className="hero-actions">
-            <Link className="button button-primary" href={primaryLink}>
+            <Link className="button button-gold hero-btn-main" href={primaryLink}>
               {primaryText} <i className="fa-solid fa-arrow-right-long" style={{ marginLeft: '8px' }} />
             </Link>
-            <Link className="button button-gold" href={secondaryLink}>
+            <Link className="button hero-btn-sec" href={secondaryLink}>
               {secondaryText}
             </Link>
           </div>

@@ -21,36 +21,67 @@ import { submitParentReview } from '@/app/actions';
 export const dynamic = 'force-dynamic';
 
 export default async function Home({ searchParams }) {
-  const sp = await searchParams;
+  const sp = (await searchParams) || {};
   const isReviewSubmitted = Boolean(sp?.review_submitted);
   const seniorInfo = getSeniorAssessmentInfo();
-  const [
-    hero,
-    news,
-    sch,
-    st,
-    vids,
-    leadMessages,
-    quickLinks,
-    glanceMetrics,
-    approvedTestimonials,
-    learnerVoices,
-    alumniStories,
-    events
-  ] = await Promise.all([
-    q('SELECT * FROM hero WHERE school_id=0 ORDER BY sort ASC, id ASC'),
-    q('SELECT p.*, s.name sname FROM posts p LEFT JOIN schools s ON s.id=p.school_id ORDER BY p.id DESC LIMIT 3'),
-    schools(),
-    S(),
-    getVideos(0),
-    getLeadershipMessages(0),
-    getQuickLinks(),
-    getGlanceMetrics(),
-    getParentTestimonials('approved'),
-    getLearnerTestimonials(),
-    getAlumniStories(true),
-    getEvents(0)
-  ]);
+
+  let hero = [];
+  let news = [];
+  let sch = [];
+  let st = {};
+  let vids = [];
+  let leadMessages = [];
+  let quickLinks = [];
+  let glanceMetrics = [];
+  let approvedTestimonials = [];
+  let learnerVoices = [];
+  let alumniStories = [];
+  let events = [];
+
+  try {
+    const [
+      heroRes,
+      newsRes,
+      schRes,
+      stRes,
+      vidsRes,
+      leadMessagesRes,
+      quickLinksRes,
+      glanceMetricsRes,
+      approvedTestimonialsRes,
+      learnerVoicesRes,
+      alumniStoriesRes,
+      eventsRes
+    ] = await Promise.all([
+      q('SELECT * FROM hero WHERE school_id=0 ORDER BY sort ASC, id ASC').catch(() => []),
+      q('SELECT p.*, s.name sname FROM posts p LEFT JOIN schools s ON s.id=p.school_id ORDER BY p.id DESC LIMIT 3').catch(() => []),
+      schools().catch(() => []),
+      S().catch(() => ({})),
+      getVideos(0).catch(() => []),
+      getLeadershipMessages(0).catch(() => []),
+      getQuickLinks().catch(() => []),
+      getGlanceMetrics().catch(() => []),
+      getParentTestimonials('approved').catch(() => []),
+      getLearnerTestimonials().catch(() => []),
+      getAlumniStories(true).catch(() => []),
+      getEvents(0).catch(() => [])
+    ]);
+
+    hero = Array.isArray(heroRes) ? heroRes : [];
+    news = Array.isArray(newsRes) ? newsRes : [];
+    sch = Array.isArray(schRes) ? schRes : [];
+    st = stRes || {};
+    vids = Array.isArray(vidsRes) ? vidsRes : [];
+    leadMessages = Array.isArray(leadMessagesRes) ? leadMessagesRes : [];
+    quickLinks = Array.isArray(quickLinksRes) ? quickLinksRes : [];
+    glanceMetrics = Array.isArray(glanceMetricsRes) ? glanceMetricsRes : [];
+    approvedTestimonials = Array.isArray(approvedTestimonialsRes) ? approvedTestimonialsRes : [];
+    learnerVoices = Array.isArray(learnerVoicesRes) ? learnerVoicesRes : [];
+    alumniStories = Array.isArray(alumniStoriesRes) ? alumniStoriesRes : [];
+    events = Array.isArray(eventsRes) ? eventsRes : [];
+  } catch (err) {
+    console.warn('[Home Data Fetch Fallback]:', err?.message);
+  }
 
   const slides = hero.length
     ? hero.map(h => ({
@@ -489,9 +520,17 @@ export default async function Home({ searchParams }) {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '22px' }}>
             {events.slice(0, 4).map((ev, idx) => {
-              const d = new Date(ev.event_date);
-              const day = !isNaN(d.getDate()) ? String(d.getDate()).padStart(2, '0') : '15';
-              const month = !isNaN(d.getMonth()) ? d.toLocaleString('en-US', { month: 'short' }).toUpperCase() : 'NOV';
+              const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+              let day = '15';
+              let month = 'NOV';
+              try {
+                const parts = String(ev?.event_date || '').split('-');
+                if (parts.length >= 3) {
+                  day = parts[2].slice(0, 2).padStart(2, '0');
+                  const mIdx = parseInt(parts[1], 10) - 1;
+                  month = monthNames[mIdx] || 'NOV';
+                }
+              } catch {}
 
               return (
                 <div
@@ -607,26 +646,30 @@ export default async function Home({ searchParams }) {
           </div>
 
           <div className="testimonials-grid">
-            {approvedTestimonials.map((t, idx) => (
-              <div key={t.id || t.parent_name || idx} className={`testimonial-card reveal-on-scroll reveal-delay-${(idx % 3) + 1}`}>
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                    <div className="quote-icon"><i className="fa-solid fa-quote-left" /></div>
-                    <div style={{ color: 'var(--gold-accent)', fontSize: '15px' }}>
-                      {'★'.repeat(t.rating || 5)}
+            {approvedTestimonials.map((t, idx) => {
+              const stars = Math.max(1, Math.min(5, Math.round(Number(t?.rating) || 5)));
+              const initial = (t?.parent_name ? String(t.parent_name).trim().charAt(0) : 'P') || 'P';
+              return (
+                <div key={t.id || t.parent_name || idx} className={`testimonial-card reveal-on-scroll reveal-delay-${(idx % 3) + 1}`}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <div className="quote-icon"><i className="fa-solid fa-quote-left" /></div>
+                      <div style={{ color: 'var(--gold-accent)', fontSize: '15px' }}>
+                        {'★'.repeat(stars)}
+                      </div>
+                    </div>
+                    <p className="testimonial-text">&ldquo;{t.comment}&rdquo;</p>
+                  </div>
+                  <div className="testimonial-author">
+                    <div className="author-avatar">{initial}</div>
+                    <div className="author-info">
+                      <h4>{t.parent_name}</h4>
+                      <span>{t.relationship || 'Parent'} &bull; {t.grade_or_division}</span>
                     </div>
                   </div>
-                  <p className="testimonial-text">&ldquo;{t.comment}&rdquo;</p>
                 </div>
-                <div className="testimonial-author">
-                  <div className="author-avatar">{t.parent_name ? t.parent_name.charAt(0) : 'P'}</div>
-                  <div className="author-info">
-                    <h4>{t.parent_name}</h4>
-                    <span>{t.relationship || 'Parent'} &bull; {t.grade_or_division}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* PARENT COMMENT SUBMISSION FORM */}

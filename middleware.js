@@ -8,6 +8,7 @@ export function middleware(req) {
     u.search = req.nextUrl.search;
     return NextResponse.rewrite(u);
   }
+  return NextResponse.next();
 }
 
 export const config = { matcher: ['/((?!_next|images|img|favicon.ico).*)'] };

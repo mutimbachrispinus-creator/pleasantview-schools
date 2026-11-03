@@ -75,9 +75,9 @@ export default function HeaderNav({
             <div className="top-nav">
               <ul>
                 <li>
-                  <Link href="/about#academics" className="assessment-pill-link">
-                    <i className="fa-solid fa-award" style={{ marginRight: '6px' }} />
-                    Assessment Report (KPSEA, KJSEA, Senior)
+                  <Link href="/about#academics" className="top-honors-chip" title="View CBE & KPSEA Distinction Reports">
+                    <i className="fa-solid fa-award" />
+                    <span>Academic Honors</span>
                   </Link>
                 </li>
                 <li>
@@ -85,10 +85,10 @@ export default function HeaderNav({
                     href={whatsappUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: '#25D366', fontWeight: 700 }}
+                    className="top-wa-link"
                     title="Admissions WhatsApp: 0711 689 913"
                   >
-                    <i className="fa-brands fa-whatsapp" style={{ marginRight: '5px', fontSize: '14px' }} /> WhatsApp
+                    <i className="fa-brands fa-whatsapp" /> WhatsApp
                   </a>
                 </li>
                 <li>
@@ -96,20 +96,20 @@ export default function HeaderNav({
                     href={mapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: '#ffffff', fontWeight: 600 }}
+                    className="top-maps-link"
                     title="Google Maps Campus Directions"
                   >
-                    <i className="fa-solid fa-location-dot" style={{ marginRight: '5px', color: 'var(--gold-accent)' }} /> Directions &amp; Map
+                    <i className="fa-solid fa-location-dot" /> Directions
                   </a>
                 </li>
                 <li>
-                  <a href={`tel:${phone.replace(/\s+/g, '')}`} style={{ color: '#ffffff', fontWeight: 600 }}>
-                    <i className="fa-solid fa-phone" style={{ marginRight: '5px', color: 'var(--gold-accent)' }} /> {phone}
+                  <a href={`tel:${phone.replace(/\s+/g, '')}`} className="top-phone-link">
+                    <i className="fa-solid fa-phone" /> {phone}
                   </a>
                 </li>
                 <li>
-                  <Link href={adminPath} style={{ color: 'var(--gold-accent)', fontWeight: 700 }}>
-                    <i className="fa-solid fa-user-shield" style={{ marginRight: '5px' }} /> Staff Portal
+                  <Link href={adminPath} className="top-portal-link">
+                    <i className="fa-solid fa-user-shield" /> Staff Portal
                   </Link>
                 </li>
               </ul>
@@ -125,6 +125,7 @@ export default function HeaderNav({
                     <li><Link href="/about">About Pleasant View</Link></li>
                     <li><Link href="/about#vision">Vision, Mission &amp; Values</Link></li>
                     <li><Link href="/about#legacy">24-Year Academic Legacy</Link></li>
+                    <li><Link href="/about#academics">Curriculum &amp; Assessment Honors</Link></li>
                     <li><Link href="/about#christian">Christian Ethos &amp; Faith</Link></li>
                     <li><Link href="/about#leadership">Leadership &amp; Governance</Link></li>
                     <li><Link href="/about#policies">Policies &amp; Safeguarding</Link></li>
@@ -198,7 +199,7 @@ export default function HeaderNav({
                 </li>
 
                 {/* PROMINENT GOLD CTA BUTTON */}
-                <li style={{ marginLeft: '12px' }}>
+                <li className="nav-cta-item">
                   <Link href="/contact#visit" className="button button-gold nav-cta-btn">
                     <i className="fa-regular fa-calendar-check" style={{ marginRight: '6px' }} />
                     Book Campus Tour
