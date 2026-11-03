@@ -1,6 +1,7 @@
 import './globals.css';
 import Link from 'next/link';
 import { schools, S, getQuickLinks } from '@/lib/db';
+import HeaderNav from '@/components/HeaderNav';
 import PwaInstallPrompt from '@/components/PwaInstallPrompt';
 import MobileBottomBar from '@/components/MobileBottomBar';
 
@@ -70,213 +71,13 @@ export default async function RootLayout({ children }) {
         <link rel="apple-touch-icon" href="/images/pwa_icon_192.png" />
       </head>
       <body>
-        {/* MAIN NAVIGATION (Exact St Andrew's Turi Match with Rich Dropdowns) */}
-        <nav className="main-nav" id="mainNav">
-          <div className="wrapper">
-            <Link href="/" className="brand-logo" title="Pleasant View Schools - Return to Homepage">
-              <div className="brand-crest-container">
-                <img
-                  src="/images/pvs_crest.png"
-                  alt="Pleasant View Schools Official Crest"
-                  className="brand-crest-img"
-                />
-              </div>
-              <div className="brand-text">
-                <h1>PLEASANT VIEW SCHOOLS</h1>
-                <small>OUR AIM IS VICTORY &bull; Est. 1998</small>
-              </div>
-            </Link>
-
-            <div className="nav-column">
-              <div className="top-nav">
-                <ul>
-                  <li>
-                    <Link href="/" style={{ color: '#ffffff', fontWeight: 600 }}>
-                      <i className="fa-solid fa-house" style={{ marginRight: '6px' }} /> Home
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/about#academics" style={{ color: 'var(--gold-accent)', fontWeight: 700, letterSpacing: '0.5px' }}>
-                      Assessment Report (KPSEA, KJSEA, Senior)
-                    </Link>
-                  </li>
-                  <li>
-                    <a
-                      href={whatsappUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: '#25D366', fontWeight: 700 }}
-                      title="Chat with Admissions on WhatsApp (0711 689 913)"
-                    >
-                      <i className="fa-brands fa-whatsapp" style={{ marginRight: '6px', fontSize: '15px' }} /> WhatsApp
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href={mapsUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: '#ffffff', fontWeight: 600 }}
-                      title="Google Maps Campus Directions"
-                    >
-                      <i className="fa-solid fa-location-dot" style={{ marginRight: '6px', color: 'var(--gold-accent)' }} /> Directions &amp; Map
-                    </a>
-                  </li>
-                  <li>
-                    <Link href="/news" style={{ color: '#ffffff', fontWeight: 600 }}>
-                      <i className="fa-solid fa-magnifying-glass" style={{ marginRight: '6px' }} /> Search
-                    </Link>
-                  </li>
-                  <li>
-                    <a href={`tel:${phone.replace(/\s+/g, '')}`}>
-                      <i className="fa-solid fa-phone" /> {phone}
-                    </a>
-                  </li>
-                  <li>
-                    <Link href={adminPath} style={{ color: 'var(--gold-accent)', fontWeight: 700 }}>
-                      <i className="fa-solid fa-user-shield" /> Staff Portal
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="bottom-nav">
-                <ul>
-                  {/* ABOUT */}
-                  <li className="has-dropdown">
-                    <Link href="/about">About</Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/about">About Pleasantview</Link></li>
-                      <li><Link href="/about#vision">Vision, Mission &amp; Values</Link></li>
-                      <li><Link href="/about#legacy">24-Year Academic Legacy</Link></li>
-                      <li><Link href="/about#christian">Christian Ethos &amp; Faith</Link></li>
-                      <li><Link href="/about#leadership">Leadership &amp; Governance</Link></li>
-                      <li><Link href="/about#policies">Policies &amp; Safeguarding</Link></li>
-                    </ul>
-                  </li>
-
-                  {/* WHY PLEASANTVIEW */}
-                  <li className="has-dropdown">
-                    <Link href="/about#why-pleasantview">Why Pleasantview</Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/about#why-pleasantview">Why Choose Pleasantview</Link></li>
-                      <li><Link href="/about#legacy">Academic Eminence (390+ Mean)</Link></li>
-                      <li><Link href="/about#cbc">CBC / CBE Practical Pathways</Link></li>
-                      <li><Link href="/about#stem">Modern Science &amp; STEM Labs</Link></li>
-                      <li><Link href="/about#boarding">Pastoral Boarding Care</Link></li>
-                      <li><Link href="/about#transport">Safe School Transport Fleet</Link></li>
-                    </ul>
-                  </li>
-
-                  {/* EARLY LEARNING */}
-                  <li className="has-dropdown">
-                    <Link href="/s/pleasantview-early-learning">Early Learning</Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/s/pleasantview-early-learning">Early Learning Overview</Link></li>
-                      <li><Link href="/s/pleasantview-early-learning/about">Playgroup &amp; Day Care</Link></li>
-                      <li><Link href="/s/pleasantview-early-learning/academics">PP1 &amp; PP2 Foundation</Link></li>
-                      <li><Link href="/s/pleasantview-early-learning/gallery">Playgrounds &amp; Facilities</Link></li>
-                      <li><Link href="/s/pleasantview-early-learning/contact">Apply for Early Learning</Link></li>
-                    </ul>
-                  </li>
-
-                  {/* PRIMARY SCHOOL */}
-                  <li className="has-dropdown">
-                    <Link href="/s/pleasantview-primary">Primary School</Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/s/pleasantview-primary">Primary School Overview</Link></li>
-                      <li><Link href="/s/pleasantview-primary/academics">CBC Grades 1 &ndash; 6 Curriculum</Link></li>
-                      <li><Link href="/s/pleasantview-primary/about">Boarding Life (Grade 4+)</Link></li>
-                      <li><Link href="/s/pleasantview-primary/gallery">Co-Curricular &amp; Sports</Link></li>
-                      <li><Link href="/s/pleasantview-primary/contact">Apply for Primary School</Link></li>
-                    </ul>
-                  </li>
-
-                  {/* JUNIOR SECONDARY */}
-                  <li className="has-dropdown">
-                    <Link href="/s/pleasantview-jss">Junior Secondary</Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/s/pleasantview-jss">Junior Secondary Overview</Link></li>
-                      <li><Link href="/s/pleasantview-jss/academics">Grades 7 &ndash; 9 (KJSEA Ready)</Link></li>
-                      <li><Link href="/s/pleasantview-jss/about">Pre-Technical &amp; Science Labs</Link></li>
-                      <li><Link href="/s/pleasantview-jss/gallery">Talent &amp; Digital Innovation</Link></li>
-                      <li><Link href="/s/pleasantview-jss/contact">Apply for Junior Secondary</Link></li>
-                    </ul>
-                  </li>
-
-                  {/* SENIOR SCHOOL */}
-                  <li className="has-dropdown">
-                    <Link href="/s/pleasantview-senior">Senior School</Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/s/pleasantview-senior">Senior School Overview</Link></li>
-                      <li><Link href="/s/pleasantview-senior/academics">Grades 10 &ndash; 12 (KCSE &amp; Senior CBC)</Link></li>
-                      <li><Link href="/s/pleasantview-senior/about">Maiden KCSE B+ University Feats</Link></li>
-                      <li><Link href="/s/pleasantview-senior/gallery">Advanced Science Laboratories</Link></li>
-                      <li><Link href="/s/pleasantview-senior/contact">Apply for Senior School</Link></li>
-                    </ul>
-                  </li>
-
-                  {/* SCHOOL LIFE */}
-                  <li className="has-dropdown">
-                    <Link href="/about#life">School Life</Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/about#boarding">Boarding Life (Grade 4+)</Link></li>
-                      <li><Link href="/about#transport">School Transport Fleet</Link></li>
-                      <li><Link href="/quick-links/sports-fixtures">Sports Fixtures &amp; Athletics</Link></li>
-                      <li><Link href="/quick-links/term-dates">Term Dates &amp; VISOs</Link></li>
-                      <li><Link href="/about#sports">Co-Curricular Clubs &amp; Arts</Link></li>
-                    </ul>
-                  </li>
-
-                  {/* ADMISSIONS */}
-                  <li className="has-dropdown">
-                    <Link href="/contact">Admissions</Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/contact">How to Apply</Link></li>
-                      <li><Link href="/contact#visit">Book Campus Tour</Link></li>
-                      <li><a href={mapsUrl} target="_blank" rel="noopener noreferrer">Campus Map &amp; Directions</a></li>
-                      <li><Link href="/quick-links/term-dates">Academic Term Dates</Link></li>
-                      <li><Link href="/contact#fees">Fee Guidelines &amp; Desk</Link></li>
-                    </ul>
-                  </li>
-
-                  {/* QUICK LINKS */}
-                  <li className="has-dropdown">
-                    <Link href="/quick-links">Quick Links</Link>
-                    <ul className="sub-menu">
-                      {quickLinks.map(l => (
-                        <li key={l.id}><Link href={l.url}>{l.title}</Link></li>
-                      ))}
-                      <li><Link href="/careers#tenders">Tenders and Bids</Link></li>
-                    </ul>
-                  </li>
-
-                  {/* CAREERS */}
-                  <li className="has-dropdown">
-                    <Link href="/careers">Careers</Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/careers">Working at Pleasantview</Link></li>
-                      <li><Link href="/careers#vacancies">Open Teaching Vacancies</Link></li>
-                      <li><Link href="/careers#apply">Submit CV / Job Application</Link></li>
-                      <li><Link href="/careers#tenders">Tenders and Bids</Link></li>
-                    </ul>
-                  </li>
-
-                  {/* CONTACT */}
-                  <li className="has-dropdown">
-                    <Link href="/contact">Contact</Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/contact">Contact Main Campus</Link></li>
-                      <li><Link href="/contact#visit">Book Walking Tour</Link></li>
-                      <li><a href={mapsUrl} target="_blank" rel="noopener noreferrer">Google Maps Directions</a></li>
-                      <li><Link href="/staff-portal">Staff &amp; Admin Portal</Link></li>
-                    </ul>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </nav>
+        {/* MAIN NAVIGATION (St Andrew's Turi Styling with Dynamic Animated Hamburger Drawer) */}
+        <HeaderNav
+          schools={schList}
+          settings={settings}
+          quickLinks={quickLinks}
+          adminPath={adminPath}
+        />
 
         {/* ROTATED HERO SIDE BUTTONS (ST ANDREW'S TURI SIGNATURE - School Red & Grey) */}
         <div className="hero-buttons">
@@ -363,7 +164,7 @@ export default async function RootLayout({ children }) {
             <div className="footer-col contact">
               <h5 className="column-title">Contact Us</h5>
               <p>
-                <strong>Pleasantview Schools Main Campus</strong><br />
+                <strong>Pleasant View Schools Main Campus</strong><br />
                 Githunguri, Komothai Subcounty<br />
                 Kiambu County, Kenya<br /><br />
                 <a
@@ -389,7 +190,7 @@ export default async function RootLayout({ children }) {
                   <li key={l.id}><Link href={l.url}>{l.title}</Link></li>
                 ))}
                 <li><Link href="/careers#tenders">Tenders and Bids</Link></li>
-                <li><Link href="/careers">Working at Pleasantview</Link></li>
+                <li><Link href="/careers">Working at Pleasant View</Link></li>
                 <li><Link href={adminPath}>Staff Portal</Link></li>
               </ul>
             </div>
@@ -419,7 +220,7 @@ export default async function RootLayout({ children }) {
         <div className="copyright-bar">
           <div className="wrapper">
             <div className="copy">
-              &copy; {new Date().getFullYear()} Pleasantview Schools. All Rights Reserved. &ldquo;Our Aim is Victory&rdquo;
+              &copy; {new Date().getFullYear()} Pleasant View Schools. All Rights Reserved. &ldquo;Our Aim is Victory&rdquo;
             </div>
             <ul className="copyright-links">
               <li><Link href="/about#privacy">Privacy Policy</Link></li>

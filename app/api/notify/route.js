@@ -5,11 +5,11 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   return NextResponse.json({
-    service: 'Pleasantview Unified Notification API',
+    service: 'Pleasant View Unified Notification API',
     providers: {
       resend: {
         configured: Boolean(process.env.RESEND_API_KEY),
-        from: process.env.MAIL_FROM || 'Pleasantview Schools <onboarding@resend.dev>',
+        from: process.env.MAIL_FROM || 'Pleasant View Schools <onboarding@resend.dev>',
         schoolEmail: process.env.SCHOOL_EMAIL || 'info@pleasantview.sc.ke'
       },
       africasTalking: {
@@ -51,9 +51,9 @@ export async function POST(req) {
       name: name || 'Parent',
       phone: phone ? formatKenyanPhone(phone) : '',
       email: email || '',
-      subject: subject || 'Pleasantview Schools Admissions Notification',
-      text: text || 'Thank you for contacting Pleasantview Schools.',
-      sms: sms || 'Thank you for contacting Pleasantview Schools. We will reach out shortly.',
+      subject: subject || 'Pleasant View Schools Admissions Notification',
+      text: text || 'Thank you for contacting Pleasant View Schools.',
+      sms: sms || 'Thank you for contacting Pleasant View Schools. We will reach out shortly.',
       to: to || undefined
     });
 

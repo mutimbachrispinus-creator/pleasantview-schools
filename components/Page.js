@@ -7,14 +7,14 @@ export default function Page({ title, subtitle, image = '/images/banner_3_a.webp
       <div className="subpage-hero" style={{ backgroundImage: `url('${image}')` }}>
         <div className="overlay" />
         <div className="subpage-hero-content">
-          <h5>{subtitle || 'PLEASANTVIEW SCHOOLS'}</h5>
+          <h5>{subtitle || 'PLEASANT VIEW SCHOOLS'}</h5>
           <h1>{title}</h1>
         </div>
       </div>
       <section className="subpage-body">
         <div className="wrapper">
           <BackButton />
-          <div style={{ maxWidth: '960px', margin: '0 auto' }}>
+          <div style={{ maxWidth: '1240px', margin: '0 auto' }}>
             {children}
           </div>
         </div>

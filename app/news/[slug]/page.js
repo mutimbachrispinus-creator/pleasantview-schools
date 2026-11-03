@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }) {
   const [p] = await q('SELECT title FROM posts WHERE slug=?', [(await params).slug]);
-  return { title: p ? `${p.title} | Pleasantview Schools` : 'News Article' };
+  return { title: p ? p.title : 'Campus News Article' };
 }
 
 export default async function Post({ params }) {

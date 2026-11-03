@@ -19,7 +19,7 @@ export async function GET(req) {
     service: 'Resend Email Service',
     status: isConfigured ? 'configured' : 'missing_api_key',
     configured: isConfigured,
-    from: process.env.MAIL_FROM || 'Pleasantview Schools <onboarding@resend.dev>',
+    from: process.env.MAIL_FROM || 'Pleasant View Schools <onboarding@resend.dev>',
     defaultTo: process.env.SCHOOL_EMAIL || 'info@pleasantview.sc.ke',
     inboundEmailCount: countRow ? Number(countRow.c) : 0,
     timestamp: new Date().toISOString()
@@ -69,7 +69,7 @@ export async function POST(req) {
           if (acc.auto_reply && sender) {
             await sendEmail({
               to: sender,
-              from: `Pleasantview ${acc.department || 'Schools'} <${acc.email}>`,
+              from: `Pleasant View ${acc.department || 'Schools'} <${acc.email}>`,
               subject: `Re: ${subject}`,
               text: acc.auto_reply
             });
@@ -101,8 +101,8 @@ export async function POST(req) {
 
     const result = await sendEmail({
       to: to || process.env.SCHOOL_EMAIL,
-      subject: subject || 'Pleasantview Schools Test Email',
-      text: text || `Hello ${name || 'Parent'}, this is a verified email from Pleasantview Schools via Resend.`,
+      subject: subject || 'Pleasant View Schools Test Email',
+      text: text || `Hello ${name || 'Parent'}, this is a verified email from Pleasant View Schools via Resend.`,
       html: html || undefined,
       name
     });

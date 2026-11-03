@@ -1,7 +1,7 @@
 import Form from '@/components/Form';
 import { book } from '@/app/actions';
 
-export const metadata = { title: 'Book a Campus Visit | Pleasantview Schools' };
+export const metadata = { title: 'Book a Campus Visit' };
 
 export default async function P({ params, searchParams }) {
   const { school } = await params;

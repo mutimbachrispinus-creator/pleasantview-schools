@@ -7,12 +7,12 @@ export const dynamic = 'force-dynamic';
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const titles = {
-    'term-dates': 'Term Dates & VISOs | Pleasantview Schools',
-    'sports-fixtures': 'Sports Fixtures & Co-Curricular | Pleasantview Schools',
-    'policies': 'Policies & Inspection Reports | Pleasantview Schools'
+    'term-dates': 'Term Dates & VISOs',
+    'sports-fixtures': 'Sports Fixtures & Co-Curricular',
+    'policies': 'Policies & Inspection Reports'
   };
   return {
-    title: titles[slug] || 'Quick Links | Pleasantview Schools'
+    title: titles[slug] || 'Quick Links & Resources'
   };
 }
 
@@ -33,7 +33,7 @@ export default async function QuickLinkPage({ params }) {
           <div className="gold-divider" style={{ marginLeft: 0 }} />
 
           <p className="lead" style={{ fontSize: '17px', color: '#444', lineHeight: 1.7, marginBottom: '25px' }}>
-            Pleasantview Schools operates a structured Christian-ethos calendar balancing rigorous Competency Based Curriculum (CBC) delivery, formative assessments, co-curricular adventures, and designated parent visiting days (VISOs).
+            Pleasant View Schools operates a structured Christian-ethos calendar balancing rigorous Competency Based Curriculum (CBC) delivery, formative assessments, co-curricular adventures, and designated parent visiting days (VISOs).
           </p>
 
           <div style={{ display: 'grid', gap: '25px', margin: '30px 0' }}>
@@ -121,12 +121,12 @@ export default async function QuickLinkPage({ params }) {
           <div className="gold-divider" style={{ marginLeft: 0 }} />
 
           <p className="lead" style={{ fontSize: '17px', color: '#444', lineHeight: 1.7, marginBottom: '25px' }}>
-            At Pleasantview Schools, sportsmanship and physical resilience are integral to whole-child development. Our students train on standard football grounds, basketball and volleyball courts, track fields, and participate in Kiambu County and East African inter-school tournaments.
+            At Pleasant View Schools, sportsmanship and physical resilience are integral to whole-child development. Our students train on standard football grounds, basketball and volleyball courts, track fields, and participate in Kiambu County and East African inter-school tournaments.
           </p>
 
           <div style={{ display: 'grid', gap: '20px', margin: '30px 0' }}>
             <div style={{ background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '8px', padding: '22px', borderLeft: '4px solid var(--primary-navy)' }}>
-              <h4 style={{ color: 'var(--primary-navy)', marginBottom: '8px' }}>⚽ Pleasantview Invitational Football Derby</h4>
+              <h4 style={{ color: 'var(--primary-navy)', marginBottom: '8px' }}>⚽ Pleasant View Invitational Football Derby</h4>
               <p style={{ margin: '0 0 10px', color: '#555', fontSize: '14.5px' }}>Under-13 &amp; Under-16 Boys and Girls tournament hosting schools from across Kiambu and Nairobi.</p>
               <span style={{ fontSize: '13px', color: '#888' }}><i className="fa-regular fa-calendar" /> Bi-annual Tournament &bull; Main Sports Grounds</span>
             </div>
@@ -134,7 +134,7 @@ export default async function QuickLinkPage({ params }) {
             <div style={{ background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '8px', padding: '22px', borderLeft: '4px solid var(--gold-accent)' }}>
               <h4 style={{ color: 'var(--gold-dark)', marginBottom: '8px' }}>🏀 Basketball &amp; Volleyball League</h4>
               <p style={{ margin: '0 0 10px', color: '#555', fontSize: '14.5px' }}>Weekly inter-school matches for Junior Secondary and Senior School squads.</p>
-              <span style={{ fontSize: '13px', color: '#888' }}><i className="fa-regular fa-calendar" /> Saturdays 9:00 AM &bull; Pleasantview Sports Pavilion</span>
+              <span style={{ fontSize: '13px', color: '#888' }}><i className="fa-regular fa-calendar" /> Saturdays 9:00 AM &bull; Pleasant View Sports Pavilion</span>
             </div>
 
             <div style={{ background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '8px', padding: '22px', borderLeft: '4px solid #28a745' }}>
@@ -161,12 +161,12 @@ export default async function QuickLinkPage({ params }) {
   return (
     <Page
       title="Quick Links Hub"
-      subtitle="PLEASANTVIEW PORTAL GATEWAYS"
+      subtitle="PLEASANT VIEW PORTAL GATEWAYS"
       image="/images/banner_1_a.webp"
     >
       <div className="quick-link-content">
         <span className="lead-badge">ESSENTIAL RESOURCES</span>
-        <h2>Pleasantview Schools &ndash; Quick Links</h2>
+        <h2>Pleasant View Schools &ndash; Quick Links</h2>
         <div className="gold-divider" style={{ marginLeft: 0 }} />
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', margin: '30px 0' }}>

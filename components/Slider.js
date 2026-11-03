@@ -93,9 +93,14 @@ export default function Slider({ slides = [], base = '' }) {
   const secondaryText = active?.button_alt_text || 'Book a Campus Tour';
   const secondaryLink = active?.button_alt_link || (base ? base + '/visit' : '/contact#visit');
 
-  // Clean, robust headline
+  // Clean, robust headline strictly splitting PLEASANT VIEW
   const rawHeadline = String(active?.headline || '').trim();
-  const activeHeadline = rawHeadline || '24 YEARS OF ACADEMIC EXCELLENCE';
+  const activeHeadline = (rawHeadline || '24 YEARS OF ACADEMIC EXCELLENCE')
+    .replace(/PLEASANTVIEW/g, 'PLEASANT VIEW')
+    .replace(/Pleasantview/g, 'Pleasant View');
+  const activeSub = String(active?.sub || '')
+    .replace(/PLEASANTVIEW/g, 'PLEASANT VIEW')
+    .replace(/Pleasantview/g, 'Pleasant View');
 
   return (
     <header
@@ -143,7 +148,7 @@ export default function Slider({ slides = [], base = '' }) {
           </div>
 
           <p className="hero-sub-text">
-            {active.sub || 'Our Aim is Victory — Transforming Hearts, Minds, Bodies and Souls of Tomorrow’s Leaders.'}
+            {activeSub || 'Our Aim is Victory — Transforming Hearts, Minds, Bodies and Souls of Tomorrow’s Leaders.'}
           </p>
 
           {/* EXACT ST ANDREW'S TURI HIGHLIGHT LINK */}

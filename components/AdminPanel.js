@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { q, S, schools, CATS, D, SF } from '@/lib/db';
+import { q, S, schools, CATS, D, SF, getGlanceMetrics, getAdmins, getPhotos } from '@/lib/db';
 import {
   login,
   logout,
@@ -36,7 +36,13 @@ import {
   updateVisitStatus,
   delVisit,
   updateEnquiryStatus,
-  delEnquiry
+  delEnquiry,
+  createAdminAccount,
+  deleteAdminAccount,
+  saveGlanceMetrics,
+  addSchoolLifePhoto,
+  delPhoto,
+  saveAdminSmsSettings
 } from '@/app/hidden-admin/actions';
 
 const LONG = ['welcome', 'about', 'mission', 'vision'];
@@ -115,7 +121,10 @@ export default async function Panel({ scope, edit }) {
     jobsList,
     appsList,
     leadMessages,
-    quickLinksList
+    quickLinksList,
+    adminsList,
+    glanceMetrics,
+    schoolLifePhotos
   ] = await Promise.all([
     q(
       `SELECT h.*, s.name sname FROM hero h LEFT JOIN schools s ON s.id=h.school_id${
@@ -154,7 +163,10 @@ export default async function Panel({ scope, edit }) {
         scope ? ' WHERE m.school_id=' + Number(scope) : ''
       } ORDER BY m.sort ASC, m.id DESC`
     ),
-    q('SELECT * FROM quick_links ORDER BY sort ASC, id ASC')
+    q('SELECT * FROM quick_links ORDER BY sort ASC, id ASC'),
+    getAdmins(),
+    getGlanceMetrics(),
+    getPhotos()
   ]);
 
   const Pick = () =>
@@ -201,28 +213,31 @@ export default async function Panel({ scope, edit }) {
           {/* QUICK NAV / JUMP BAR */}
           <div style={{ background: '#ffffff', padding: '12px 18px', borderRadius: '6px', border: '1px solid #dde2ec', marginBottom: '30px', display: 'flex', gap: '12px', flexWrap: 'wrap', fontSize: '13px', fontWeight: 600 }}>
             <span style={{ color: '#888', alignSelf: 'center' }}>Jump To:</span>
-            <a href="#campuses" style={{ color: 'var(--primary-navy)' }}>🏫 Campuses &amp; Population</a>
+            <a href="#campuses" style={{ color: 'var(--primary-navy)' }}>🏫 Campuses &amp; Branches</a>
+            <a href="#admins" style={{ color: 'var(--primary-navy)' }}>👥 Admins &amp; Staff ({adminsList.length})</a>
+            <a href="#metrics" style={{ color: 'var(--primary-navy)' }}>📊 Distinction Metrics</a>
+            <a href="#gallery" style={{ color: 'var(--primary-navy)' }}>📸 School Life Gallery ({schoolLifePhotos.length})</a>
             <a href="#editor" style={{ color: 'var(--primary-navy)' }}>📝 Details &amp; Profile</a>
             <a href="#leadership" style={{ color: 'var(--primary-navy)' }}>🎙️ Leadership Messages</a>
             <a href="#quicklinks" style={{ color: 'var(--primary-navy)' }}>⚡ Quick Links</a>
             <a href="#videos" style={{ color: 'var(--primary-navy)' }}>🎥 Videos Showcase</a>
-            <a href="#careers" style={{ color: 'var(--primary-navy)' }}>💼 Careers &amp; Applications ({appsList.length})</a>
+            <a href="#careers" style={{ color: 'var(--primary-navy)' }}>💼 Careers ({appsList.length})</a>
             <a href="#hero" style={{ color: 'var(--primary-navy)' }}>🖼️ Hero Sliders</a>
             <a href="#visits" style={{ color: 'var(--primary-navy)' }}>📅 Campus Visits ({vis.length})</a>
             <a href="#inbound" style={{ color: 'var(--primary-navy)' }}>✉️ SMS &amp; Mailbox Hub</a>
           </div>
 
-          {/* 1. CAMPUSES & CATEGORIES DATA (POPULATION, RATIOS, LEVELS) */}
+          {/* 1. CAMPUSES & CATEGORIES DATA (POPULATION, RATIOS, LEVELS, LOCATION, BRANCH ADMIN) */}
           {!scope && (
             <section id="campuses" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
                 <div>
                   <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
                     <i className="fa-solid fa-school" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
-                    School Divisions, Categories &amp; Population Settings
+                    School Divisions, Campuses &amp; Branches
                   </h2>
                   <p style={{ color: '#666', fontSize: '14px', margin: '4px 0 0' }}>
-                    Data updated here appears live on the website cards, division pages, statistics bar, and Admissions portal.
+                    Configure campus names, categories, education levels, physical locations, and assigned branch administrators.
                   </p>
                 </div>
               </div>
@@ -231,12 +246,14 @@ export default async function Panel({ scope, edit }) {
                 <table className="admin-table">
                   <thead>
                     <tr>
-                      <th>School Name</th>
+                      <th>School / Branch Name</th>
                       <th>Category</th>
                       <th>Grades / Level</th>
-                      <th>Learners Population</th>
-                      <th>Boarding Scholars</th>
-                      <th>Teacher Ratio</th>
+                      <th>Location</th>
+                      <th>Branch Admin</th>
+                      <th>Learners</th>
+                      <th>Boarding</th>
+                      <th>Ratio</th>
                       <th>Portal Access</th>
                       <th>Actions</th>
                     </tr>
@@ -255,6 +272,8 @@ export default async function Panel({ scope, edit }) {
                           </span>
                         </td>
                         <td>{s.level}</td>
+                        <td style={{ fontSize: '13px', color: '#555' }}>{s.location || 'Githunguri, Kiambu'}</td>
+                        <td style={{ fontSize: '13px', fontWeight: 600, color: 'var(--primary-navy)' }}>{s.admin_name || s.admin_email || 'Assigned Head'}</td>
                         <td><strong>{s.learners || '450 Students'}</strong></td>
                         <td>{s.boarders || '200 Boarders'}</td>
                         <td>{s.ratio || '1:20'}</td>
@@ -292,11 +311,11 @@ export default async function Panel({ scope, edit }) {
 
               {/* ADD NEW SCHOOL DIVISION */}
               <div style={{ marginTop: '25px', background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
-                <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Add New School Category / Division</h4>
+                <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Add New School Branch / Division</h4>
                 <form action={addSchool} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
                   <div className="form-group">
                     <label>School Name *</label>
-                    <input name="name" placeholder="e.g. Pleasantview Senior School" required />
+                    <input name="name" placeholder="e.g. Pleasant View Senior School" required />
                   </div>
                   <div className="form-group">
                     <label>Category *</label>
@@ -304,19 +323,27 @@ export default async function Panel({ scope, edit }) {
                   </div>
                   <div className="form-group">
                     <label>Level / Grades *</label>
-                    <input name="level" placeholder="e.g. Grades 10 – 12 (KCSE & Senior CBC)" required />
+                    <input name="level" placeholder="e.g. Grades 10 – 12 (Form 1 – 4)" required />
                   </div>
                   <div className="form-group">
-                    <label>Learners Population *</label>
-                    <input name="learners" placeholder="e.g. 520 Students" defaultValue="500 Students" />
+                    <label>Campus Location *</label>
+                    <input name="location" placeholder="e.g. Githunguri, Komothai Subcounty, Kiambu" defaultValue="Githunguri, Komothai Subcounty, Kiambu County" required />
+                  </div>
+                  <div className="form-group">
+                    <label>Assigned Branch Admin Name</label>
+                    <input name="admin_name" placeholder="e.g. Mrs. Grace Njeri (Principal)" defaultValue="Branch Principal" />
+                  </div>
+                  <div className="form-group">
+                    <label>Learners Population</label>
+                    <input name="learners" placeholder="e.g. 500 Students" defaultValue="500 Students" />
                   </div>
                   <div className="form-group">
                     <label>Boarding Population</label>
-                    <input name="boarders" placeholder="e.g. 260 Boarders" defaultValue="200 Boarders" />
+                    <input name="boarders" placeholder="e.g. 200 Boarders" defaultValue="200 Boarders" />
                   </div>
                   <div className="form-group">
-                    <label>Teacher Ratio</label>
-                    <input name="ratio" placeholder="e.g. 1:18" defaultValue="1:20" />
+                    <label>Teacher-Student Ratio</label>
+                    <input name="ratio" placeholder="e.g. 1:20" defaultValue="1:20" />
                   </div>
                   <div className="form-group">
                     <label>Division Color Theme</label>
@@ -327,7 +354,263 @@ export default async function Panel({ scope, edit }) {
                     <input type="file" name="image" accept="image/*" />
                   </div>
                   <button type="submit" className="button button-secondary" style={{ gridColumn: '1 / -1', marginTop: '5px' }}>
-                    + Publish New School Division
+                    + Publish New School Branch
+                  </button>
+                </form>
+              </div>
+            </section>
+          )}
+
+          {/* 1B. STAFF & ADMINISTRATOR ACCOUNTS (CREATE & MANAGE ADMINS) */}
+          {!scope && (
+            <section id="admins" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
+                <div>
+                  <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
+                    <i className="fa-solid fa-user-shield" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
+                    Staff &amp; Administrator Accounts
+                  </h2>
+                  <p style={{ color: '#666', fontSize: '14px', margin: '4px 0 0' }}>
+                    Create and manage authorized administrators for specific school branches or central management.
+                  </p>
+                </div>
+              </div>
+
+              {/* LIST OF CURRENT ADMINS */}
+              <div style={{ overflowX: 'auto', marginBottom: '25px' }}>
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Administrator Name</th>
+                      <th>Email Address</th>
+                      <th>Role</th>
+                      <th>Assigned Branch / Campus</th>
+                      <th>Mobile Handset (SMS Alert)</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {adminsList.map(a => (
+                      <tr key={a.id}>
+                        <td>
+                          <strong>{a.name}</strong>
+                        </td>
+                        <td>{a.email}</td>
+                        <td>
+                          <span style={{
+                            background: a.role === 'Super Administrator' ? 'rgba(139,30,45,0.1)' : 'rgba(5,40,107,0.1)',
+                            color: a.role === 'Super Administrator' ? '#8B1E2D' : 'var(--primary-navy)',
+                            padding: '3px 8px',
+                            borderRadius: '3px',
+                            fontWeight: 700,
+                            fontSize: '12px'
+                          }}>
+                            {a.role}
+                          </span>
+                        </td>
+                        <td>{a.school_name || 'All Campuses'}</td>
+                        <td>{a.phone || '+254 711 689 913'}</td>
+                        <td>
+                          <form action={deleteAdminAccount} style={{ display: 'inline' }}>
+                            <input type="hidden" name="id" value={a.id} />
+                            <button
+                              type="submit"
+                              style={{
+                                background: '#d9534f',
+                                color: '#fff',
+                                border: 0,
+                                padding: '4px 10px',
+                                borderRadius: '3px',
+                                cursor: 'pointer',
+                                fontSize: '12px',
+                                fontWeight: 600
+                              }}
+                            >
+                              Delete
+                            </button>
+                          </form>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* CREATE ANOTHER ADMIN FORM */}
+              <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
+                <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Create Another Administrator</h4>
+                <form action={createAdminAccount} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
+                  <div className="form-group">
+                    <label>Administrator Full Name *</label>
+                    <input name="name" placeholder="e.g. John Mwangi" required />
+                  </div>
+                  <div className="form-group">
+                    <label>Email Address *</label>
+                    <input name="email" type="email" placeholder="jmwangi@pleasantview.sc.ke" required />
+                  </div>
+                  <div className="form-group">
+                    <label>Password *</label>
+                    <input name="password" type="password" placeholder="••••••••••••" defaultValue="pleasantview2026" required />
+                  </div>
+                  <div className="form-group">
+                    <label>Administrator Role *</label>
+                    <select name="role">
+                      <option value="Branch Administrator">Branch Administrator (School Campus Head)</option>
+                      <option value="Super Administrator">Super Administrator (Central Management)</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Assigned School Branch *</label>
+                    <select name="school_name">
+                      <option value="All Campuses">All Campuses (Central Executive)</option>
+                      {list.map(s => (
+                        <option key={s.id} value={s.name}>
+                          {s.name} ({s.category || 'Division'})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Mobile Handset Phone (For SMS Alerts)</label>
+                    <input name="phone" placeholder="+254 711 000 000" defaultValue="+254 711 689 913" />
+                  </div>
+                  <button type="submit" className="button button-gold" style={{ gridColumn: '1 / -1', marginTop: '5px' }}>
+                    + Register Administrator Account
+                  </button>
+                </form>
+              </div>
+            </section>
+          )}
+
+          {/* 1C. EDITABLE "AT A GLANCE" DISTINCTION NUMBERS (HOMEPAGE METRICS) */}
+          {!scope && (
+            <section id="metrics" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
+                <div>
+                  <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
+                    <i className="fa-solid fa-chart-line" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
+                    Editable &ldquo;At a Glance&rdquo; Distinction Numbers (Homepage Metrics)
+                  </h2>
+                  <p style={{ color: '#666', fontSize: '14px', margin: '4px 0 0' }}>
+                    Update the 6 key distinction cards displayed in the &ldquo;Pleasant View at a Glance&rdquo; section on the landing page.
+                  </p>
+                </div>
+              </div>
+
+              <form action={saveGlanceMetrics}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginBottom: '20px' }}>
+                  {glanceMetrics.map((m, idx) => (
+                    <div key={m.id || idx} style={{ background: 'var(--soft-bg)', padding: '18px', borderRadius: '6px', borderLeft: '4px solid var(--gold-accent)' }}>
+                      <input type="hidden" name={`metric_${idx + 1}_id`} value={m.id || idx + 1} />
+                      <div style={{ fontSize: '12px', fontWeight: 800, color: 'var(--gold-dark)', textTransform: 'uppercase', marginBottom: '8px' }}>
+                        Metric Card #{idx + 1}
+                      </div>
+                      <div className="form-group" style={{ marginBottom: '10px' }}>
+                        <label>Stat Value (e.g. 24+, EE &amp; ME1, KCSE B+, 1:20)</label>
+                        <input name={`metric_${idx + 1}_val`} defaultValue={m.stat_value} style={{ fontWeight: 800, fontSize: '16px' }} required />
+                      </div>
+                      <div className="form-group" style={{ marginBottom: '10px' }}>
+                        <label>Stat Label (e.g. Years of Excellence)</label>
+                        <input name={`metric_${idx + 1}_label`} defaultValue={m.stat_label} required />
+                      </div>
+                      <div className="form-group">
+                        <label>Subtext / Description</label>
+                        <input name={`metric_${idx + 1}_desc`} defaultValue={m.stat_desc} required />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button type="submit" className="button button-gold" style={{ padding: '12px 24px', fontSize: '14px' }}>
+                  <i className="fa-solid fa-floppy-disk" style={{ marginRight: '8px' }} /> Save Distinction Metrics
+                </button>
+              </form>
+            </section>
+          )}
+
+          {/* 1D. SCHOOL LIFE PHOTO GALLERY MANAGER */}
+          {!scope && (
+            <section id="gallery" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
+                <div>
+                  <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
+                    <i className="fa-solid fa-images" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
+                    School Life Photo Gallery Manager
+                  </h2>
+                  <p style={{ color: '#666', fontSize: '14px', margin: '4px 0 0' }}>
+                    Upload and manage pictures across various categories of school life (Academic &amp; STEM, Sports &amp; Athletics, Boarding Life, Creative Arts, Spiritual Life, Campus Environment).
+                  </p>
+                </div>
+              </div>
+
+              {/* CURRENT PHOTOS GRID */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '18px', marginBottom: '30px' }}>
+                {schoolLifePhotos.map(p => (
+                  <div key={p.id} style={{ border: '1px solid #e1e6ef', borderRadius: '6px', overflow: 'hidden', background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                    <div style={{ height: '160px', backgroundImage: `url('${p.image}')`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative' }}>
+                      <span style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(5,40,107,0.85)', color: '#fff', padding: '2px 8px', borderRadius: '3px', fontSize: '11px', fontWeight: 700 }}>
+                        {p.category}
+                      </span>
+                    </div>
+                    <div style={{ padding: '12px' }}>
+                      <strong style={{ fontSize: '14px', display: 'block', color: 'var(--primary-navy)', marginBottom: '4px' }}>
+                        {p.title || p.category}
+                      </strong>
+                      <p style={{ fontSize: '12.5px', color: '#666', margin: '0 0 10px', lineHeight: 1.4 }}>
+                        {p.caption || 'No caption'}
+                      </p>
+                      <form action={delPhoto} style={{ textAlign: 'right' }}>
+                        <input type="hidden" name="id" value={p.id} />
+                        <button type="submit" style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}>
+                          Delete Photo
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* ADD NEW PHOTO FORM */}
+              <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
+                <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Upload / Add New School Life Picture</h4>
+                <form action={addSchoolLifePhoto} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
+                  <div className="form-group">
+                    <label>Category *</label>
+                    <select name="category" required>
+                      <option value="Academic & STEM">Academic &amp; STEM</option>
+                      <option value="Sports & Athletics">Sports &amp; Athletics</option>
+                      <option value="Boarding Life">Boarding Life</option>
+                      <option value="Creative Arts">Creative Arts &amp; Music</option>
+                      <option value="Spiritual Life">Spiritual Life &amp; Chapel</option>
+                      <option value="Campus Environment">Campus Environment &amp; Facilities</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Photo Title *</label>
+                    <input name="title" placeholder="e.g. Modern Integrated Science & Robotics Lab" required />
+                  </div>
+                  <div className="form-group">
+                    <label>Caption / Short Description</label>
+                    <input name="caption" placeholder="e.g. Scholars conducting physics and chemistry investigations" />
+                  </div>
+                  <div className="form-group">
+                    <label>Target School Branch</label>
+                    <select name="school_id">
+                      <option value="0">All Campuses</option>
+                      {list.map(s => (
+                        <option key={s.id} value={s.id}>{s.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Upload Image File</label>
+                    <input type="file" name="image_file" accept="image/*" />
+                  </div>
+                  <div className="form-group">
+                    <label>Or Paste Image URL</label>
+                    <input name="image_url" placeholder="e.g. /images/hero_science_lab.jpg" />
+                  </div>
+                  <button type="submit" className="button button-gold" style={{ gridColumn: '1 / -1', marginTop: '5px' }}>
+                    + Publish Picture to School Life Gallery
                   </button>
                 </form>
               </div>
@@ -1077,16 +1360,15 @@ export default async function Panel({ scope, edit }) {
               <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px', borderLeft: '4px solid #28a745' }}>
                 <h4 style={{ marginBottom: '8px' }}>
                   <i className="fa-solid fa-mobile-screen" style={{ color: '#28a745', marginRight: '6px' }} />
-                  Admin Handset Number (Direct Visitor SMS)
+                  Admin Handset Numbers (Receive Visitor SMS Alerts)
                 </h4>
                 <p style={{ fontSize: '13px', color: '#666', marginBottom: '10px' }}>
-                  Visitor messages sent from website are routed straight to this mobile number via SMS (with <strong>no automatic auto-reply</strong> to visitor).
+                  Visitor inquiries and tour bookings are dispatched directly to these mobile handset numbers via SMS (with <strong>strictly zero auto-reply SMS</strong> sent back to visitors). Enter multiple numbers separated by commas.
                 </p>
-                <form action={saveSchool} style={{ display: 'flex', gap: '8px' }}>
-                  <input type="hidden" name="school_id" value="0" />
-                  <input name="admin_sms_phone" type="tel" defaultValue={vals.admin_sms_phone || '+254711689913'} style={{ padding: '8px', fontSize: '13px', flex: 1 }} required />
-                  <button type="submit" className="button button-secondary" style={{ padding: '8px 14px', fontSize: '12px' }}>
-                    Save Admin Number
+                <form action={saveAdminSmsSettings} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <input name="admin_sms_phone" type="text" defaultValue={vals.admin_sms_phone || '+254 711 689 913'} placeholder="+254711689913, +254722000000" style={{ padding: '8px', fontSize: '13px', width: '100%' }} required />
+                  <button type="submit" className="button button-secondary" style={{ padding: '8px 14px', fontSize: '12px', alignSelf: 'flex-start' }}>
+                    Save Recipient Numbers
                   </button>
                 </form>
               </div>

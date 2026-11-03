@@ -2,20 +2,21 @@ import Link from 'next/link';
 import Slider from '@/components/Slider';
 import VmvSlideshow from '@/components/VmvSlideshow';
 import VideoShowcase from '@/components/VideoShowcase';
-import { q, S, schools, getVideos, getLeadershipMessages, getQuickLinks, getSeniorAssessmentInfo } from '@/lib/db';
+import { q, S, schools, getVideos, getLeadershipMessages, getQuickLinks, getSeniorAssessmentInfo, getGlanceMetrics } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const seniorInfo = getSeniorAssessmentInfo();
-  const [hero, news, sch, st, vids, leadMessages, quickLinks] = await Promise.all([
+  const [hero, news, sch, st, vids, leadMessages, quickLinks, glanceMetrics] = await Promise.all([
     q('SELECT * FROM hero WHERE school_id=0 ORDER BY sort ASC, id ASC'),
     q('SELECT p.*, s.name sname FROM posts p LEFT JOIN schools s ON s.id=p.school_id ORDER BY p.id DESC LIMIT 3'),
     schools(),
     S(),
     getVideos(0),
     getLeadershipMessages(0),
-    getQuickLinks()
+    getQuickLinks(),
+    getGlanceMetrics()
   ]);
 
   const slides = hero.length
@@ -61,28 +62,28 @@ export default async function Home() {
 
   const primaryLeader = leadMessages[0] || {
     name: 'Board of Directors & Executive Principal',
-    title: 'Pleasantview Schools Group',
+    title: 'Pleasant View Schools Group',
     role: 'Director',
     quote: 'Our aim is victory — not merely in examinations, but in shaping disciplined, visionary young people who lead with wisdom, faith, and purpose.',
-    message: 'Welcome to Pleasantview Schools. For over two decades, our community has stood as a beacon of academic excellence and character development in Kiambu County. We believe that true education nurtures the mind while fortifying the soul. Whether in our early learning centre, thriving primary school, modern Junior Secondary (JSS), or distinguished Senior School, we provide state-of-the-art science laboratories, extensive transport coverage, and world-class pastoral boarding.',
+    message: 'Welcome to Pleasant View Schools. For over two decades, our community has stood as a beacon of academic excellence and character development in Kiambu County. We believe that true education nurtures the mind while fortifying the soul. Whether in our early learning centre, thriving primary school, modern Junior Secondary (JSS), or distinguished Senior School, we provide state-of-the-art science laboratories, extensive transport coverage, and world-class pastoral boarding.',
     image: '/images/banner_3_a.webp'
   };
 
   const testimonials = [
     {
       name: 'Caroline Mburu',
-      role: 'Lawyer & Pleasantview Parent',
+      role: 'Lawyer & Pleasant View Parent',
       quote: 'This school is good and I am very happy with it. They have all the modern facilities that pupils need and demonstrate deep pastoral responsibility for every child’s growth.'
     },
     {
       name: 'Wilson Solonka',
       role: 'Civil Engineer & Parent',
-      quote: 'The final processed product from Pleasantview Schools is Pretty Pleasant. My niece and nephew are already there and their academic confidence and discipline are outstanding.'
+      quote: 'The final processed product from Pleasant View Schools is Pretty Pleasant. My niece and nephew are already there and their academic confidence and discipline are outstanding.'
     },
     {
       name: 'Samuel Karonjo',
       role: 'Businessman & Parent',
-      quote: 'My son went through Pleasantview from early primary all the way through, and I am immensely proud of the institution. I highly recommend it to any parent seeking true excellence.'
+      quote: 'My son went through Pleasant View from early primary all the way through, and I am immensely proud of the institution. I highly recommend it to any parent seeking true excellence.'
     }
   ];
 
@@ -137,55 +138,27 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* PLEASANTVIEW AT A GLANCE (The Dunham School & The Walker School Signature Metrics) */}
-      <section className="at-a-glance-section" aria-label="Pleasantview at a Glance">
+      {/* PLEASANT VIEW AT A GLANCE (The Dunham School & The Walker School Signature Metrics) */}
+      <section className="at-a-glance-section" aria-label="Pleasant View at a Glance">
         <div className="wrapper">
           <div style={{ textAlign: 'center', marginBottom: '35px' }}>
             <span style={{ color: 'var(--gold-accent)', fontSize: '12px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase' }}>
               DISTINCTION BY NUMBERS
             </span>
-            <h2 style={{ color: '#ffffff', fontSize: 'clamp(26px, 2.8vw, 36px)', fontFamily: 'Cinzel, serif', margin: '6px 0 0' }}>
-              Pleasantview at a Glance
+            <h2 style={{ color: '#ffffff', fontSize: 'clamp(26px, 2.8vw, 36px)', fontFamily: 'Cinzel, serif', margin: '6px 0 0', textTransform: 'uppercase' }}>
+              PLEASANT VIEW AT A GLANCE
             </h2>
             <div className="gold-divider" style={{ margin: '12px auto' }} />
           </div>
 
           <div className="at-a-glance-grid">
-            <div className="at-a-glance-card">
-              <div className="stat-num">24+</div>
-              <div className="stat-label">Years of Excellence</div>
-              <div className="stat-desc">Est. 1998 in Githunguri, Kiambu</div>
-            </div>
-
-            <div className="at-a-glance-card">
-              <div className="stat-num">EE &amp; ME1</div>
-              <div className="stat-label">KPSEA &amp; KJSEA Average</div>
-              <div className="stat-desc">Exceeding Expectations &amp; Level 1 Distinction</div>
-            </div>
-
-            <div className="at-a-glance-card">
-              <div className="stat-num">{seniorInfo.exam} B+</div>
-              <div className="stat-label">Senior School Transition</div>
-              <div className="stat-desc">{seniorInfo.subtext}</div>
-            </div>
-
-            <div className="at-a-glance-card">
-              <div className="stat-num">1:20</div>
-              <div className="stat-label">Teacher-Student Ratio</div>
-              <div className="stat-desc">Personalized CBC Competency Coaching</div>
-            </div>
-
-            <div className="at-a-glance-card">
-              <div className="stat-num">600+</div>
-              <div className="stat-label">Boarding Scholars</div>
-              <div className="stat-desc">Loving Pastoral Care from Grade 4+</div>
-            </div>
-
-            <div className="at-a-glance-card">
-              <div className="stat-num">100%</div>
-              <div className="stat-label">TSC Certified Faculty</div>
-              <div className="stat-desc">Trained CBC Facilitators &amp; Mentors</div>
-            </div>
+            {glanceMetrics.map((m, idx) => (
+              <div key={m.id || idx} className="at-a-glance-card">
+                <div className="stat-num">{m.stat_value}</div>
+                <div className="stat-label">{m.stat_label}</div>
+                <div className="stat-desc">{m.stat_desc}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -338,7 +311,7 @@ export default async function Home() {
                     <Link href={`/s/${s.slug}`} className="button button-primary" style={{ flex: 1, padding: '8px', fontSize: '12.5px', textAlign: 'center' }}>
                       Explore Campus
                     </Link>
-                    <Link href={`/s/${s.slug}/contact`} className="button button-gold" style={{ padding: '8px 12px', fontSize: '12.5px' }}>
+                    <Link href={`/contact?school=${s.slug}#visit`} className="button button-gold" style={{ padding: '8px 12px', fontSize: '12.5px' }}>
                       Apply
                     </Link>
                   </div>
@@ -450,7 +423,7 @@ export default async function Home() {
               <h5>WHAT&apos;S HAPPENING</h5>
               <h3>Latest News &amp; Stories</h3>
               <div className="line" />
-              <p>Stay informed with updates on examinations, co-curricular highlights, academic symposiums, and admissions across all Pleasantview campuses.</p>
+              <p>Stay informed with updates on examinations, co-curricular highlights, academic symposiums, and admissions across all Pleasant View campuses.</p>
               <Link className="button button-secondary" href="/news">
                 All News &amp; Updates
               </Link>
@@ -490,7 +463,7 @@ export default async function Home() {
         <div className="wrapper">
           <div className="testimonials-header">
             <h5>TESTIMONIALS &amp; TRUST</h5>
-            <h3>What Parents Say About Pleasantview</h3>
+            <h3>What Parents Say About Pleasant View</h3>
             <div className="gold-divider" />
           </div>
 

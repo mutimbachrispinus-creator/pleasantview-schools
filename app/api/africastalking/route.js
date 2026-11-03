@@ -73,7 +73,7 @@ export async function POST(req) {
 
     // 3. Outbound SMS dispatch
     const recipient = body.to || body.phone || body.phoneNumber;
-    const message = body.message || body.text || 'Welcome to Pleasantview Schools. Your admission request has been logged.';
+    const message = body.message || body.text || 'Welcome to Pleasant View Schools. Your admission request has been logged.';
 
     if (!recipient) {
       return NextResponse.json(

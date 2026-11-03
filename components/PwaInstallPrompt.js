@@ -96,7 +96,7 @@ export default function PwaInstallPrompt() {
 
       <div style={{ flex: 1, fontSize: '13px' }}>
         <strong style={{ display: 'block', fontSize: '14px', color: 'var(--gold-accent)' }}>
-          Install Pleasantview App
+          Install Pleasant View App
         </strong>
         <span>Add to home screen for instant portal access &amp; campus tours.</span>
       </div>

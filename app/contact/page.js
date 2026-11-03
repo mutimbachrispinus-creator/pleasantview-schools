@@ -4,7 +4,7 @@ import { book, enquire, sendDirectAdminSms } from '@/app/actions';
 import { schools, S } from '@/lib/db';
 
 export const metadata = {
-  title: 'Book a Campus Visit & Admissions Contact | Pleasant View Schools',
+  title: 'Book a Campus Visit & Admissions Contact',
   description: 'Schedule a walking campus tour, send a direct SMS to administration, or contact the Pleasant View Schools admissions desk in Githunguri, Kiambu County.'
 };
 
@@ -15,6 +15,7 @@ export default async function ContactPage({ searchParams }) {
   const isBooked = Boolean(sp.booked || sp.ok === 'visit');
   const isEnquirySent = Boolean(sp.ok && sp.ok !== 'visit');
   const isSmsSent = Boolean(sp.sms_sent);
+  const selectedBranch = sp.school || sp.branch || 'all';
   const schList = await schools();
   const st = await S();
 
@@ -24,7 +25,7 @@ export default async function ContactPage({ searchParams }) {
 
   return (
     <Page title="Admissions &amp; Campus Tours" subtitle="CONNECT WITH PLEASANT VIEW SCHOOLS">
-      <div className="wrapper" style={{ maxWidth: '1180px', margin: '0 auto', padding: '0 20px 60px' }}>
+      <div className="wrapper" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 15px 60px' }}>
         {/* SUCCESS NOTIFICATION TOAST */}
         {isBooked && (
           <div style={{
@@ -40,7 +41,7 @@ export default async function ContactPage({ searchParams }) {
             <i className="fa-solid fa-circle-check" style={{ fontSize: '42px', color: 'var(--gold-accent)', marginBottom: '12px' }} />
             <h3 style={{ color: '#ffffff', marginBottom: '8px', fontSize: '24px' }}>Campus Tour Booking Received!</h3>
             <p style={{ fontSize: '16px', maxWidth: '650px', margin: '0 auto', color: 'rgba(255,255,255,0.92)' }}>
-              Thank you for scheduling a visit to Pleasantview Schools. Our admissions secretary will contact you via SMS and phone to confirm your itinerary and meet you at the campus reception.
+              Thank you for scheduling a visit to Pleasant View Schools. Our admissions secretary will contact you via phone to confirm your itinerary and meet you at the campus reception.
             </p>
           </div>
         )}
@@ -78,9 +79,9 @@ export default async function ContactPage({ searchParams }) {
         )}
 
         {/* TWO-COLUMN LAYOUT: FORMS ON LEFT, CONTACT DETAILS & LOCATION ON RIGHT */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '40px' }}>
+        <div className="contact-split-grid">
           {/* COLUMN 1: INTERACTIVE BOOK CAMPUS TOUR & ENQUIRY FORMS */}
-          <div>
+          <div style={{ minWidth: 0 }}>
             {/* BOOK A CAMPUS TOUR CARD */}
             <div id="visit" className="custom-form" style={{
               background: '#ffffff',
@@ -88,7 +89,8 @@ export default async function ContactPage({ searchParams }) {
               borderRadius: '6px',
               boxShadow: '0 8px 30px rgba(0,0,0,0.06)',
               borderTop: '4px solid var(--gold-accent)',
-              marginBottom: '40px'
+              marginBottom: '40px',
+              maxWidth: '100%'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                 <i className="fa-solid fa-calendar-check" style={{ color: 'var(--gold-accent)', fontSize: '22px' }} />
@@ -104,11 +106,11 @@ export default async function ContactPage({ searchParams }) {
               <form action={book}>
                 <div className="form-group">
                   <label>Select School Division / Campus *</label>
-                  <select name="school" style={{ padding: '12px', fontSize: '14px', width: '100%', borderRadius: '4px', border: '1px solid #ccc' }}>
-                    <option value="all">Pleasantview Schools Main Campus (All Divisions)</option>
+                  <select name="school" defaultValue={selectedBranch} style={{ padding: '12px', fontSize: '14px', width: '100%', borderRadius: '4px', border: '1px solid #ccc', fontWeight: 600 }}>
+                    <option value="all">Pleasant View Schools Main Campus (All Divisions)</option>
                     {schList.map(s => (
                       <option key={s.id} value={s.slug}>
-                        {s.name} ({s.category || 'Division'})
+                        {s.name} ({s.category || 'Division'}) &bull; {s.level}
                       </option>
                     ))}
                   </select>
@@ -273,7 +275,7 @@ export default async function ContactPage({ searchParams }) {
           </div>
 
           {/* COLUMN 2: CAMPUS DIRECTORY, ADMISSIONS OFFICE, & SOCIAL LINKS */}
-          <div>
+          <div style={{ minWidth: 0 }}>
             {/* ADMISSIONS DESK DIRECTORY */}
             <div style={{
               background: 'linear-gradient(135deg, #8B1E2D, #1E232A)',
@@ -287,7 +289,7 @@ export default async function ContactPage({ searchParams }) {
                 DIRECT ADMISSIONS DESK
               </span>
               <h3 style={{ color: '#ffffff', fontSize: '24px', marginTop: '6px', marginBottom: '20px' }}>
-                Pleasantview Schools Main Reception
+                Pleasant View Schools Main Reception
               </h3>
 
               <div style={{ display: 'grid', gap: '20px' }}>

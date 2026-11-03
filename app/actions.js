@@ -11,7 +11,7 @@ export async function book(fd) {
   const b = Object.fromEntries(fd);
   const targetSchool = b.school && b.school !== '0' && b.school !== 'all' ? await getSchool(b.school) : null;
   const schoolId = targetSchool?.id || 0;
-  const schoolName = targetSchool?.name || 'Pleasantview Schools Main Campus';
+  const schoolName = targetSchool?.name || 'Pleasant View Schools Main Campus';
   const schoolEmail = targetSchool?.email || process.env.SCHOOL_EMAIL || 'info@pleasantview.sc.ke';
   const back = targetSchool ? `/s/${targetSchool.slug}/visit?ok=1` : '/contact?booked=1#visit';
 
@@ -31,9 +31,17 @@ export async function book(fd) {
       ...b,
       to: schoolEmail,
       subject: `[${schoolName}] Campus Tour Booking: ${b.name} (${b.visit_date})`,
-      text: `Visitor Name: ${b.name}\nPhone: ${b.phone}\nEmail: ${b.email}\nDate: ${b.visit_date}\nGuests: ${b.guests}\nSchool Division: ${schoolName}\nStudent Grade: ${b.grade || 'Not specified'}`,
-      sms: `Hi ${b.name}, your tour booking for ${schoolName} on ${b.visit_date} is confirmed. Our admissions team looks forward to hosting you.`
+      text: `Visitor Name: ${b.name}\nPhone: ${b.phone}\nEmail: ${b.email}\nDate: ${b.visit_date}\nGuests: ${b.guests}\nSchool Division: ${schoolName}\nStudent Grade: ${b.grade || 'Not specified'}`
     });
+
+    // Alert admin handsets of new tour booking via SMS
+    const settings = await S();
+    const rawAdminNumbers = String(settings.admin_sms_phone || process.env.ADMIN_SMS_PHONE || '+254711689913');
+    const adminNumbers = rawAdminNumbers.split(/[,;\n]+/).map(n => n.trim()).filter(Boolean);
+    const tourSms = `[Tour Booking] ${b.name} (${b.phone}) booked for ${schoolName} on ${b.visit_date} (${b.guests || 1} guests, Grade: ${b.grade || 'N/A'})`;
+    for (const num of adminNumbers) {
+      await sendSMS({ to: num, message: tourSms });
+    }
   } catch (err) {
     console.warn('[Notification Error]:', err.message);
   }
@@ -60,10 +68,20 @@ export async function enquire(fd) {
     await notify({
       ...b,
       to: s?.email || process.env.SCHOOL_EMAIL || 'info@pleasantview.sc.ke',
-      subject: `[${s?.name || 'Pleasantview Schools'}] Enquiry: ${b.name}`,
-      text: `${b.name}\n${b.phone}\n${b.email}\n\n${b.message}`,
-      sms: `Hi ${b.name}, we received your enquiry and our admissions desk will contact you shortly.`
+      subject: `[${s?.name || 'Pleasant View Schools'}] Enquiry: ${b.name}`,
+      text: `${b.name}\n${b.phone}\n${b.email}\n\n${b.message}`
     });
+
+    // Alert admin handsets of new admissions inquiry via SMS
+    const settings = await S();
+    const rawAdminNumbers = String(settings.admin_sms_phone || process.env.ADMIN_SMS_PHONE || '+254711689913');
+    const adminNumbers = rawAdminNumbers.split(/[,;\n]+/).map(n => n.trim()).filter(Boolean);
+    const enqSms = `[Admissions Enquiry] From: ${b.name} (${b.phone}) for ${s?.name || 'General'}: "${(b.message || '').slice(0, 100)}"`;
+    for (const num of adminNumbers) {
+      try {
+        await sendSMS({ to: num, message: enqSms });
+      } catch {}
+    }
   } catch (err) {
     console.warn('[Notification Error]:', err.message);
   }
@@ -94,7 +112,7 @@ export async function applyJob(fd) {
       to: process.env.SCHOOL_EMAIL || 'info@pleasantview.sc.ke',
       subject: `[Career Application] ${jobTitle}: ${name}`,
       text: `Applicant: ${name}\nEmail: ${email}\nPhone: ${phone}\nPosition: ${jobTitle}\nExperience: ${experience}\nCover Letter:\n${coverLetter}`,
-      sms: `Hi ${name}, Pleasantview Schools HR has received your application for ${jobTitle}. We will review your profile shortly.`
+      sms: `Hi ${name}, Pleasant View Schools HR has received your application for ${jobTitle}. We will review your profile shortly.`
     });
   } catch (err) {
     console.warn('[Notification Error]:', err.message);
@@ -116,24 +134,27 @@ export async function sendDirectAdminSms(fd) {
   if (!visitorPhone || !message) redirect(back);
 
   const settings = await S();
-  const adminPhone = settings.admin_sms_phone || process.env.ADMIN_SMS_PHONE || process.env.SCHOOL_PHONE || '+254711689913';
+  const rawAdminNumbers = String(settings.admin_sms_phone || process.env.ADMIN_SMS_PHONE || process.env.SCHOOL_PHONE || '+254711689913');
+  const adminNumbers = rawAdminNumbers.split(/[,;\n]+/).map(n => n.trim()).filter(Boolean);
 
-  // 1. Send SMS directly to Admin's mobile phone via Africa's Talking
-  const smsBody = `[PV Web SMS] ${name} (${visitorPhone}): ${message}`;
-  try {
-    await sendSMS({
-      to: adminPhone,
-      message: smsBody
-    });
-  } catch (err) {
-    console.warn('[Direct SMS Error]:', err.message);
+  // 1. Send SMS directly to Admin mobile phones via Africa's Talking
+  const smsBody = `[PV Visitor SMS] ${name} (${visitorPhone}): ${message}`;
+  for (const num of adminNumbers) {
+    try {
+      await sendSMS({
+        to: num,
+        message: smsBody
+      });
+    } catch (err) {
+      console.warn('[Direct SMS Error]:', err.message);
+    }
   }
 
   // 2. Record in inbound_sms database table
   try {
     await q('INSERT INTO inbound_sms(sender, receiver, text, status) VALUES(?,?,?,?)', [
       visitorPhone,
-      adminPhone,
+      adminNumbers[0] || '+254711689913',
       message,
       'received'
     ]);
@@ -145,7 +166,7 @@ export async function sendDirectAdminSms(fd) {
       'sms',
       'inbound',
       visitorPhone,
-      adminPhone,
+      adminNumbers.join(', '),
       message,
       'received'
     ]);

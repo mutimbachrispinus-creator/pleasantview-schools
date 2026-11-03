@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { getQuickLinks } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Quick Links | Pleasantview Schools' };
+export const metadata = { title: 'Quick Links & Resources' };
 
 export default async function QuickLinksPage() {
   const quickLinks = await getQuickLinks();
@@ -16,7 +16,7 @@ export default async function QuickLinksPage() {
     >
       <div className="quick-link-content">
         <span className="lead-badge">ESSENTIAL RESOURCES</span>
-        <h2>Pleasantview Schools &ndash; Quick Links Hub</h2>
+        <h2>Pleasant View Schools &ndash; Quick Links Hub</h2>
         <div className="gold-divider" style={{ marginLeft: 0 }} />
 
         <p className="lead" style={{ fontSize: '17px', color: '#444', lineHeight: 1.7, marginBottom: '25px' }}>

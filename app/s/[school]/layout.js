@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 export async function generateMetadata({ params }) {
   const s = await getSchool((await params).school);
   return {
-    title: s ? `${s.name} (${s.category || 'School'}) | Pleasantview Schools` : 'School Division'
+    title: s ? `${s.name} (${s.category || 'School'})` : 'School Division'
   };
 }
 
@@ -18,13 +18,13 @@ export default async function SchoolLayout({ children, params }) {
 
   return (
     <div>
-      <div className="school-subbar" style={{ backgroundColor: s.color || '#8B1E2D' }}>
+      <div className="school-subbar" style={{ backgroundColor: '#8B1E2D' }}>
         <div className="wrapper">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ background: 'rgba(255,255,255,0.2)', padding: '3px 8px', borderRadius: '3px', fontSize: '11px', fontWeight: 800, letterSpacing: '1px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <span style={{ background: 'rgba(255,255,255,0.22)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 800, letterSpacing: '1px', color: '#fff' }}>
               {s.category || 'DIVISION'}
             </span>
-            <h4>{s.name}</h4>
+            <h4 style={{ margin: 0, color: '#ffffff', fontSize: '17px', fontWeight: 700 }}>{s.name}</h4>
           </div>
           <ul className="school-subbar-links">
             {[

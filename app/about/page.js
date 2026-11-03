@@ -3,14 +3,14 @@ import Link from 'next/link';
 import { S } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'About Us | Pleasantview Schools' };
+export const metadata = { title: 'About Our Heritage, Mission & Christian Ethos' };
 
 export default async function About() {
   const s = await S();
 
   return (
     <Page
-      title="About Pleasantview Schools"
+      title="About Pleasant View Schools"
       subtitle="OUR HERITAGE & VISION"
       image="/images/banner_3_a.webp"
     >
@@ -19,7 +19,7 @@ export default async function About() {
       <div className="gold-divider" style={{ marginLeft: 0 }} />
 
       <p style={{ fontSize: '18px', lineHeight: 1.8, marginBottom: '25px', color: '#333' }}>
-        Founded in 1998, Pleasantview Schools has grown from a visionary primary institution into one of the most respected private Christian-ethos day and boarding school networks in Kenya. Situated amidst the scenic, peaceful highlands of Githunguri, Komothai Subcounty, Kiambu County, our campuses provide a serene sanctuary where learners thrive intellectually, spiritually, and socially.
+        Founded in 1998, Pleasant View Schools has grown from a visionary primary institution into one of the most respected private Christian-ethos day and boarding school networks in Kenya. Situated amidst the scenic, peaceful highlands of Githunguri, Komothai Subcounty, Kiambu County, our campuses provide a serene sanctuary where learners thrive intellectually, spiritually, and socially.
       </p>
 
       <div style={{ background: 'var(--soft-bg)', padding: '30px', borderRadius: '6px', borderLeft: '4px solid var(--primary-navy)', margin: '30px 0' }}>
@@ -54,7 +54,7 @@ export default async function About() {
       {/* CBC / CBE TRANSITION & STEM */}
       <h3 id="cbc" style={{ marginTop: '45px', marginBottom: '15px' }}>Transition to Competency Based Curriculum (CBC / CBE)</h3>
       <p style={{ lineHeight: 1.85, fontSize: '16px', marginBottom: '20px', color: '#444' }}>
-        Pleasantview has seamlessly pioneered Kenya’s Competency Based Education framework across Early Years, Primary, and Junior Secondary (JSS) levels. With fully equipped Pre-Technical, Integrated Science, Agriculture, and Digital STEM hubs, our learners transition from theoretical rote memorization into real-world innovation, scientific inquiry, and ethical problem solving.
+        Pleasant View has seamlessly pioneered Kenya’s Competency Based Education framework across Early Years, Primary, and Junior Secondary (JSS) levels. With fully equipped Pre-Technical, Integrated Science, Agriculture, and Digital STEM hubs, our learners transition from theoretical rote memorization into real-world innovation, scientific inquiry, and ethical problem solving.
       </p>
 
       {/* CHRISTIAN ETHOS */}
@@ -67,7 +67,7 @@ export default async function About() {
       <h3 id="grounds-accommodation" style={{ marginTop: '45px', marginBottom: '15px' }}>Grounds, Boarding &amp; Modern Accommodation</h3>
       <div id="boarding">
         <p style={{ lineHeight: 1.85, fontSize: '16px', marginBottom: '20px', color: '#444' }}>
-          Spread across scenic, serene acreage in Githunguri, Pleasantview offers modern boarding dormitories from Grade 4 upwards. Resident houseparents, dedicated matrons, 24/7 security, hot water showers, and nutritious dining ensure every child feels secure, comfortable, and cherished in a home-away-from-home setting.
+          Spread across scenic, serene acreage in Githunguri, Pleasant View offers modern boarding dormitories from Grade 4 upwards. Resident houseparents, dedicated matrons, 24/7 security, hot water showers, and nutritious dining ensure every child feels secure, comfortable, and cherished in a home-away-from-home setting.
         </p>
       </div>
 
@@ -75,7 +75,7 @@ export default async function About() {
       <h3 id="policies" style={{ marginTop: '45px', marginBottom: '15px' }}>School Policies, Inspection Reports &amp; Safeguarding</h3>
       <div style={{ background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '24px', margin: '20px 0 35px' }}>
         <p style={{ fontSize: '15px', color: '#555', lineHeight: 1.7, margin: '0 0 15px' }}>
-          Pleasantview maintains strict adherence to Ministry of Education guidelines and international best practices for child safeguarding, health, sanitation, and data protection.
+          Pleasant View maintains strict adherence to Ministry of Education guidelines and international best practices for child safeguarding, health, sanitation, and data protection.
         </p>
         <ul style={{ lineHeight: 2, color: '#444', paddingLeft: '20px' }}>
           <li><i className="fa-solid fa-file-pdf" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} /> <strong>Ministry Quality Assurance &amp; Standards Report:</strong> Rated Exemplary</li>

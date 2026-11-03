@@ -31,10 +31,16 @@ export async function login(fd) {
     if (isMaster && (pw === masterPassword || eq(pw, masterPassword))) {
       await startSession(0);
     } else {
-      // Dynamic departmental email accounts (support@, info@, etc.)
-      const [acc] = await q('SELECT * FROM email_accounts WHERE lower(email)=? AND is_active=1 AND can_login=1', [em]);
-      if (acc && acc.password && (pw === acc.password.trim() || eq(pw, acc.password.trim()))) {
-        await startSession(0);
+      // Dynamic admin accounts from admins table
+      const [adm] = await q('SELECT * FROM admins WHERE lower(email)=? AND is_active=1', [em]);
+      if (adm && adm.password && (pw === adm.password.trim() || eq(pw, adm.password.trim()))) {
+        await startSession(adm.school_id || 0);
+      } else {
+        // Dynamic departmental email accounts (support@, info@, etc.)
+        const [acc] = await q('SELECT * FROM email_accounts WHERE lower(email)=? AND is_active=1 AND can_login=1', [em]);
+        if (acc && acc.password && (pw === acc.password.trim() || eq(pw, acc.password.trim()))) {
+          await startSession(0);
+        }
       }
     }
   } else {
@@ -374,8 +380,8 @@ export async function testResend(fd) {
   const to = String(fd.get('email') || process.env.SCHOOL_EMAIL || 'info@pleasantview.sc.ke');
   const res = await sendEmail({
     to,
-    subject: 'Pleasantview Schools Resend Gateway Verification',
-    text: 'This is a test verification email from Pleasantview Schools via Resend. The gateway route is operational.'
+    subject: 'Pleasant View Schools Resend Gateway Verification',
+    text: 'This is a test verification email from Pleasant View Schools via Resend. The gateway route is operational.'
   });
   done();
   return res;
@@ -386,7 +392,7 @@ export async function testAfricasTalking(fd) {
   const phone = String(fd.get('phone') || process.env.SCHOOL_PHONE || '+254711689913');
   const res = await sendSMS({
     to: phone,
-    message: 'Pleasantview Schools: Africa\'s Talking gateway verification message. Service operational.'
+    message: 'Pleasant View Schools: Africa\'s Talking gateway verification message. Service operational.'
   });
   done();
   return res;
@@ -410,7 +416,7 @@ export async function replyEmail(fd) {
   await A();
   const to = String(fd.get('to') || '').trim();
   const fromAccount = String(fd.get('from_account') || '').trim();
-  const subject = String(fd.get('subject') || 'Re: Pleasantview Schools Admissions').trim();
+  const subject = String(fd.get('subject') || 'Re: Pleasant View Schools Admissions').trim();
   const msg = String(fd.get('message') || '').trim();
   const emailId = Number(fd.get('email_id'));
   if (!to || !msg) return;
@@ -419,7 +425,7 @@ export async function replyEmail(fd) {
     to,
     subject,
     text: msg,
-    ...(fromAccount ? { from: `Pleasantview Schools <${fromAccount}>` } : {})
+    ...(fromAccount ? { from: `Pleasant View Schools <${fromAccount}>` } : {})
   });
   if (emailId) {
     await q('UPDATE inbound_emails SET status="replied" WHERE id=?', [emailId]);
@@ -577,5 +583,90 @@ export async function toggleQuickLink(fd) {
   if (id) {
     await q('UPDATE quick_links SET is_active=? WHERE id=?', [isActive, id]);
   }
+  done();
+}
+
+export async function createAdminAccount(fd) {
+  await C();
+  const name = String(fd.get('name') || '').trim();
+  const email = String(fd.get('email') || '').trim().toLowerCase();
+  const password = String(fd.get('password') || 'pleasantview2026').trim();
+  const role = String(fd.get('role') || 'Super Administrator').trim();
+  const schoolId = Number(fd.get('school_id')) || 0;
+  const schoolName = String(fd.get('school_name') || 'All Campuses').trim();
+  const phone = String(fd.get('phone') || '').trim();
+
+  if (!name || !email || !password) return;
+
+  await q(
+    'INSERT INTO admins(name, email, password, role, school_id, school_name, phone, is_active) VALUES(?,?,?,?,?,?,?,1)',
+    [name, email, password, role, schoolId, schoolName, phone]
+  );
+  done();
+}
+
+export async function deleteAdminAccount(fd) {
+  await C();
+  const id = Number(fd.get('id'));
+  if (id) {
+    await q('DELETE FROM admins WHERE id=?', [id]);
+  }
+  done();
+}
+
+export async function saveGlanceMetrics(fd) {
+  await A();
+  for (let i = 1; i <= 6; i++) {
+    const val = String(fd.get(`metric_${i}_val`) || '').trim();
+    const label = String(fd.get(`metric_${i}_label`) || '').trim();
+    const desc = String(fd.get(`metric_${i}_desc`) || '').trim();
+    const id = Number(fd.get(`metric_${i}_id`)) || i;
+
+    if (val && label) {
+      await q(
+        'INSERT INTO glance_metrics(id, stat_value, stat_label, stat_desc, sort) VALUES(?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET stat_value=excluded.stat_value, stat_label=excluded.stat_label, stat_desc=excluded.stat_desc',
+        [id, val, label, desc, i]
+      );
+    }
+  }
+  done();
+}
+
+export async function addSchoolLifePhoto(fd) {
+  await A();
+  const sc = await A();
+  const category = String(fd.get('category') || 'Academic & STEM').trim();
+  const title = String(fd.get('title') || '').trim();
+  const caption = String(fd.get('caption') || '').trim();
+  const uploaded = await saveImg(fd.get('image_file'));
+  const chosenUrl = String(fd.get('image_url') || '').trim();
+  const image = uploaded || chosenUrl;
+  const schoolId = sid(fd, sc);
+
+  if (!image) return;
+
+  await q(
+    'INSERT INTO photos(school_id, category, image, title, caption) VALUES(?,?,?,?,?)',
+    [schoolId, category, image, title, caption]
+  );
+  done();
+}
+
+export async function delPhoto(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  if (id) {
+    await q('DELETE FROM photos WHERE id=?', [id]);
+  }
+  done();
+}
+
+export async function saveAdminSmsSettings(fd) {
+  await C();
+  const numbers = String(fd.get('admin_sms_phone') || '+254 711 689 913').trim();
+  await q(
+    'INSERT INTO settings(k, v) VALUES(?, ?) ON CONFLICT(k) DO UPDATE SET v=excluded.v',
+    ['admin_sms_phone', numbers]
+  );
   done();
 }

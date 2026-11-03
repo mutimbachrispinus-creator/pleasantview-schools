@@ -4,8 +4,8 @@ import { getJobs } from '@/lib/db';
 import { applyJob } from '@/app/actions';
 
 export const metadata = {
-  title: 'Working at Pleasantview | Careers & Opportunities',
-  description: 'Join the distinguished teaching and administrative faculty at Pleasantview Schools in Githunguri, Kiambu County.'
+  title: 'Working at Pleasant View | Careers & Vacancies',
+  description: 'Join the distinguished teaching and administrative faculty at Pleasant View Schools in Githunguri, Kiambu County.'
 };
 
 export const dynamic = 'force-dynamic';
@@ -16,7 +16,7 @@ export default async function CareersPage({ searchParams }) {
   const jobsList = await getJobs();
 
   return (
-    <Page title="Working at Pleasantview" subtitle="CAREERS &amp; FACULTY EXCELLENCE">
+    <Page title="Working at Pleasant View" subtitle="CAREERS &amp; FACULTY EXCELLENCE">
       <div className="wrapper" style={{ maxWidth: '1140px', margin: '0 auto', padding: '0 20px 60px' }}>
         {/* SUCCESS NOTIFICATION */}
         {isApplied && (
@@ -33,7 +33,7 @@ export default async function CareersPage({ searchParams }) {
             <i className="fa-solid fa-circle-check" style={{ fontSize: '42px', color: 'var(--gold-accent)', marginBottom: '12px' }} />
             <h3 style={{ color: '#ffffff', marginBottom: '8px', fontSize: '24px' }}>Application Submitted Successfully!</h3>
             <p style={{ fontSize: '16px', maxWidth: '650px', margin: '0 auto', color: 'rgba(255,255,255,0.92)' }}>
-              Thank you for applying to join the Pleasantview Schools team. Our Human Resources and Academic Leadership Committee will review your qualifications and contact shortlisted candidates directly.
+              Thank you for applying to join the Pleasant View Schools team. Our Human Resources and Academic Leadership Committee will review your qualifications and contact shortlisted candidates directly.
             </p>
           </div>
         )}
@@ -56,7 +56,7 @@ export default async function CareersPage({ searchParams }) {
               Inspire the Leaders of Tomorrow
             </h2>
             <p style={{ fontSize: '16.5px', lineHeight: 1.7, color: 'rgba(255,255,255,0.9)' }}>
-              At Pleasantview Schools, we believe an exceptional education begins with exceptional people. We foster an uplifting, collegiate work culture with continuous professional development, competitive compensation, and a shared commitment to Christian character and academic victory.
+              At Pleasant View Schools, we believe an exceptional education begins with exceptional people. We foster an uplifting, collegiate work culture with continuous professional development, competitive compensation, and a shared commitment to Christian character and academic victory.
             </p>
             <div style={{ display: 'flex', gap: '25px', marginTop: '25px', flexWrap: 'wrap' }}>
               <div>
@@ -199,7 +199,7 @@ export default async function CareersPage({ searchParams }) {
                         <textarea
                           name="cover_letter"
                           rows={4}
-                          placeholder="Summarize your academic qualifications, TSC registration number (if teacher), leadership background, and why you wish to serve at Pleasantview Schools..."
+                          placeholder="Summarize your academic qualifications, TSC registration number (if teacher), leadership background, and why you wish to serve at Pleasant View Schools..."
                           required
                           style={{ padding: '10px' }}
                         />

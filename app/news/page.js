@@ -3,7 +3,7 @@ import Page from '@/components/Page';
 import { q } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'News & Updates | Pleasantview Schools' };
+export const metadata = { title: 'News & Updates' };
 
 export default async function News() {
   const posts = await q('SELECT p.*, s.name sname FROM posts p LEFT JOIN schools s ON s.id=p.school_id ORDER BY p.id DESC');

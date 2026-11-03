@@ -1,7 +1,7 @@
 import Form from '@/components/Form';
 import { enquire } from '@/app/actions';
 
-export const metadata = { title: 'Contact Division | Pleasantview Schools' };
+export const metadata = { title: 'Contact Division Desk' };
 
 export default async function P({ params, searchParams }) {
   const { school } = await params;
