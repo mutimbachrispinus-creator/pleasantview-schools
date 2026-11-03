@@ -2,13 +2,42 @@ import Link from 'next/link';
 import Slider from '@/components/Slider';
 import VmvSlideshow from '@/components/VmvSlideshow';
 import VideoShowcase from '@/components/VideoShowcase';
-import { q, S, schools, getVideos, getLeadershipMessages, getQuickLinks, getSeniorAssessmentInfo, getGlanceMetrics } from '@/lib/db';
+import {
+  q,
+  S,
+  schools,
+  getVideos,
+  getLeadershipMessages,
+  getQuickLinks,
+  getSeniorAssessmentInfo,
+  getGlanceMetrics,
+  getParentTestimonials,
+  getLearnerTestimonials,
+  getAlumniStories,
+  getEvents
+} from '@/lib/db';
+import { submitParentReview } from '@/app/actions';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Home() {
+export default async function Home({ searchParams }) {
+  const sp = await searchParams;
+  const isReviewSubmitted = Boolean(sp?.review_submitted);
   const seniorInfo = getSeniorAssessmentInfo();
-  const [hero, news, sch, st, vids, leadMessages, quickLinks, glanceMetrics] = await Promise.all([
+  const [
+    hero,
+    news,
+    sch,
+    st,
+    vids,
+    leadMessages,
+    quickLinks,
+    glanceMetrics,
+    approvedTestimonials,
+    learnerVoices,
+    alumniStories,
+    events
+  ] = await Promise.all([
     q('SELECT * FROM hero WHERE school_id=0 ORDER BY sort ASC, id ASC'),
     q('SELECT p.*, s.name sname FROM posts p LEFT JOIN schools s ON s.id=p.school_id ORDER BY p.id DESC LIMIT 3'),
     schools(),
@@ -16,7 +45,11 @@ export default async function Home() {
     getVideos(0),
     getLeadershipMessages(0),
     getQuickLinks(),
-    getGlanceMetrics()
+    getGlanceMetrics(),
+    getParentTestimonials('approved'),
+    getLearnerTestimonials(),
+    getAlumniStories(true),
+    getEvents(0)
   ]);
 
   const slides = hero.length
@@ -68,24 +101,6 @@ export default async function Home() {
     message: 'Welcome to Pleasant View Schools. For over two decades, our community has stood as a beacon of academic excellence and character development in Kiambu County. We believe that true education nurtures the mind while fortifying the soul. Whether in our early learning centre, thriving primary school, modern Junior Secondary (JSS), or distinguished Senior School, we provide state-of-the-art science laboratories, extensive transport coverage, and world-class pastoral boarding.',
     image: '/images/banner_3_a.webp'
   };
-
-  const testimonials = [
-    {
-      name: 'Caroline Mburu',
-      role: 'Lawyer & Pleasant View Parent',
-      quote: 'This school is good and I am very happy with it. They have all the modern facilities that pupils need and demonstrate deep pastoral responsibility for every child’s growth.'
-    },
-    {
-      name: 'Wilson Solonka',
-      role: 'Civil Engineer & Parent',
-      quote: 'The final processed product from Pleasant View Schools is Pretty Pleasant. My niece and nephew are already there and their academic confidence and discipline are outstanding.'
-    },
-    {
-      name: 'Samuel Karonjo',
-      role: 'Businessman & Parent',
-      quote: 'My son went through Pleasant View from early primary all the way through, and I am immensely proud of the institution. I highly recommend it to any parent seeking true excellence.'
-    }
-  ];
 
   return (
     <>
@@ -458,27 +473,324 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* TESTIMONIALS */}
-      <section className="testimonials-section">
+      {/* UPCOMING CALENDAR EVENTS & ANNOUNCEMENTS (Set by Admin) */}
+      <section className="events-calendar-section" id="events" style={{ background: '#ffffff', padding: '75px 0', borderTop: '1px solid #e2e8f0' }}>
         <div className="wrapper">
-          <div className="testimonials-header">
-            <h5>TESTIMONIALS &amp; TRUST</h5>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '35px', flexWrap: 'wrap', gap: '15px' }} className="reveal-on-scroll">
+            <div>
+              <span className="lead-badge" style={{ color: 'var(--primary-red)' }}>DATES FOR YOUR DIARY</span>
+              <h2 style={{ margin: '6px 0 0', color: 'var(--primary-navy)' }}>Upcoming Events &amp; Announcements</h2>
+              <div className="gold-divider" style={{ marginLeft: 0 }} />
+            </div>
+            <Link href="/quick-links/term-dates" className="button button-tertiary" style={{ padding: '8px 18px', fontSize: '13px' }}>
+              Full Term Calendar &amp; VISOs &rarr;
+            </Link>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '22px' }}>
+            {events.slice(0, 4).map((ev, idx) => {
+              const d = new Date(ev.event_date);
+              const day = !isNaN(d.getDate()) ? String(d.getDate()).padStart(2, '0') : '15';
+              const month = !isNaN(d.getMonth()) ? d.toLocaleString('en-US', { month: 'short' }).toUpperCase() : 'NOV';
+
+              return (
+                <div
+                  key={ev.id || idx}
+                  className={`reveal-on-scroll reveal-delay-${(idx % 4) + 1}`}
+                  style={{
+                    background: 'var(--soft-bg)',
+                    borderRadius: '8px',
+                    border: '1px solid #dde2ec',
+                    padding: '24px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    boxShadow: '0 4px 18px rgba(0,0,0,0.03)',
+                    transition: 'transform 0.25s ease, box-shadow 0.25s ease'
+                  }}
+                >
+                  <div>
+                    {/* DATE BLOCK & CATEGORY */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
+                      <div style={{
+                        width: '56px',
+                        height: '60px',
+                        background: 'linear-gradient(135deg, var(--primary-red), var(--primary-navy))',
+                        color: '#ffffff',
+                        borderRadius: '6px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        boxShadow: '0 4px 12px rgba(139,30,45,0.22)'
+                      }}>
+                        <span style={{ fontSize: '20px', fontWeight: 800, lineHeight: 1 }}>{day}</span>
+                        <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '1px', marginTop: '2px' }}>{month}</span>
+                      </div>
+                      <div>
+                        <span style={{
+                          background: 'rgba(5,40,107,0.08)',
+                          color: 'var(--primary-navy)',
+                          padding: '3px 8px',
+                          borderRadius: '3px',
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          textTransform: 'uppercase'
+                        }}>
+                          {ev.category}
+                        </span>
+                        <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+                          <i className="fa-regular fa-clock" style={{ marginRight: '4px' }} />
+                          {ev.event_time}
+                        </div>
+                      </div>
+                    </div>
+
+                    <h4 style={{ fontSize: '17px', color: 'var(--primary-navy)', margin: '0 0 8px', lineHeight: 1.4 }}>
+                      {ev.title}
+                    </h4>
+
+                    {ev.description && (
+                      <p style={{ fontSize: '13.5px', color: '#555', lineHeight: 1.55, margin: '0 0 12px' }}>
+                        {ev.description}
+                      </p>
+                    )}
+                  </div>
+
+                  <div style={{ paddingTop: '12px', borderTop: '1px dashed #d5dce8', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px', color: '#777' }}>
+                    <span>
+                      <i className="fa-solid fa-location-dot" style={{ marginRight: '5px', color: 'var(--primary-red)' }} />
+                      {ev.location ? ev.location.slice(0, 24) + '...' : 'Main Campus'}
+                    </span>
+                    <span style={{ fontWeight: 600, color: 'var(--primary-navy)' }}>
+                      {ev.school_name || 'All Campuses'}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* 1. TESTIMONIALS & TRUST (APPROVED PARENT REVIEWS) */}
+      <section className="testimonials-section" id="parent-reviews">
+        <div className="wrapper">
+          {/* TOAST ON SUCCESSFUL REVIEW SUBMISSION */}
+          {isReviewSubmitted && (
+            <div style={{
+              background: '#d4edda',
+              color: '#155724',
+              borderRadius: '8px',
+              padding: '24px',
+              marginBottom: '35px',
+              borderLeft: '6px solid #28a745',
+              textAlign: 'center',
+              boxShadow: '0 6px 20px rgba(0,0,0,0.06)'
+            }}>
+              <i className="fa-solid fa-circle-check" style={{ fontSize: '36px', color: '#28a745', marginBottom: '8px' }} />
+              <h3 style={{ margin: '0 0 6px', fontSize: '20px' }}>Review Submitted Successfully!</h3>
+              <p style={{ margin: 0, fontSize: '15px' }}>
+                Thank you for your feedback! Your review has been forwarded to the General School Administrator for moderation and will appear on the landing page once approved.
+              </p>
+            </div>
+          )}
+
+          <div className="testimonials-header reveal-on-scroll">
+            <h5>TESTIMONIALS &amp; PARENT VOICES</h5>
             <h3>What Parents Say About Pleasant View</h3>
             <div className="gold-divider" />
+            <p style={{ maxWidth: '680px', margin: '10px auto 0', color: '#666', fontSize: '15px' }}>
+              Real perspectives from our parent community across our Early Learning, Primary, Junior Secondary (JSS), and Senior High School divisions.
+            </p>
           </div>
 
           <div className="testimonials-grid">
-            {testimonials.map(t => (
-              <div key={t.name} className="testimonial-card">
+            {approvedTestimonials.map((t, idx) => (
+              <div key={t.id || t.parent_name || idx} className={`testimonial-card reveal-on-scroll reveal-delay-${(idx % 3) + 1}`}>
                 <div>
-                  <div className="quote-icon"><i className="fa-solid fa-quote-left" /></div>
-                  <p className="testimonial-text">&ldquo;{t.quote}&rdquo;</p>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <div className="quote-icon"><i className="fa-solid fa-quote-left" /></div>
+                    <div style={{ color: 'var(--gold-accent)', fontSize: '15px' }}>
+                      {'★'.repeat(t.rating || 5)}
+                    </div>
+                  </div>
+                  <p className="testimonial-text">&ldquo;{t.comment}&rdquo;</p>
                 </div>
                 <div className="testimonial-author">
-                  <div className="author-avatar">{t.name.charAt(0)}</div>
+                  <div className="author-avatar">{t.parent_name ? t.parent_name.charAt(0) : 'P'}</div>
                   <div className="author-info">
-                    <h4>{t.name}</h4>
-                    <span>{t.role}</span>
+                    <h4>{t.parent_name}</h4>
+                    <span>{t.relationship || 'Parent'} &bull; {t.grade_or_division}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* PARENT COMMENT SUBMISSION FORM */}
+          <div className="reveal-on-scroll" style={{
+            marginTop: '50px',
+            background: '#ffffff',
+            borderRadius: '8px',
+            padding: '35px',
+            boxShadow: '0 6px 25px rgba(0,0,0,0.06)',
+            borderTop: '4px solid var(--gold-accent)',
+            maxWidth: '850px',
+            margin: '50px auto 0'
+          }}>
+            <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+              <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--gold-dark)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                SHARE YOUR PERSPECTIVE
+              </span>
+              <h4 style={{ fontSize: '22px', color: 'var(--primary-navy)', margin: '6px 0 8px' }}>
+                Are You a Pleasant View Parent or Guardian?
+              </h4>
+              <p style={{ fontSize: '14px', color: '#666', margin: 0 }}>
+                We welcome your reflections on your child&apos;s academic progress and boarding experience. Submissions are reviewed by the general school administrator before publication.
+              </p>
+            </div>
+
+            <form action={submitParentReview} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+              <div className="form-group">
+                <label>Parent / Guardian Full Name *</label>
+                <input name="parent_name" placeholder="e.g. Mrs. Jane Kimani" required />
+              </div>
+
+              <div className="form-group">
+                <label>Learner&apos;s Name (Optional)</label>
+                <input name="learner_name" placeholder="e.g. Samuel Kimani" />
+              </div>
+
+              <div className="form-group">
+                <label>Division &amp; Grade / Class *</label>
+                <input name="grade_or_division" placeholder="e.g. Grade 7 JSS or Form 2 Senior" required />
+              </div>
+
+              <div className="form-group">
+                <label>Rating (1 to 5 Stars) *</label>
+                <select name="rating" defaultValue="5">
+                  <option value="5">★★★★★ (5 Stars - Exceptional)</option>
+                  <option value="4">★★★★☆ (4 Stars - Highly Satisfied)</option>
+                  <option value="3">★★★☆☆ (3 Stars - Good)</option>
+                  <option value="2">★★☆☆☆ (2 Stars - Fair)</option>
+                  <option value="1">★☆☆☆☆ (1 Star - Needs Improvement)</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Phone Number (For verification)</label>
+                <input name="phone" placeholder="+254 711 000 000" />
+              </div>
+
+              <div className="form-group">
+                <label>Email Address</label>
+                <input name="email" type="email" placeholder="jane.kimani@example.com" />
+              </div>
+
+              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                <label>Your Comment / Review *</label>
+                <textarea
+                  name="comment"
+                  rows="3"
+                  placeholder="Tell us about the teaching, science laboratories, spiritual guidance, sports, or pastoral care..."
+                  required
+                />
+              </div>
+
+              <input name="website" className="hp" tabIndex="-1" autoComplete="off" style={{ display: 'none' }} />
+
+              <button
+                type="submit"
+                className="button button-gold"
+                style={{ gridColumn: '1 / -1', padding: '14px', fontSize: '15px', fontWeight: 800 }}
+              >
+                <i className="fa-solid fa-paper-plane" style={{ marginRight: '8px' }} /> Submit Review for Administrator Approval
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      {/* 2. EXISTING LEARNERS & STUDENT BODY VOICES (WITH PHOTOS) */}
+      <section className="student-voices-section" id="student-voices" style={{ background: '#f8fafc', padding: '80px 0', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
+        <div className="wrapper">
+          <div className="testimonials-header reveal-on-scroll">
+            <h5 style={{ color: 'var(--primary-red)' }}>SCHOLAR PERSPECTIVES &amp; DREAMS</h5>
+            <h3 style={{ color: 'var(--primary-navy)' }}>Voices from Our Student Body</h3>
+            <div className="gold-divider" />
+            <p style={{ maxWidth: '680px', margin: '10px auto 0', color: '#666', fontSize: '15px' }}>
+              Hear directly from our pupils and senior scholars about their discoveries in modern science laboratories, coding classes, and campus friendships.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: '25px', marginTop: '40px' }}>
+            {learnerVoices.map((l, idx) => (
+              <div
+                key={l.id || idx}
+                className={`reveal-on-scroll reveal-delay-${(idx % 3) + 1}`}
+                style={{
+                  background: '#ffffff',
+                  borderRadius: '10px',
+                  overflow: 'hidden',
+                  boxShadow: '0 6px 24px rgba(0,0,0,0.05)',
+                  border: '1px solid #e2e8f0',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+                }}
+              >
+                <div style={{
+                  height: '220px',
+                  backgroundImage: `url('${l.photo_url || '/images/girls_high_school3.webp'}')`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center top',
+                  position: 'relative'
+                }}>
+                  <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'linear-gradient(to top, rgba(7,28,61,0.85) 0%, transparent 60%)'
+                  }} />
+                  <span style={{
+                    position: 'absolute',
+                    top: '12px',
+                    left: '12px',
+                    background: 'var(--primary-red)',
+                    color: '#ffffff',
+                    padding: '4px 10px',
+                    borderRadius: '4px',
+                    fontSize: '11px',
+                    fontWeight: 800,
+                    letterSpacing: '0.5px'
+                  }}>
+                    {l.grade_or_class}
+                  </span>
+                  <div style={{ position: 'absolute', bottom: '12px', left: '16px', right: '16px' }}>
+                    <h4 style={{ color: '#ffffff', margin: 0, fontSize: '18px', fontWeight: 700 }}>{l.name}</h4>
+                    <span style={{ color: 'var(--gold-accent)', fontSize: '12.5px', fontWeight: 600 }}>{l.school_name}</span>
+                  </div>
+                </div>
+
+                <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <p style={{ fontSize: '14.5px', color: '#444', lineHeight: 1.65, fontStyle: 'italic', margin: '0 0 16px' }}>
+                    &ldquo;{l.comment}&rdquo;
+                  </p>
+
+                  <div style={{ paddingTop: '14px', borderTop: '1px solid #edf1f7', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                    {l.favorite_subject && (
+                      <span style={{ background: 'rgba(5,40,107,0.06)', color: 'var(--primary-navy)', padding: '4px 10px', borderRadius: '4px', fontSize: '12px', fontWeight: 600 }}>
+                        <i className="fa-solid fa-book-open" style={{ marginRight: '5px', color: 'var(--gold-accent)' }} />
+                        {l.favorite_subject}
+                      </span>
+                    )}
+                    {l.future_aspiration && (
+                      <span style={{ background: 'rgba(139,30,45,0.06)', color: 'var(--primary-red)', padding: '4px 10px', borderRadius: '4px', fontSize: '12px', fontWeight: 700 }}>
+                        <i className="fa-solid fa-compass" style={{ marginRight: '5px' }} />
+                        {l.future_aspiration}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -486,6 +798,115 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* 3. ALUMNI SUCCESS STORIES & TESTIMONIALS */}
+      {alumniStories.length > 0 && (
+        <section className="alumni-section" id="alumni" style={{ background: '#ffffff', padding: '80px 0' }}>
+          <div className="wrapper">
+            <div className="testimonials-header reveal-on-scroll">
+              <h5>OUR AIM IS VICTORY</h5>
+              <h3>Alumni Milestones &amp; Success Stories</h3>
+              <div className="gold-divider" />
+              <p style={{ maxWidth: '680px', margin: '10px auto 0', color: '#666', fontSize: '15px' }}>
+                Pleasant View alumni thrive across East Africa and globally in computer science, medicine, engineering, law, and entrepreneurship.
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '30px', marginTop: '40px' }}>
+              {alumniStories.map((a, idx) => (
+                <div
+                  key={a.id || idx}
+                  className={`reveal-on-scroll reveal-delay-${(idx % 2) + 1}`}
+                  style={{
+                    background: '#ffffff',
+                    borderRadius: '10px',
+                    border: '1px solid #dde2ec',
+                    boxShadow: '0 8px 30px rgba(0,0,0,0.06)',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column'
+                  }}
+                >
+                  <div style={{
+                    height: '220px',
+                    backgroundImage: `url('${a.image_url || '/images/girls_high_school3.webp'}')`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    position: 'relative'
+                  }}>
+                    <div style={{
+                      position: 'absolute',
+                      inset: 0,
+                      background: 'linear-gradient(to top, rgba(7,28,61,0.85) 0%, transparent 60%)'
+                    }} />
+                    <span style={{
+                      position: 'absolute',
+                      top: '12px',
+                      left: '12px',
+                      background: 'var(--gold-accent)',
+                      color: 'var(--primary-navy)',
+                      padding: '4px 10px',
+                      borderRadius: '4px',
+                      fontSize: '11px',
+                      fontWeight: 800,
+                      letterSpacing: '0.5px'
+                    }}>
+                      {a.grad_year}
+                    </span>
+                    <div style={{ position: 'absolute', bottom: '12px', left: '16px', right: '16px' }}>
+                      <h4 style={{ color: '#ffffff', margin: 0, fontSize: '19px', fontWeight: 700 }}>{a.name}</h4>
+                      <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: '13px' }}>{a.campus_division}</span>
+                    </div>
+                  </div>
+
+                  <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                      <div style={{ fontSize: '14px', color: 'var(--primary-red)', fontWeight: 700, marginBottom: '4px' }}>
+                        {a.current_role}
+                      </div>
+                      <div style={{ fontSize: '12.5px', color: '#666', marginBottom: '14px' }}>
+                        {a.university_or_company}
+                      </div>
+                      {a.quote && (
+                        <blockquote style={{
+                          margin: '0 0 14px',
+                          padding: '12px 14px',
+                          background: 'var(--soft-bg)',
+                          borderLeft: '4px solid var(--gold-accent)',
+                          fontStyle: 'italic',
+                          color: '#333',
+                          fontSize: '13.5px',
+                          lineHeight: 1.55,
+                          borderRadius: '4px'
+                        }}>
+                          &ldquo;{a.quote}&rdquo;
+                        </blockquote>
+                      )}
+                      <p style={{ fontSize: '14px', color: '#555', lineHeight: 1.65, margin: 0 }}>
+                        {a.story}
+                      </p>
+                    </div>
+
+                    {a.video_url && (
+                      <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid #edf1f7' }}>
+                        <a
+                          href={a.video_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="button button-gold"
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', fontSize: '12.5px' }}
+                        >
+                          <i className="fa-solid fa-play" /> Watch Video Story &rarr;
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* CAMPUS LIFE: TRANSPORT & BOARDING */}
       <section className="facilities-spotlight">

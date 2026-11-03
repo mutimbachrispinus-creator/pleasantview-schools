@@ -2,7 +2,7 @@
 import crypto from 'crypto';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
-import { q, saveImg, D, CATS, SF } from '@/lib/db';
+import { q, saveImg, saveVideo, D, CATS, SF } from '@/lib/db';
 import { getAdmin, eq, checkPw, hashPw, startSession, endSession, limited } from '@/lib/auth';
 import { sendEmail, sendSMS } from '@/lib/notify';
 
@@ -14,7 +14,14 @@ const A = async () => {
 const C = async () => {
   if (await A()) throw new Error('Central admin only');
 };
-const done = () => revalidatePath('/', 'layout');
+const done = () => {
+  try {
+    revalidatePath('/', 'layout');
+    revalidatePath('/about');
+    revalidatePath('/contact');
+    revalidatePath('/hidden-admin');
+  } catch {}
+};
 const sid = (fd, sc) => sc || +fd.get('school_id') || 0;
 const slugify = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const newKey = () => crypto.randomBytes(8).toString('hex');
@@ -126,7 +133,12 @@ export async function saveSchool(fd) {
 export async function addVideo(fd) {
   await A();
   const title = String(fd.get('title') || '').trim();
-  const youtubeUrl = String(fd.get('youtube_url') || '').trim();
+  let youtubeUrl = String(fd.get('youtube_url') || '').trim();
+  const videoFile = fd.get('video_file');
+  if (videoFile && videoFile.size > 0) {
+    const savedVid = await saveVideo(videoFile);
+    if (savedVid) youtubeUrl = savedVid;
+  }
   const category = String(fd.get('category') || 'Campus Tour').trim();
   const description = String(fd.get('description') || '').trim();
   const uploadedThumb = await saveImg(fd.get('thumbnail_file'));
@@ -668,5 +680,215 @@ export async function saveAdminSmsSettings(fd) {
     'INSERT INTO settings(k, v) VALUES(?, ?) ON CONFLICT(k) DO UPDATE SET v=excluded.v',
     ['admin_sms_phone', numbers]
   );
+  done();
+}
+
+export async function saveExamResult(fd) {
+  await A();
+  const sc = await A();
+  const id = Number(fd.get('id')) || 0;
+  const examCategory = String(fd.get('exam_category') || 'national').trim();
+  const schoolId = sid(fd, sc);
+  const schoolName = String(fd.get('school_name') || 'All Campuses').trim();
+  const examName = String(fd.get('exam_name') || '').trim();
+  const academicYear = String(fd.get('academic_year') || '2026').trim();
+  const cohortSize = String(fd.get('cohort_size') || '').trim();
+  const meanGrade = String(fd.get('mean_grade') || '').trim();
+  const performanceBreakdown = String(fd.get('performance_breakdown') || '').trim();
+  const topSubjects = String(fd.get('top_subjects') || '').trim();
+  const summaryNotes = String(fd.get('summary_notes') || '').trim();
+  const isPublished = fd.get('is_published') === '0' ? 0 : 1;
+  const sort = Number(fd.get('sort')) || 0;
+
+  if (!examName) return;
+
+  if (id > 0) {
+    await q(
+      'UPDATE exam_results SET exam_category=?, school_id=?, school_name=?, exam_name=?, academic_year=?, cohort_size=?, mean_grade=?, performance_breakdown=?, top_subjects=?, summary_notes=?, is_published=?, sort=? WHERE id=?',
+      [examCategory, schoolId, schoolName, examName, academicYear, cohortSize, meanGrade, performanceBreakdown, topSubjects, summaryNotes, isPublished, sort, id]
+    );
+  } else {
+    await q(
+      'INSERT INTO exam_results(exam_category, school_id, school_name, exam_name, academic_year, cohort_size, mean_grade, performance_breakdown, top_subjects, summary_notes, is_published, sort) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
+      [examCategory, schoolId, schoolName, examName, academicYear, cohortSize, meanGrade, performanceBreakdown, topSubjects, summaryNotes, isPublished, sort]
+    );
+  }
+  done();
+}
+
+export async function deleteExamResult(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  if (id) {
+    await q('DELETE FROM exam_results WHERE id=?', [id]);
+  }
+  done();
+}
+
+export async function approveTestimonial(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  if (id) {
+    await q('UPDATE parent_testimonials SET status="approved" WHERE id=?', [id]);
+  }
+  done();
+}
+
+export async function rejectTestimonial(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  if (id) {
+    await q('UPDATE parent_testimonials SET status="rejected" WHERE id=?', [id]);
+  }
+  done();
+}
+
+export async function deleteTestimonial(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  if (id) {
+    await q('DELETE FROM parent_testimonials WHERE id=?', [id]);
+  }
+  done();
+}
+
+export async function saveAlumniStory(fd) {
+  await A();
+  const id = Number(fd.get('id')) || 0;
+  const name = String(fd.get('name') || '').trim();
+  const gradYear = String(fd.get('grad_year') || '').trim();
+  const campusDivision = String(fd.get('campus_division') || 'Senior School').trim();
+  const currentRole = String(fd.get('current_role') || '').trim();
+  const universityOrCompany = String(fd.get('university_or_company') || '').trim();
+  const quote = String(fd.get('quote') || '').trim();
+  const story = String(fd.get('story') || '').trim();
+  const uploaded = await saveImg(fd.get('image_file'));
+  const chosenUrl = String(fd.get('image_url') || '').trim();
+  const imageUrl = uploaded || chosenUrl || '/images/girls_high_school3.webp';
+  let videoUrl = String(fd.get('video_url') || '').trim();
+  const videoFile = fd.get('video_file');
+  if (videoFile && videoFile.size > 0) {
+    const savedVid = await saveVideo(videoFile);
+    if (savedVid) videoUrl = savedVid;
+  }
+  const isFeatured = fd.get('is_featured') === '0' ? 0 : 1;
+  const sort = Number(fd.get('sort')) || 0;
+
+  if (!name || !story) return;
+
+  if (id > 0) {
+    await q(
+      'UPDATE alumni_stories SET name=?, grad_year=?, campus_division=?, current_role=?, university_or_company=?, quote=?, story=?, image_url=?, video_url=?, is_featured=?, sort=? WHERE id=?',
+      [name, gradYear, campusDivision, currentRole, universityOrCompany, quote, story, imageUrl, videoUrl, isFeatured, sort, id]
+    );
+  } else {
+    await q(
+      'INSERT INTO alumni_stories(name, grad_year, campus_division, current_role, university_or_company, quote, story, image_url, video_url, is_featured, sort) VALUES(?,?,?,?,?,?,?,?,?,?,?)',
+      [name, gradYear, campusDivision, currentRole, universityOrCompany, quote, story, imageUrl, videoUrl, isFeatured, sort]
+    );
+  }
+  done();
+}
+
+export async function deleteAlumniStory(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  if (id) {
+    await q('DELETE FROM alumni_stories WHERE id=?', [id]);
+  }
+  done();
+}
+
+export async function saveLearnerTestimonial(fd) {
+  await A();
+  const sc = await A();
+  const id = Number(fd.get('id')) || 0;
+  const name = String(fd.get('name') || '').trim();
+  const gradeOrClass = String(fd.get('grade_or_class') || '').trim();
+  const schoolId = sid(fd, sc);
+  const schoolName = String(fd.get('school_name') || 'All Campuses').trim();
+  const comment = String(fd.get('comment') || '').trim();
+  const uploaded = await saveImg(fd.get('image_file'));
+  const chosenUrl = String(fd.get('image_url') || '').trim();
+  const photoUrl = uploaded || chosenUrl || '/images/girls_high_school3.webp';
+  const favoriteSubject = String(fd.get('favorite_subject') || '').trim();
+  const futureAspiration = String(fd.get('future_aspiration') || '').trim();
+  const sort = Number(fd.get('sort')) || 0;
+  const isPublished = fd.get('is_published') === '0' ? 0 : 1;
+
+  if (!name || !comment) return;
+
+  if (id > 0) {
+    await q(
+      'UPDATE learner_testimonials SET name=?, grade_or_class=?, school_id=?, school_name=?, comment=?, photo_url=?, favorite_subject=?, future_aspiration=?, sort=?, is_published=? WHERE id=?',
+      [name, gradeOrClass, schoolId, schoolName, comment, photoUrl, favoriteSubject, futureAspiration, sort, isPublished, id]
+    );
+  } else {
+    await q(
+      'INSERT INTO learner_testimonials(name, grade_or_class, school_id, school_name, comment, photo_url, favorite_subject, future_aspiration, sort, is_published) VALUES(?,?,?,?,?,?,?,?,?,?)',
+      [name, gradeOrClass, schoolId, schoolName, comment, photoUrl, favoriteSubject, futureAspiration, sort, isPublished]
+    );
+  }
+  done();
+}
+
+export async function deleteLearnerTestimonial(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  if (id) {
+    await q('DELETE FROM learner_testimonials WHERE id=?', [id]);
+  }
+  done();
+}
+
+export async function saveEvent(fd) {
+  await A();
+  const sc = await A();
+  const id = Number(fd.get('id')) || 0;
+  const title = String(fd.get('title') || '').trim();
+  const eventDate = String(fd.get('event_date') || '').trim();
+  const eventTime = String(fd.get('event_time') || '9:00 AM - 1:00 PM').trim();
+  const category = String(fd.get('category') || 'Academic').trim();
+  const location = String(fd.get('location') || 'Main Campus Pavilion, Githunguri').trim();
+  const schoolId = sid(fd, sc);
+  const schoolName = String(fd.get('school_name') || 'All Campuses').trim();
+  const description = String(fd.get('description') || '').trim();
+  const isFeatured = fd.get('is_featured') === '0' ? 0 : 1;
+  const isActive = fd.get('is_active') === '0' ? 0 : 1;
+  const sort = Number(fd.get('sort')) || 0;
+
+  if (!title || !eventDate) return;
+
+  if (id > 0) {
+    await q(
+      'UPDATE events SET title=?, event_date=?, event_time=?, category=?, location=?, school_id=?, school_name=?, description=?, is_featured=?, is_active=?, sort=? WHERE id=?',
+      [title, eventDate, eventTime, category, location, schoolId, schoolName, description, isFeatured, isActive, sort, id]
+    );
+  } else {
+    await q(
+      'INSERT INTO events(title, event_date, event_time, category, location, school_id, school_name, description, is_featured, is_active, sort) VALUES(?,?,?,?,?,?,?,?,?,?,?)',
+      [title, eventDate, eventTime, category, location, schoolId, schoolName, description, isFeatured, isActive, sort]
+    );
+  }
+  done();
+}
+
+export async function deleteEvent(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  if (id) {
+    await q('DELETE FROM events WHERE id=?', [id]);
+  }
+  done();
+}
+
+export async function toggleEvent(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  const current = Number(fd.get('is_active')) || 0;
+  const next = current === 1 ? 0 : 1;
+  if (id) {
+    await q('UPDATE events SET is_active=? WHERE id=?', [next, id]);
+  }
   done();
 }

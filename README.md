@@ -1,19 +1,19 @@
-# PLEASANTVIEW SCHOOLS — Institutional Web Portal & Management System
+# PLEASANT VIEW SCHOOLS — Institutional Web Portal & Management System
 
 > **A luxury multi-campus academic web platform built to the highest architectural standards of [St Andrew's Turi](https://www.standrewsturi.com), powered by Next.js, Africa's Talking SMS, Resend Email, and a Central Administrative Console.**
 
 ---
 
-## 🏛️ About Pleasantview Schools
+## 🏛️ About Pleasant View Schools
 
 - **Location:** Githunguri, Komothai Subcounty, Kiambu County, Kenya  
 - **Established:** 1998 (24+ Years of Scholastic Distinction)  
 - **Motto:** *Our Aim is Victory*  
 - **Ethos:** Competent · Confident · Compassionate (Christian-ethos Foundation)  
 - **Academic Benchmarks:**
-  - **KCPE:** Consistently exceeds **390/500** mean score (Top 10 in Kiambu County)
-  - **KCSE (Girls' High School):** Mean grade **B+**, with >90% direct university qualification
-  - **CBC Pathways:** Modern STEM, Integrated Science, Agriculture, and Digital Robotics Hubs
+  - **KPSEA & KJSEA:** Consistently achieves **EE (Exceeding Expectations)** and **ME1 (Meeting Expectations - Top Tier)** distinction (Top 10 in Kiambu County)
+  - **KCSE (Senior Girls):** Mean grade **B+**, with >90% direct university qualification transitioning to KSSEA
+  - **CBE Pathways:** Modern STEM, Integrated Science, Agriculture, and Digital Robotics Hubs
 
 ---
 

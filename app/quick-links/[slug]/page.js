@@ -1,6 +1,6 @@
 import Page from '@/components/Page';
 import Link from 'next/link';
-import { getQuickLinks } from '@/lib/db';
+import { getQuickLinks, getEvents } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,7 +18,10 @@ export async function generateMetadata({ params }) {
 
 export default async function QuickLinkPage({ params }) {
   const { slug } = await params;
-  const quickLinks = await getQuickLinks();
+  const [quickLinks, events] = await Promise.all([
+    getQuickLinks(),
+    getEvents()
+  ]);
 
   if (slug === 'term-dates') {
     return (
@@ -87,6 +90,48 @@ export default async function QuickLinkPage({ params }) {
               </ul>
             </div>
           </div>
+
+          {/* DYNAMIC CALENDAR EVENTS & ANNOUNCEMENTS SET BY ADMIN */}
+          {events.length > 0 && (
+            <div style={{ marginTop: '40px', marginBottom: '35px' }}>
+              <span className="lead-badge" style={{ color: 'var(--primary-red)' }}>OFFICIAL ANNOUNCEMENTS</span>
+              <h3 style={{ fontSize: '22px', color: 'var(--primary-navy)', margin: '6px 0 16px' }}>
+                Scheduled School Events &amp; Parent Diary
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '18px' }}>
+                {events.map(ev => (
+                  <div
+                    key={ev.id}
+                    style={{
+                      background: '#ffffff',
+                      border: '1px solid #dde2ec',
+                      borderRadius: '8px',
+                      padding: '20px',
+                      borderTop: '3px solid var(--primary-red)',
+                      boxShadow: '0 2px 10px rgba(0,0,0,0.03)'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span style={{ fontSize: '11px', background: 'rgba(139,30,45,0.08)', color: 'var(--primary-red)', padding: '2px 8px', borderRadius: '3px', fontWeight: 800, textTransform: 'uppercase' }}>
+                        {ev.category}
+                      </span>
+                      <strong style={{ fontSize: '13px', color: 'var(--primary-navy)' }}>{ev.event_date}</strong>
+                    </div>
+                    <h4 style={{ fontSize: '16px', color: 'var(--primary-navy)', margin: '0 0 6px' }}>{ev.title}</h4>
+                    <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                      <i className="fa-regular fa-clock" style={{ marginRight: '5px' }} />
+                      {ev.event_time} &bull; {ev.location}
+                    </div>
+                    {ev.description && (
+                      <p style={{ fontSize: '13px', color: '#555', margin: 0, lineHeight: 1.5 }}>
+                        {ev.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div style={{ background: 'var(--soft-bg)', padding: '25px', borderRadius: '8px', borderLeft: '4px solid var(--gold-accent)', margin: '30px 0' }}>
             <h4 style={{ marginBottom: '8px' }}><i className="fa-solid fa-clock" style={{ color: 'var(--gold-dark)', marginRight: '8px' }} /> Daily Reporting Routine</h4>

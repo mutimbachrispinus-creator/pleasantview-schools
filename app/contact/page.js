@@ -25,7 +25,7 @@ export default async function ContactPage({ searchParams }) {
 
   return (
     <Page title="Admissions &amp; Campus Tours" subtitle="CONNECT WITH PLEASANT VIEW SCHOOLS">
-      <div className="wrapper" style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 15px 60px' }}>
+      <div style={{ width: '100%', padding: '0 0 60px' }}>
         {/* SUCCESS NOTIFICATION TOAST */}
         {isBooked && (
           <div style={{
@@ -79,9 +79,9 @@ export default async function ContactPage({ searchParams }) {
         )}
 
         {/* TWO-COLUMN LAYOUT: FORMS ON LEFT, CONTACT DETAILS & LOCATION ON RIGHT */}
-        <div className="contact-split-grid">
+        <div className="contact-layout-container">
           {/* COLUMN 1: INTERACTIVE BOOK CAMPUS TOUR & ENQUIRY FORMS */}
-          <div style={{ minWidth: 0 }}>
+          <div className="contact-main-column">
             {/* BOOK A CAMPUS TOUR CARD */}
             <div id="visit" className="custom-form" style={{
               background: '#ffffff',
@@ -275,7 +275,7 @@ export default async function ContactPage({ searchParams }) {
           </div>
 
           {/* COLUMN 2: CAMPUS DIRECTORY, ADMISSIONS OFFICE, & SOCIAL LINKS */}
-          <div style={{ minWidth: 0 }}>
+          <div className="contact-side-column">
             {/* ADMISSIONS DESK DIRECTORY */}
             <div style={{
               background: 'linear-gradient(135deg, #8B1E2D, #1E232A)',
@@ -397,25 +397,28 @@ export default async function ContactPage({ searchParams }) {
                 Academic Division Desks
               </h4>
               <div style={{ display: 'grid', gap: '14px' }}>
-                {schList.map(s => (
-                  <div key={s.id} style={{ padding: '12px', background: 'var(--soft-bg)', borderRadius: '4px', borderLeft: `3px solid ${s.color || 'var(--primary-navy)'}` }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <strong>{s.name}</strong>
-                      <span style={{ fontSize: '11px', background: '#fff', padding: '2px 6px', borderRadius: '3px', fontWeight: 700, color: s.color || 'var(--primary-navy)' }}>
-                        {s.category}
-                      </span>
+                {schList.map(s => {
+                  const cleanedName = s.name.replace(/Pleasantview/gi, 'Pleasant View');
+                  return (
+                    <div key={s.id} style={{ padding: '14px', background: 'var(--soft-bg)', borderRadius: '6px', borderLeft: `4px solid ${s.color || 'var(--primary-navy)'}` }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <strong style={{ fontSize: '14.5px', color: 'var(--primary-navy)' }}>{cleanedName}</strong>
+                        <span style={{ fontSize: '11px', background: '#fff', padding: '2px 8px', borderRadius: '3px', fontWeight: 700, color: s.color || 'var(--primary-navy)', border: '1px solid #e1e7f0' }}>
+                          {s.category}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '13px', color: '#555', marginTop: '6px' }}>
+                        <i className="fa-solid fa-phone" style={{ marginRight: '6px', color: 'var(--medium-blue)' }} />
+                        <a href={`tel:${s.phone || phone}`} style={{ color: '#333', textDecoration: 'none' }}>{s.phone || phone}</a>
+                      </div>
+                      <div style={{ marginTop: '8px' }}>
+                        <Link href={`/s/${s.slug}/visit`} style={{ fontSize: '12px', fontWeight: 700, color: 'var(--primary-red)', textDecoration: 'none' }}>
+                          Book {cleanedName} Tour &rarr;
+                        </Link>
+                      </div>
                     </div>
-                    <div style={{ fontSize: '13px', color: '#555', marginTop: '6px' }}>
-                      <i className="fa-solid fa-phone" style={{ marginRight: '6px', color: 'var(--medium-blue)' }} />
-                      <a href={`tel:${s.phone || phone}`} style={{ color: '#333', textDecoration: 'none' }}>{s.phone || phone}</a>
-                    </div>
-                    <div style={{ marginTop: '8px' }}>
-                      <Link href={`/s/${s.slug}/visit`} style={{ fontSize: '12px', fontWeight: 700, color: 'var(--medium-blue)', textDecoration: 'none' }}>
-                        Book {s.name} Tour &rarr;
-                      </Link>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>

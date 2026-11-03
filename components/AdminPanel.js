@@ -1,5 +1,20 @@
 import Link from 'next/link';
-import { q, S, schools, CATS, D, SF, getGlanceMetrics, getAdmins, getPhotos } from '@/lib/db';
+import {
+  q,
+  S,
+  schools,
+  CATS,
+  D,
+  SF,
+  getGlanceMetrics,
+  getAdmins,
+  getPhotos,
+  getAllExamResults,
+  getAllParentTestimonials,
+  getAllAlumniStories,
+  getAllLearnerTestimonials,
+  getAllEvents
+} from '@/lib/db';
 import {
   login,
   logout,
@@ -42,7 +57,19 @@ import {
   saveGlanceMetrics,
   addSchoolLifePhoto,
   delPhoto,
-  saveAdminSmsSettings
+  saveAdminSmsSettings,
+  saveExamResult,
+  deleteExamResult,
+  approveTestimonial,
+  rejectTestimonial,
+  deleteTestimonial,
+  saveAlumniStory,
+  deleteAlumniStory,
+  saveLearnerTestimonial,
+  deleteLearnerTestimonial,
+  saveEvent,
+  deleteEvent,
+  toggleEvent
 } from '@/app/hidden-admin/actions';
 
 const LONG = ['welcome', 'about', 'mission', 'vision'];
@@ -124,7 +151,12 @@ export default async function Panel({ scope, edit }) {
     quickLinksList,
     adminsList,
     glanceMetrics,
-    schoolLifePhotos
+    schoolLifePhotos,
+    examResultsList,
+    parentTestimonialsList,
+    alumniList,
+    learnersList,
+    eventsList
   ] = await Promise.all([
     q(
       `SELECT h.*, s.name sname FROM hero h LEFT JOIN schools s ON s.id=h.school_id${
@@ -166,7 +198,12 @@ export default async function Panel({ scope, edit }) {
     q('SELECT * FROM quick_links ORDER BY sort ASC, id ASC'),
     getAdmins(),
     getGlanceMetrics(),
-    getPhotos()
+    getPhotos(),
+    getAllExamResults(),
+    getAllParentTestimonials(),
+    getAllAlumniStories(),
+    getAllLearnerTestimonials(),
+    getAllEvents()
   ]);
 
   const Pick = () =>
@@ -191,12 +228,28 @@ export default async function Panel({ scope, edit }) {
       <div className="wrapper">
         <div className="admin-panel-container">
           {/* HEADER BAR */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', flexWrap: 'wrap', gap: '15px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
             <div>
               <div className="admin-badge"><i className="fa-solid fa-shield-halved" /> ACTIVE ADMIN SESSION</div>
               <h1 style={{ fontSize: '28px', color: 'var(--primary-navy)', margin: '4px 0 0' }}>
-                {scope ? `${me?.name} Staff Portal` : 'Central Management Console: PLEASANTVIEW SCHOOLS'}
+                {scope ? `${me?.name} Staff Portal` : 'Central Management Console: PLEASANT VIEW SCHOOLS'}
               </h1>
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: '#e6f4ea',
+                color: '#137333',
+                border: '1px solid #b7e1cd',
+                padding: '4px 12px',
+                borderRadius: '20px',
+                fontSize: '12px',
+                fontWeight: 700,
+                marginTop: '6px'
+              }}>
+                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#137333', display: 'inline-block' }} />
+                Instant Live Sync Active &bull; Published changes revalidate automatically across all devices
+              </div>
             </div>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
               <Link href="/" target="_blank" className="button button-gold" style={{ padding: '8px 16px', fontSize: '13px' }}>
@@ -211,20 +264,27 @@ export default async function Panel({ scope, edit }) {
           </div>
 
           {/* QUICK NAV / JUMP BAR */}
-          <div style={{ background: '#ffffff', padding: '12px 18px', borderRadius: '6px', border: '1px solid #dde2ec', marginBottom: '30px', display: 'flex', gap: '12px', flexWrap: 'wrap', fontSize: '13px', fontWeight: 600 }}>
+          <div style={{ background: '#ffffff', padding: '12px 18px', borderRadius: '6px', border: '1px solid #dde2ec', marginBottom: '30px', display: 'flex', gap: '10px', flexWrap: 'wrap', fontSize: '13px', fontWeight: 600 }}>
             <span style={{ color: '#888', alignSelf: 'center' }}>Jump To:</span>
-            <a href="#campuses" style={{ color: 'var(--primary-navy)' }}>🏫 Campuses &amp; Branches</a>
-            <a href="#admins" style={{ color: 'var(--primary-navy)' }}>👥 Admins &amp; Staff ({adminsList.length})</a>
+            <a href="#campuses" style={{ color: 'var(--primary-navy)' }}>🏫 Campuses</a>
+            <a href="#admins" style={{ color: 'var(--primary-navy)' }}>👥 Admins ({adminsList.length})</a>
+            <a href="#exams" style={{ color: 'var(--primary-red)', fontWeight: 700 }}>🎓 Exam Results ({examResultsList.length})</a>
+            <a href="#parent-reviews" style={{ color: '#b26a00', fontWeight: 700 }}>
+              💬 Parent Reviews {parentTestimonialsList.filter(t => t.status === 'pending').length > 0 && `(${parentTestimonialsList.filter(t => t.status === 'pending').length} Pending)`}
+            </a>
+            <a href="#learner-voices" style={{ color: 'var(--primary-navy)', fontWeight: 700 }}>🌟 Student Voices ({learnersList.length})</a>
+            <a href="#alumni" style={{ color: 'var(--gold-dark)', fontWeight: 700 }}>🏆 Alumni ({alumniList.length})</a>
+            <a href="#events" style={{ color: 'var(--primary-red)', fontWeight: 700 }}>📅 Events ({eventsList.length})</a>
             <a href="#metrics" style={{ color: 'var(--primary-navy)' }}>📊 Distinction Metrics</a>
-            <a href="#gallery" style={{ color: 'var(--primary-navy)' }}>📸 School Life Gallery ({schoolLifePhotos.length})</a>
-            <a href="#editor" style={{ color: 'var(--primary-navy)' }}>📝 Details &amp; Profile</a>
-            <a href="#leadership" style={{ color: 'var(--primary-navy)' }}>🎙️ Leadership Messages</a>
+            <a href="#gallery" style={{ color: 'var(--primary-navy)' }}>📸 Gallery ({schoolLifePhotos.length})</a>
+            <a href="#editor" style={{ color: 'var(--primary-navy)' }}>📝 Profile</a>
+            <a href="#leadership" style={{ color: 'var(--primary-navy)' }}>🎙️ Leadership</a>
             <a href="#quicklinks" style={{ color: 'var(--primary-navy)' }}>⚡ Quick Links</a>
-            <a href="#videos" style={{ color: 'var(--primary-navy)' }}>🎥 Videos Showcase</a>
+            <a href="#videos" style={{ color: 'var(--primary-navy)' }}>🎥 Videos</a>
             <a href="#careers" style={{ color: 'var(--primary-navy)' }}>💼 Careers ({appsList.length})</a>
             <a href="#hero" style={{ color: 'var(--primary-navy)' }}>🖼️ Hero Sliders</a>
-            <a href="#visits" style={{ color: 'var(--primary-navy)' }}>📅 Campus Visits ({vis.length})</a>
-            <a href="#inbound" style={{ color: 'var(--primary-navy)' }}>✉️ SMS &amp; Mailbox Hub</a>
+            <a href="#visits" style={{ color: 'var(--primary-navy)' }}>📅 Tours ({vis.length})</a>
+            <a href="#inbound" style={{ color: 'var(--primary-navy)' }}>✉️ SMS Hub</a>
           </div>
 
           {/* 1. CAMPUSES & CATEGORIES DATA (POPULATION, RATIOS, LEVELS, LOCATION, BRANCH ADMIN) */}
@@ -481,6 +541,627 @@ export default async function Panel({ scope, edit }) {
               </div>
             </section>
           )}
+
+          {/* 1C-1. ACADEMIC EXAMINATION RESULTS (NATIONAL & IN-SCHOOL) */}
+          <section id="exams" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
+              <div>
+                <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
+                  <i className="fa-solid fa-award" style={{ color: 'var(--primary-red)', marginRight: '8px' }} />
+                  Academic Examination Results Manager (National &amp; In-School)
+                </h2>
+                <p style={{ color: '#666', fontSize: '14px', margin: '4px 0 0' }}>
+                  Manage external national assessment statistics (KPSEA, KJSEA, Senior KCSE) and internal school formative exam series displayed on /about#academics.
+                </p>
+              </div>
+            </div>
+
+            {/* LIST OF CURRENT EXAM RESULTS */}
+            <div style={{ overflowX: 'auto', marginBottom: '25px' }}>
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Exam / Assessment Name</th>
+                    <th>School / Division</th>
+                    <th>Year</th>
+                    <th>Mean Score / Band</th>
+                    <th>Cohort</th>
+                    <th>Highlights</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {examResultsList.map(e => (
+                    <tr key={e.id}>
+                      <td>
+                        <span style={{
+                          background: e.exam_category === 'national' ? 'rgba(139,30,45,0.1)' : 'rgba(5,40,107,0.1)',
+                          color: e.exam_category === 'national' ? 'var(--primary-red)' : 'var(--primary-navy)',
+                          padding: '3px 8px',
+                          borderRadius: '3px',
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          textTransform: 'uppercase'
+                        }}>
+                          {e.exam_category}
+                        </span>
+                      </td>
+                      <td>
+                        <strong>{e.exam_name}</strong>
+                      </td>
+                      <td>{e.school_name || 'All Campuses'}</td>
+                      <td>{e.academic_year}</td>
+                      <td><strong style={{ color: 'var(--primary-red)' }}>{e.mean_grade}</strong></td>
+                      <td>{e.cohort_size || '—'}</td>
+                      <td style={{ fontSize: '12px', maxWidth: '240px' }}>
+                        <div>{e.performance_breakdown}</div>
+                        {e.top_subjects && <small style={{ color: '#666' }}>Subjects: {e.top_subjects}</small>}
+                      </td>
+                      <td>
+                        <span style={{ background: e.is_published ? '#d4edda' : '#fff3cd', color: e.is_published ? '#155724' : '#856404', padding: '2px 6px', borderRadius: '3px', fontSize: '11px', fontWeight: 700 }}>
+                          {e.is_published ? 'Published' : 'Draft'}
+                        </span>
+                      </td>
+                      <td>
+                        <form action={deleteExamResult} style={{ display: 'inline' }}>
+                          <input type="hidden" name="id" value={e.id} />
+                          <button
+                            type="submit"
+                            style={{ background: '#d9534f', color: '#fff', border: 0, padding: '4px 10px', borderRadius: '4px', fontSize: '12px', cursor: 'pointer' }}
+                            onClick={evt => { if (!confirm('Delete this exam result?')) evt.preventDefault(); }}
+                          >
+                            Delete
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* ADD / UPDATE EXAM RESULT FORM */}
+            <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
+              <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Publish New Academic Assessment Result</h4>
+              <form action={saveExamResult} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
+                <div className="form-group">
+                  <label>Assessment Category *</label>
+                  <select name="exam_category" required>
+                    <option value="national">National External Exam (KPSEA / KJSEA / KCSE / KSSEA)</option>
+                    <option value="internal">In-School Internal Exam (Continuous / Mocks / STEM)</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Target School Division *</label>
+                  <select name="school_name">
+                    <option value="All Campuses">All Campuses (Group Aggregate)</option>
+                    {list.map(s => (
+                      <option key={s.id} value={s.name}>{s.name} ({s.category})</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Examination / Assessment Title *</label>
+                  <input name="exam_name" placeholder="e.g. KPSEA 2026 Assessment" required />
+                </div>
+
+                <div className="form-group">
+                  <label>Academic Year *</label>
+                  <input name="academic_year" defaultValue="2026" required />
+                </div>
+
+                <div className="form-group">
+                  <label>Mean Score / Benchmark *</label>
+                  <input name="mean_grade" placeholder="e.g. EE (Exceeding Expectations) or B+ (9.42 Points)" required />
+                </div>
+
+                <div className="form-group">
+                  <label>Cohort Size</label>
+                  <input name="cohort_size" placeholder="e.g. 115 Registered Candidates" />
+                </div>
+
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label>Performance Breakdown / Transition Metrics</label>
+                  <input name="performance_breakdown" placeholder="e.g. 78% Exceeding Expectations (EE), 22% Meeting Expectations (ME1). 100% Transition to JSS." />
+                </div>
+
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label>Top Subject Distinctions</label>
+                  <input name="top_subjects" placeholder="e.g. Mathematics (96%), Integrated Science (94%), Pre-Technical (93%)" />
+                </div>
+
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label>Summary Notes / Honors Context</label>
+                  <textarea name="summary_notes" rows="2" placeholder="e.g. Consistently placed in the top 10 benchmark primary institutions in Kiambu County." />
+                </div>
+
+                <div style={{ display: 'flex', gap: '20px', alignItems: 'center', gridColumn: '1 / -1' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', margin: 0 }}>
+                    <input type="checkbox" name="is_published" value="1" defaultChecked />
+                    <strong>Publish immediately to public website (/about#academics)</strong>
+                  </label>
+                  <input type="hidden" name="sort" value="1" />
+                </div>
+
+                <button type="submit" className="button button-gold" style={{ gridColumn: '1 / -1', padding: '12px' }}>
+                  <i className="fa-solid fa-floppy-disk" style={{ marginRight: '8px' }} /> Save &amp; Sync Exam Result
+                </button>
+              </form>
+            </div>
+          </section>
+
+          {/* 1C-2. PARENT & GUARDIAN TESTIMONIALS (APPROVAL QUEUE) */}
+          <section id="parent-reviews" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
+              <div>
+                <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
+                  <i className="fa-solid fa-comments" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
+                  Parent &amp; Guardian Testimonials &amp; Approval Queue
+                </h2>
+                <p style={{ color: '#666', fontSize: '14px', margin: '4px 0 0' }}>
+                  Review comments submitted by parents and guardians. Only approved reviews appear on the public landing page.
+                </p>
+              </div>
+              <div>
+                {parentTestimonialsList.filter(t => t.status === 'pending').length > 0 ? (
+                  <span style={{ background: '#fff3cd', color: '#856404', padding: '6px 14px', borderRadius: '20px', fontSize: '13px', fontWeight: 800 }}>
+                    ⚠️ {parentTestimonialsList.filter(t => t.status === 'pending').length} Review(s) Awaiting Approval
+                  </span>
+                ) : (
+                  <span style={{ background: '#d4edda', color: '#155724', padding: '6px 14px', borderRadius: '20px', fontSize: '13px', fontWeight: 800 }}>
+                    ✓ All Reviews Moderated
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* REVIEWS TABLE */}
+            <div style={{ overflowX: 'auto' }}>
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Status</th>
+                    <th>Parent / Guardian</th>
+                    <th>Learner &amp; Grade</th>
+                    <th>Rating</th>
+                    <th>Comment</th>
+                    <th>Contact</th>
+                    <th>Submitted</th>
+                    <th>Moderation Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {parentTestimonialsList.map(t => (
+                    <tr key={t.id} style={{ background: t.status === 'pending' ? '#fffdf5' : 'inherit' }}>
+                      <td>
+                        <span style={{
+                          background: t.status === 'approved' ? '#d4edda' : t.status === 'pending' ? '#fff3cd' : '#f8d7da',
+                          color: t.status === 'approved' ? '#155724' : t.status === 'pending' ? '#856404' : '#721c24',
+                          padding: '3px 8px',
+                          borderRadius: '3px',
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          textTransform: 'uppercase'
+                        }}>
+                          {t.status}
+                        </span>
+                      </td>
+                      <td><strong>{t.parent_name}</strong><br /><small style={{ color: '#888' }}>{t.relationship || 'Parent'}</small></td>
+                      <td>
+                        <strong>{t.grade_or_division}</strong>
+                        {t.learner_name && <div style={{ fontSize: '12px', color: '#666' }}>Pupil: {t.learner_name}</div>}
+                      </td>
+                      <td>
+                        <span style={{ color: 'var(--gold-accent)', fontSize: '14px' }}>
+                          {'★'.repeat(t.rating || 5)}
+                        </span>
+                      </td>
+                      <td style={{ fontSize: '13.5px', maxWidth: '320px', lineHeight: 1.5 }}>
+                        &ldquo;{t.comment}&rdquo;
+                      </td>
+                      <td style={{ fontSize: '12px' }}>
+                        {t.phone && <div>{t.phone}</div>}
+                        {t.email && <small style={{ color: '#777' }}>{t.email}</small>}
+                      </td>
+                      <td style={{ fontSize: '12px', color: '#777' }}>{t.created_at ? t.created_at.slice(0, 10) : 'Recent'}</td>
+                      <td>
+                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                          {t.status !== 'approved' && (
+                            <form action={approveTestimonial} style={{ display: 'inline' }}>
+                              <input type="hidden" name="id" value={t.id} />
+                              <button type="submit" style={{ background: '#28a745', color: '#fff', border: 0, padding: '4px 10px', borderRadius: '3px', fontSize: '12px', cursor: 'pointer', fontWeight: 700 }}>
+                                ✓ Approve
+                              </button>
+                            </form>
+                          )}
+                          {t.status !== 'rejected' && (
+                            <form action={rejectTestimonial} style={{ display: 'inline' }}>
+                              <input type="hidden" name="id" value={t.id} />
+                              <button type="submit" style={{ background: '#ffc107', color: '#000', border: 0, padding: '4px 10px', borderRadius: '3px', fontSize: '12px', cursor: 'pointer' }}>
+                                Reject
+                              </button>
+                            </form>
+                          )}
+                          <form action={deleteTestimonial} style={{ display: 'inline' }}>
+                            <input type="hidden" name="id" value={t.id} />
+                            <button
+                              type="submit"
+                              style={{ background: '#d9534f', color: '#fff', border: 0, padding: '4px 10px', borderRadius: '3px', fontSize: '12px', cursor: 'pointer' }}
+                              onClick={evt => { if (!confirm('Permanently delete this review?')) evt.preventDefault(); }}
+                            >
+                              Delete
+                            </button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          {/* 1C-3. EXISTING LEARNERS / STUDENT BODY VOICES & PHOTOS */}
+          <section id="learner-voices" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
+              <div>
+                <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
+                  <i className="fa-solid fa-graduation-cap" style={{ color: 'var(--primary-navy)', marginRight: '8px' }} />
+                  Existing Learners / School Student Body Voices
+                </h2>
+                <p style={{ color: '#666', fontSize: '14px', margin: '4px 0 0' }}>
+                  Upload and update perspectives and comments from our enrolled scholars alongside their photos, classes, and future ambitions.
+                </p>
+              </div>
+            </div>
+
+            {/* CURRENT LEARNERS GRID */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '18px', marginBottom: '25px' }}>
+              {learnersList.map(l => (
+                <div key={l.id} style={{ border: '1px solid #dde2ec', borderRadius: '8px', padding: '18px', background: 'var(--soft-bg)' }}>
+                  <div style={{ display: 'flex', gap: '14px', alignItems: 'center', marginBottom: '12px' }}>
+                    <div style={{ width: '56px', height: '56px', borderRadius: '50%', overflow: 'hidden', backgroundImage: `url('${l.photo_url || '/images/girls_high_school3.webp'}')`, backgroundSize: 'cover', backgroundPosition: 'center', flexShrink: 0, border: '2px solid var(--gold-accent)' }} />
+                    <div>
+                      <strong style={{ fontSize: '15px', color: 'var(--primary-navy)', display: 'block' }}>{l.name}</strong>
+                      <span style={{ fontSize: '12px', color: 'var(--primary-red)', fontWeight: 700 }}>{l.grade_or_class}</span>
+                      <small style={{ display: 'block', color: '#777', fontSize: '11px' }}>{l.school_name}</small>
+                    </div>
+                  </div>
+                  <p style={{ fontSize: '13.5px', color: '#444', fontStyle: 'italic', lineHeight: 1.5, margin: '0 0 10px' }}>
+                    &ldquo;{l.comment}&rdquo;
+                  </p>
+                  {(l.favorite_subject || l.future_aspiration) && (
+                    <div style={{ fontSize: '12px', color: '#666', paddingTop: '8px', borderTop: '1px dashed #ccc' }}>
+                      {l.favorite_subject && <div><strong>Favorite Subject:</strong> {l.favorite_subject}</div>}
+                      {l.future_aspiration && <div><strong>Ambition:</strong> {l.future_aspiration}</div>}
+                    </div>
+                  )}
+                  <div style={{ marginTop: '12px', textAlign: 'right' }}>
+                    <form action={deleteLearnerTestimonial} style={{ display: 'inline' }}>
+                      <input type="hidden" name="id" value={l.id} />
+                      <button
+                        type="submit"
+                        style={{ background: '#d9534f', color: '#fff', border: 0, padding: '4px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
+                        onClick={evt => { if (!confirm('Delete this learner comment?')) evt.preventDefault(); }}
+                      >
+                        Delete
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* ADD LEARNER VOICE FORM */}
+            <div style={{ background: '#ffffff', border: '1px solid #e1e7f0', padding: '20px', borderRadius: '6px' }}>
+              <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Add New Student Body Comment &amp; Photo</h4>
+              <form action={saveLearnerTestimonial} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
+                <div className="form-group">
+                  <label>Learner Full Name *</label>
+                  <input name="name" placeholder="e.g. Brenda Cherono" required />
+                </div>
+                <div className="form-group">
+                  <label>Grade / Class *</label>
+                  <input name="grade_or_class" placeholder="e.g. Form 3 Senior Girls or Grade 8 JSS" required />
+                </div>
+                <div className="form-group">
+                  <label>Campus Division *</label>
+                  <select name="school_name">
+                    <option value="All Campuses">All Campuses</option>
+                    {list.map(s => (
+                      <option key={s.id} value={s.name}>{s.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Upload Scholar Photo</label>
+                  <input name="image_file" type="file" accept="image/*" />
+                </div>
+                <div className="form-group">
+                  <label>Or Image URL Path</label>
+                  <input name="image_url" placeholder="/images/girls_high_school3.webp" />
+                </div>
+                <div className="form-group">
+                  <label>Favorite Subject / Interest</label>
+                  <input name="favorite_subject" placeholder="e.g. Robotics, Physics, Mathematics" />
+                </div>
+                <div className="form-group">
+                  <label>Future Career Aspiration</label>
+                  <input name="future_aspiration" placeholder="e.g. Aeronautical Engineer" />
+                </div>
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label>Learner Comment / Perspective *</label>
+                  <textarea name="comment" rows="3" placeholder="Share what the scholar enjoys about studying, laboratory experiments, or boarding at Pleasant View..." required />
+                </div>
+                <button type="submit" className="button button-primary" style={{ gridColumn: '1 / -1', padding: '12px' }}>
+                  <i className="fa-solid fa-plus" style={{ marginRight: '6px' }} /> Publish Student Voice
+                </button>
+              </form>
+            </div>
+          </section>
+
+          {/* 1C-4. ALUMNI SUCCESS STORIES (PHOTOS & VIDEOS <= 10MB) */}
+          <section id="alumni" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
+              <div>
+                <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
+                  <i className="fa-solid fa-trophy" style={{ color: 'var(--gold-dark)', marginRight: '8px' }} />
+                  Alumni Success Stories &amp; Videos (Max 10MB)
+                </h2>
+                <p style={{ color: '#666', fontSize: '14px', margin: '4px 0 0' }}>
+                  Highlight alumni who have graduated from Pleasant View, their university/career milestones, photos, and video testimonials (video uploads strictly &le; 10MB).
+                </p>
+              </div>
+            </div>
+
+            {/* ALUMNI CARDS */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', marginBottom: '25px' }}>
+              {alumniList.map(a => (
+                <div key={a.id} style={{ border: '1px solid #dde2ec', borderRadius: '8px', overflow: 'hidden', background: '#ffffff', boxShadow: '0 4px 15px rgba(0,0,0,0.04)' }}>
+                  <div style={{ height: '180px', backgroundImage: `url('${a.image_url || '/images/girls_high_school3.webp'}')`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative' }}>
+                    <span style={{ position: 'absolute', top: '10px', left: '10px', background: 'var(--primary-red)', color: '#fff', padding: '3px 10px', borderRadius: '3px', fontSize: '11px', fontWeight: 800 }}>
+                      {a.grad_year}
+                    </span>
+                    {a.video_url && (
+                      <span style={{ position: 'absolute', bottom: '10px', right: '10px', background: 'rgba(0,0,0,0.75)', color: 'var(--gold-accent)', padding: '3px 8px', borderRadius: '3px', fontSize: '11px', fontWeight: 700 }}>
+                        <i className="fa-solid fa-video" /> Video Attached
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ padding: '18px' }}>
+                    <h4 style={{ margin: '0 0 4px', fontSize: '17px', color: 'var(--primary-navy)' }}>{a.name}</h4>
+                    <div style={{ fontSize: '13px', color: 'var(--primary-red)', fontWeight: 700, marginBottom: '6px' }}>{a.current_role}</div>
+                    <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>{a.university_or_company}</div>
+                    {a.quote && (
+                      <p style={{ fontSize: '13.5px', fontStyle: 'italic', color: '#333', lineHeight: 1.5, margin: '0 0 10px', background: 'var(--soft-bg)', padding: '10px', borderRadius: '4px' }}>
+                        &ldquo;{a.quote}&rdquo;
+                      </p>
+                    )}
+                    <p style={{ fontSize: '13px', color: '#555', lineHeight: 1.6, margin: 0 }}>
+                      {a.story}
+                    </p>
+                    <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid #eee', textAlign: 'right' }}>
+                      <form action={deleteAlumniStory} style={{ display: 'inline' }}>
+                        <input type="hidden" name="id" value={a.id} />
+                        <button
+                          type="submit"
+                          style={{ background: '#d9534f', color: '#fff', border: 0, padding: '4px 10px', borderRadius: '3px', fontSize: '12px', cursor: 'pointer' }}
+                          onClick={evt => { if (!confirm('Delete this alumni story?')) evt.preventDefault(); }}
+                        >
+                          Delete Story
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* ADD ALUMNI STORY FORM */}
+            <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
+              <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Publish Alumni Success Story</h4>
+              <form action={saveAlumniStory} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
+                <div className="form-group">
+                  <label>Alumnus Full Name *</label>
+                  <input name="name" placeholder="e.g. Dr. Kevin Njoroge" required />
+                </div>
+                <div className="form-group">
+                  <label>Graduation Year / Class *</label>
+                  <input name="grad_year" placeholder="e.g. Class of 2017" required />
+                </div>
+                <div className="form-group">
+                  <label>Division Attended</label>
+                  <input name="campus_division" defaultValue="Pleasant View Senior School" />
+                </div>
+                <div className="form-group">
+                  <label>Current Profession / Title *</label>
+                  <input name="current_role" placeholder="e.g. Medical Doctor / Software Engineer" required />
+                </div>
+                <div className="form-group">
+                  <label>University / Company</label>
+                  <input name="university_or_company" placeholder="e.g. University of Nairobi / Safaricom" />
+                </div>
+                <div className="form-group">
+                  <label>Photo File Upload</label>
+                  <input name="image_file" type="file" accept="image/*" />
+                </div>
+                <div className="form-group">
+                  <label>Video File Upload (Strict Max 10MB)</label>
+                  <input
+                    name="video_file"
+                    type="file"
+                    accept="video/mp4,video/webm,video/ogg"
+                  />
+                  <small style={{ color: '#777', fontSize: '11px', display: 'block', marginTop: '3px' }}>
+                    ⚡ Max file size: 10MB. For larger videos, paste a YouTube embed link below.
+                  </small>
+                </div>
+                <div className="form-group">
+                  <label>Or Video / YouTube URL</label>
+                  <input name="video_url" placeholder="https://www.youtube.com/watch?v=..." />
+                </div>
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label>Impact Quote</label>
+                  <input name="quote" placeholder="e.g. Pleasant View instilled the discipline that shaped my medical career." />
+                </div>
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label>Full Alumni Career &amp; Campus Story *</label>
+                  <textarea name="story" rows="3" placeholder="Describe their academic journey at Pleasant View, high school achievements, and subsequent professional impact..." required />
+                </div>
+                <button type="submit" className="button button-gold" style={{ gridColumn: '1 / -1', padding: '12px' }}>
+                  <i className="fa-solid fa-plus" style={{ marginRight: '6px' }} /> Publish Alumni Story
+                </button>
+              </form>
+            </div>
+          </section>
+
+          {/* 1C-5. CALENDAR EVENTS & ANNOUNCEMENTS SET BY ADMIN */}
+          <section id="events" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
+              <div>
+                <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
+                  <i className="fa-solid fa-calendar-days" style={{ color: 'var(--primary-red)', marginRight: '8px' }} />
+                  Calendar Events &amp; School Announcements ({eventsList.length})
+                </h2>
+                <p style={{ color: '#666', fontSize: '14px', margin: '4px 0 0' }}>
+                  Schedule academic events, parent visiting Sundays (VISOs), sports galas, chapel services, and term breaks displayed on the homepage and term dates calendar.
+                </p>
+              </div>
+            </div>
+
+            {/* EVENTS TABLE */}
+            <div style={{ overflowX: 'auto', marginBottom: '25px' }}>
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Event Date</th>
+                    <th>Time</th>
+                    <th>Event Title</th>
+                    <th>Category</th>
+                    <th>Division / Branch</th>
+                    <th>Location</th>
+                    <th>Visibility</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {eventsList.map(ev => (
+                    <tr key={ev.id} style={{ opacity: ev.is_active ? 1 : 0.6 }}>
+                      <td>
+                        <strong style={{ color: 'var(--primary-red)' }}>{ev.event_date}</strong>
+                      </td>
+                      <td style={{ fontSize: '12.5px', color: '#555' }}>{ev.event_time || 'All Day'}</td>
+                      <td>
+                        <strong>{ev.title}</strong>
+                        {ev.description && <p style={{ fontSize: '12px', color: '#666', margin: '4px 0 0' }}>{ev.description}</p>}
+                      </td>
+                      <td>
+                        <span style={{ background: 'var(--soft-bg)', color: 'var(--primary-navy)', padding: '2px 8px', borderRadius: '3px', fontSize: '11px', fontWeight: 700 }}>
+                          {ev.category}
+                        </span>
+                      </td>
+                      <td style={{ fontSize: '12.5px' }}>{ev.school_name || 'All Campuses'}</td>
+                      <td style={{ fontSize: '12px', color: '#666' }}>{ev.location}</td>
+                      <td>
+                        <form action={toggleEvent} style={{ display: 'inline' }}>
+                          <input type="hidden" name="id" value={ev.id} />
+                          <input type="hidden" name="is_active" value={ev.is_active} />
+                          <button
+                            type="submit"
+                            style={{
+                              background: ev.is_active ? '#d4edda' : '#f8d7da',
+                              color: ev.is_active ? '#155724' : '#721c24',
+                              border: 0,
+                              padding: '3px 8px',
+                              borderRadius: '3px',
+                              fontSize: '11px',
+                              fontWeight: 700,
+                              cursor: 'pointer'
+                            }}
+                          >
+                            {ev.is_active ? 'Active (Live)' : 'Hidden'}
+                          </button>
+                        </form>
+                      </td>
+                      <td>
+                        <form action={deleteEvent} style={{ display: 'inline' }}>
+                          <input type="hidden" name="id" value={ev.id} />
+                          <button
+                            type="submit"
+                            style={{ background: '#d9534f', color: '#fff', border: 0, padding: '4px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
+                            onClick={evt => { if (!confirm('Delete this calendar event?')) evt.preventDefault(); }}
+                          >
+                            Delete
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* ADD EVENT FORM */}
+            <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
+              <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Publish New Calendar Event / Announcement</h4>
+              <form action={saveEvent} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
+                <div className="form-group">
+                  <label>Event Date *</label>
+                  <input name="event_date" type="date" required />
+                </div>
+                <div className="form-group">
+                  <label>Event Time</label>
+                  <input name="event_time" placeholder="e.g. 9:00 AM - 1:00 PM" defaultValue="9:00 AM - 1:00 PM" />
+                </div>
+                <div className="form-group">
+                  <label>Event Category *</label>
+                  <select name="category">
+                    <option value="Academic">Academic &amp; Assessments</option>
+                    <option value="Term Dates & VISO">Term Dates &amp; Visiting Sunday (VISO)</option>
+                    <option value="STEM & Innovation">STEM &amp; Innovation</option>
+                    <option value="Sports & Athletics">Sports &amp; Athletics</option>
+                    <option value="Spiritual Life">Spiritual Life &amp; Chapel</option>
+                    <option value="Parent Meeting">Parent &amp; Community Meeting</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Target School Division *</label>
+                  <select name="school_name">
+                    <option value="All Campuses">All Campuses (Entire School Group)</option>
+                    {list.map(s => (
+                      <option key={s.id} value={s.name}>{s.name} ({s.category})</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label>Event Title / Announcement Headline *</label>
+                  <input name="title" placeholder="e.g. Term 1 Inter-School Robotics & Science Exhibition" required />
+                </div>
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label>Campus Venue / Location</label>
+                  <input name="location" defaultValue="Main Campus Pavilion, Githunguri" placeholder="e.g. Main Science Complex or Sports Pavilion" />
+                </div>
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label>Event Description / Parent Notes</label>
+                  <textarea name="description" rows="2" placeholder="Details regarding reporting hours, visitor guidelines, dress code, or exhibition schedule..." />
+                </div>
+                <div style={{ display: 'flex', gap: '20px', alignItems: 'center', gridColumn: '1 / -1' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', margin: 0 }}>
+                    <input type="checkbox" name="is_featured" value="1" defaultChecked />
+                    <strong>Feature prominently on Homepage Calendar section</strong>
+                  </label>
+                  <input type="hidden" name="is_active" value="1" />
+                </div>
+                <button type="submit" className="button button-gold" style={{ gridColumn: '1 / -1', padding: '12px' }}>
+                  <i className="fa-solid fa-calendar-plus" style={{ marginRight: '6px' }} /> Publish Calendar Event
+                </button>
+              </form>
+            </div>
+          </section>
 
           {/* 1C. EDITABLE "AT A GLANCE" DISTINCTION NUMBERS (HOMEPAGE METRICS) */}
           {!scope && (
@@ -900,8 +1581,19 @@ export default async function Panel({ scope, edit }) {
                   <input name="title" placeholder="e.g. Science Fair & Robotics Innovations" required />
                 </div>
                 <div className="form-group">
-                  <label>YouTube Link or URL *</label>
-                  <input name="youtube_url" placeholder="https://www.youtube.com/watch?v=..." required />
+                  <label>YouTube Link or URL</label>
+                  <input name="youtube_url" placeholder="https://www.youtube.com/watch?v=... (or upload file below)" />
+                </div>
+                <div className="form-group">
+                  <label>Or Direct Video Upload (Strict Max 10MB)</label>
+                  <input
+                    type="file"
+                    name="video_file"
+                    accept="video/mp4,video/webm,video/ogg"
+                  />
+                  <small style={{ color: '#777', fontSize: '11px', display: 'block', marginTop: '2px' }}>
+                    ⚡ Strict max size: 10MB. YouTube / Vimeo links recommended for longer HD videos.
+                  </small>
                 </div>
                 <div className="form-group">
                   <label>Category</label>

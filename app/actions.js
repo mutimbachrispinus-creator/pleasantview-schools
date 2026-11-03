@@ -176,3 +176,44 @@ export async function sendDirectAdminSms(fd) {
 
   redirect(back);
 }
+
+export async function submitParentReview(fd) {
+  const b = Object.fromEntries(fd);
+  const back = '/?review_submitted=1#parent-reviews';
+
+  if (b.website || (await limited('rev' + (await ip())))) redirect(back);
+
+  const parentName = String(b.parent_name || '').trim();
+  const learnerName = String(b.learner_name || '').trim();
+  const grade = String(b.grade_or_division || '').trim();
+  const relationship = String(b.relationship || 'Parent / Guardian').trim();
+  const rating = Math.min(5, Math.max(1, Number(b.rating) || 5));
+  const comment = String(b.comment || '').trim();
+  const phone = String(b.phone || '').trim();
+  const email = String(b.email || '').trim();
+
+  if (!parentName || !comment || !grade) {
+    redirect(back);
+  }
+
+  await q(
+    'INSERT INTO parent_testimonials(parent_name, learner_name, grade_or_division, relationship, rating, comment, phone, email, status) VALUES(?,?,?,?,?,?,?,?, "pending")',
+    [parentName, learnerName, grade, relationship, rating, comment, phone, email]
+  );
+
+  try {
+    const settings = await S();
+    const rawAdminNumbers = String(settings.admin_sms_phone || process.env.ADMIN_SMS_PHONE || '+254711689913');
+    const adminNumbers = rawAdminNumbers.split(/[,;\n]+/).map(n => n.trim()).filter(Boolean);
+    const alertSms = `[New Parent Review Pending] From: ${parentName} (${grade}): "${comment.slice(0, 80)}..." Pending admin approval in portal.`;
+    for (const num of adminNumbers) {
+      try {
+        await sendSMS({ to: num, message: alertSms });
+      } catch {}
+    }
+  } catch (err) {
+    console.warn('[Review Alert Error]:', err.message);
+  }
+
+  redirect(back);
+}

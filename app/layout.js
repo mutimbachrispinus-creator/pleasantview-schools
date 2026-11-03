@@ -4,6 +4,8 @@ import { schools, S, getQuickLinks } from '@/lib/db';
 import HeaderNav from '@/components/HeaderNav';
 import PwaInstallPrompt from '@/components/PwaInstallPrompt';
 import MobileBottomBar from '@/components/MobileBottomBar';
+import CookieConsent from '@/components/CookieConsent';
+import ScrollReveal from '@/components/ScrollReveal';
 
 export const metadata = {
   title: {
@@ -225,6 +227,7 @@ export default async function RootLayout({ children }) {
             <ul className="copyright-links">
               <li><Link href="/about#privacy">Privacy Policy</Link></li>
               <li><Link href="/about#terms">Data Protection Policy</Link></li>
+              <li><Link href="/about#cookies">Cookie Policy</Link></li>
               <li><Link href="/quick-links/term-dates">Term Dates &amp; VISOs</Link></li>
               <li><Link href={adminPath}>Staff Portal</Link></li>
             </ul>
@@ -233,6 +236,12 @@ export default async function RootLayout({ children }) {
 
         {/* PWA INSTALL PROMPT BANNER */}
         <PwaInstallPrompt />
+
+        {/* COOKIE CONSENT BANNER */}
+        <CookieConsent />
+
+        {/* TURI-STYLE WORDS SCROLL REVEAL */}
+        <ScrollReveal />
 
         {/* MOBILE BOTTOM NAVIGATION BAR */}
         <MobileBottomBar

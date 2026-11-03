@@ -2563,23 +2563,74 @@ section.director-welcome-section {
   .custom-form { padding: 22px; width: 100% !important; }
 }
 
-/* CONTACT & BOOKING SPLIT GRID */
-.contact-split-grid {
-  display: grid;
-  grid-template-columns: 1.25fr 0.9fr;
-  gap: 35px;
-  align-items: start;
+/* CONTACT & BOOKING LAYOUT (FLEXBOX ARCHITECTURE TO PREVENT ANY OVERLAPPING) */
+.contact-layout-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 36px;
   width: 100%;
   max-width: 100%;
+  box-sizing: border-box;
 }
-.contact-split-grid > div {
+.contact-main-column {
+  flex: 1 1 58%;
   min-width: 0;
-  width: 100%;
+  max-width: 60%;
+  box-sizing: border-box;
 }
-@media (max-width: 960px) {
+.contact-side-column {
+  flex: 1 1 38%;
+  min-width: 320px;
+  max-width: 40%;
+  box-sizing: border-box;
+}
+@media (max-width: 1080px) {
+  .contact-layout-container {
+    flex-direction: column !important;
+    gap: 30px;
+  }
+  .contact-main-column,
+  .contact-side-column {
+    flex: 1 1 100% !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+}
+
+/* BACKWARDS COMPATIBILITY FOR ANY LEGACY SPLIT GRID */
+.contact-split-grid {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 36px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.contact-split-grid > div:first-child {
+  flex: 1 1 58%;
+  min-width: 0;
+  max-width: 60%;
+  box-sizing: border-box;
+}
+.contact-split-grid > div:last-child {
+  flex: 1 1 38%;
+  min-width: 320px;
+  max-width: 40%;
+  box-sizing: border-box;
+}
+@media (max-width: 1080px) {
   .contact-split-grid {
-    grid-template-columns: 1fr;
-    gap: 25px;
+    flex-direction: column !important;
+    gap: 30px;
+  }
+  .contact-split-grid > div:first-child,
+  .contact-split-grid > div:last-child {
+    flex: 1 1 100% !important;
+    max-width: 100% !important;
+    width: 100% !important;
   }
 }
 
@@ -2590,7 +2641,7 @@ section.director-welcome-section {
     max-width: 100vw !important;
     overflow-x: hidden;
   }
-  .custom-form, .contact-split-grid, .overview-grid, .glance-grid, .divisions-grid, .spotlight-grid {
+  .custom-form, .contact-layout-container, .contact-split-grid, .overview-grid, .glance-grid, .divisions-grid, .spotlight-grid {
     max-width: 100% !important;
     width: 100% !important;
     box-sizing: border-box !important;
@@ -2600,3 +2651,45 @@ section.director-welcome-section {
     box-sizing: border-box !important;
   }
 }
+
+/* EXQUISITE CREST WATERMARK ACROSS THE WEBSITE (LOWER OPACITY) */
+body {
+  position: relative;
+  min-height: 100vh;
+}
+body::before {
+  content: "";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(760px, 88vw);
+  height: min(900px, 90vh);
+  background-image: url('/images/pvs_crest.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  opacity: 0.035; /* Subtle, dignified watermark */
+  pointer-events: none;
+  z-index: 0;
+}
+main, .subpage-body, .director-welcome-section, .schools-overview, .video-showcase-section, footer, header {
+  position: relative;
+  z-index: 1;
+}
+
+/* TURI-STYLE WORDS & SECTION SCROLL REVEAL TRANSITIONS */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.reveal-on-scroll.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
