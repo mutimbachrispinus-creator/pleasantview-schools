@@ -99,34 +99,7 @@ const Del = ({ t, id }) => (
   </form>
 );
 
-export const LoginForm = ({ k = '', title = 'Staff & Admin Portal' }) => (
-  <main className="subpage-body">
-    <div className="wrapper">
-      <BackButton fallback="/" label="Back" current="Staff & Admin Portal Login" />
-      <div className="custom-form" style={{ margin: '30px auto', maxWidth: '480px' }}>
-        <div className="admin-badge"><i className="fa-solid fa-lock" /> AUTHENTICATION</div>
-        <h2>{title}</h2>
-        <p style={{ fontSize: '14px', color: '#666', marginBottom: '20px' }}>
-          Please authenticate with your administrative credentials (username <code>admin</code> or department email e.g. <code>admission@...</code>, <code>finance@...</code>, <code>infor@...</code>).
-        </p>
-        <form action={login}>
-          <input type="hidden" name="key" value={k} />
-          <div className="form-group">
-            <label>Admin Username or Department Email Address</label>
-            <input name="email" type="text" placeholder="e.g. admin or senior@pleasantviewschools.co.ke" defaultValue="admin" required />
-          </div>
-          <div className="form-group">
-            <label>Password</label>
-            <input name="password" type="password" placeholder="••••••••••••" defaultValue="pleasantview2026" required />
-          </div>
-          <button type="submit" className="button button-secondary" style={{ marginTop: '10px', width: '100%' }}>
-            Sign In to Console
-          </button>
-        </form>
-      </div>
-    </div>
-  </main>
-);
+export { default as LoginForm } from '@/components/LoginForm';
 
 export default async function Panel({ scope, edit }) {
   const list = await schools();
@@ -401,9 +374,9 @@ export default async function Panel({ scope, edit }) {
                   </div>
                   <div className="form-group">
                     <label>Operating Admin Initial Password *</label>
-                    <input name="admin_password" type="password" placeholder="••••••••••••" defaultValue="pleasantview2026" required />
+                    <input name="admin_password" type="password" placeholder="Set temporary operating password" required />
                     <small style={{ color: '#888', fontSize: '11px', display: 'block', marginTop: '2px' }}>
-                      Subject to change by the operating admin via OTP verification.
+                      Operating admin will be prompted to change upon first OTP login.
                     </small>
                   </div>
                   <div className="form-group">
@@ -531,7 +504,7 @@ export default async function Panel({ scope, edit }) {
                   </div>
                   <div className="form-group">
                     <label>Password *</label>
-                    <input name="password" type="password" placeholder="••••••••••••" defaultValue="pleasantview2026" required />
+                    <input name="password" type="password" placeholder="Create administrator password" required />
                   </div>
                   <div className="form-group">
                     <label>Administrator Role *</label>
@@ -2082,7 +2055,7 @@ export default async function Panel({ scope, edit }) {
                 <h4 style={{ marginBottom: '8px' }}>Resend Email Gateway</h4>
                 <p style={{ fontSize: '13px', color: '#666', marginBottom: '10px' }}>Verify outbound transactional email delivery.</p>
                 <form action={testResend} style={{ display: 'flex', gap: '8px' }}>
-                  <input name="email" type="email" defaultValue="infor@pleasantviewschools.co.ke" style={{ padding: '8px', fontSize: '13px', flex: 1 }} required />
+                  <input name="email" type="email" defaultValue="info@pleasantviewschools.co.ke" style={{ padding: '8px', fontSize: '13px', flex: 1 }} required />
                   <button type="submit" className="button button-primary" style={{ padding: '8px 14px', fontSize: '12px' }}>
                     Send Test
                   </button>

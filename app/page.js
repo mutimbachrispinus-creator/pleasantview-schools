@@ -723,7 +723,7 @@ export default async function Home({ searchParams }) {
               </div>
 
               <div className="form-group">
-                <label>Phone Number (For verification)</label>
+                <label>Phone Number</label>
                 <input name="phone" placeholder="+254 711 000 000" />
               </div>
 
@@ -749,7 +749,7 @@ export default async function Home({ searchParams }) {
                 className="button button-gold"
                 style={{ gridColumn: '1 / -1', padding: '14px', fontSize: '15px', fontWeight: 800 }}
               >
-                <i className="fa-solid fa-paper-plane" style={{ marginRight: '8px' }} /> Submit Review for Administrator Approval
+                <i className="fa-solid fa-paper-plane" style={{ marginRight: '8px' }} /> Submit Review
               </button>
             </form>
           </div>

@@ -47,7 +47,19 @@ export default async function About() {
         </div>
         <div style={{ background: 'var(--soft-bg)', padding: '24px', borderRadius: '6px', borderLeft: '4px solid var(--gold-accent)' }}>
           <h4 style={{ color: 'var(--gold-dark)', marginBottom: '8px' }}>Core Values &amp; Motto</h4>
-          <p style={{ fontSize: '15px', color: '#555', margin: 0 }}>{s.values} &mdash; <em>&ldquo;{s.motto || 'Our Aim is Victory'}&rdquo;</em></p>
+          <ul style={{ margin: '8px 0 12px 18px', padding: 0, fontSize: '14.5px', color: '#444', lineHeight: 1.7 }}>
+            <li><strong>Respect</strong></li>
+            <li><strong>Integrity</strong></li>
+            <li><strong>Empathy</strong></li>
+            <li><strong>Excellence</strong></li>
+            <li><strong>Accountability</strong></li>
+            <li><strong>Co-operation</strong></li>
+            <li><strong>Critical thinking</strong></li>
+            <li><strong>Appreciation</strong></li>
+          </ul>
+          <p style={{ fontSize: '14px', color: '#666', margin: 0, fontStyle: 'italic' }}>
+            Motto: &ldquo;{s.motto || 'Our Aim is Victory'}&rdquo;
+          </p>
         </div>
       </div>
 

@@ -23,7 +23,7 @@ export default function VmvSlideshow({ vision, mission, values, motto }) {
       label: 'Core Values',
       heading: 'Our Core Values',
       sub: 'CHARACTER & EXCELLENCE',
-      text: `${values || 'Courage, Integrity, Compassion, Discipline and Academic Excellence.'} — “${motto || 'Our Aim is Victory'}”`,
+      text: `${values || 'Respect, Integrity, Empathy, Excellence, Accountability, Co-operation, Critical thinking, Appreciation.'} — “${motto || 'Our Aim is Victory'}”`,
       image: '/images/gallery_8.webp'
     }
   ];

@@ -47,7 +47,7 @@ export default async function RootLayout({ children }) {
   }
 
   const phone = settings.phone || process.env.SCHOOL_PHONE || '+254 711 689 913';
-  const email = settings.email || process.env.SCHOOL_EMAIL || 'infor@pleasantviewschools.co.ke';
+  const email = settings.email || process.env.SCHOOL_EMAIL || 'info@pleasantviewschools.co.ke';
   const mapsUrl = settings.maps_url || 'https://maps.app.goo.gl/iBXf1M86VKxqAEft5';
   const whatsappUrl = settings.whatsapp_url || 'https://wa.me/254711689913?text=Hello%20Pleasant%20View%20Schools,%20I%20would%20like%20to%20inquire%20about%20admissions.';
   const adminPath = '/staff-portal';

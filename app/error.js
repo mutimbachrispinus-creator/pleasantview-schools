@@ -25,21 +25,23 @@ export default function ErrorBoundary({ error, reset }) {
     }
   }, [error]);
 
-  const handleHardRefresh = () => {
+  const handleHardRefresh = async () => {
     if (typeof window !== 'undefined') {
       try {
         sessionStorage.removeItem('pvs_chunk_reloaded');
         sessionStorage.removeItem('pvs_chunk_reload_time');
         if ('caches' in window) {
-          caches.keys().then(names => names.forEach(n => caches.delete(n)));
+          const names = await caches.keys();
+          await Promise.all(names.map(n => caches.delete(n)));
         }
         if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.getRegistrations().then(regs => {
-            for (const r of regs) r.unregister();
-          });
+          const regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map(r => r.unregister()));
         }
+        // Clear session cookie in case of expired or mismatched authentication token
+        document.cookie = 'pv=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
       } catch {}
-      window.location.href = window.location.pathname + '?_v=' + Date.now();
+      window.location.href = window.location.pathname.split('?')[0] + '?_nocache=' + Date.now();
     } else {
       reset();
     }
@@ -85,7 +87,7 @@ export default function ErrorBoundary({ error, reset }) {
         <p style={{ fontSize: '14.5px', color: '#666', lineHeight: 1.6, marginBottom: '25px' }}>
           We detected an interface update. Please tap below to refresh the page or return to the main portal.
         </p>
-        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
           <button
             type="button"
             onClick={handleHardRefresh}
@@ -93,14 +95,30 @@ export default function ErrorBoundary({ error, reset }) {
               background: '#8B1E2D',
               color: '#ffffff',
               border: 0,
-              padding: '12px 24px',
+              padding: '12px 22px',
               borderRadius: '6px',
               fontWeight: 700,
-              fontSize: '14px',
+              fontSize: '13.5px',
               cursor: 'pointer'
             }}
           >
             Refresh Now
+          </button>
+          <button
+            type="button"
+            onClick={() => reset()}
+            style={{
+              background: '#ffffff',
+              color: '#1E232A',
+              border: '1px solid #d1d5db',
+              padding: '12px 22px',
+              borderRadius: '6px',
+              fontWeight: 700,
+              fontSize: '13.5px',
+              cursor: 'pointer'
+            }}
+          >
+            Try Again
           </button>
           <Link
             href="/"
@@ -108,10 +126,10 @@ export default function ErrorBoundary({ error, reset }) {
               background: '#1E232A',
               color: '#ffffff',
               textDecoration: 'none',
-              padding: '12px 24px',
+              padding: '12px 22px',
               borderRadius: '6px',
               fontWeight: 700,
-              fontSize: '14px',
+              fontSize: '13.5px',
               display: 'inline-block'
             }}
           >

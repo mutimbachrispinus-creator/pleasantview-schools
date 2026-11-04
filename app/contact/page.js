@@ -20,7 +20,7 @@ export default async function ContactPage({ searchParams }) {
   const st = await S();
 
   const phone = st.phone || '+254 711 689 913';
-  const email = st.email || 'infor@pleasantviewschools.co.ke';
+  const email = st.email || 'info@pleasantviewschools.co.ke';
   const location = st.location || 'Githunguri, Komothai Subcounty, Kiambu County';
 
   return (
@@ -335,8 +335,8 @@ export default async function ContactPage({ searchParams }) {
                   <div>
                     <strong style={{ fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>Official Email Desks:</strong>
                     <div style={{ fontSize: '14.5px', marginTop: '4px', lineHeight: 1.6 }}>
-                      <div><strong style={{ color: 'rgba(255,255,255,0.7)' }}>Admissions:</strong> <a href="mailto:admission@pleasantviewschools.co.ke" style={{ color: '#ffffff', textDecoration: 'none', fontWeight: 700 }}>admission@pleasantviewschools.co.ke</a></div>
-                      <div><strong style={{ color: 'rgba(255,255,255,0.7)' }}>Information:</strong> <a href="mailto:infor@pleasantviewschools.co.ke" style={{ color: '#ffffff', textDecoration: 'none', fontWeight: 700 }}>infor@pleasantviewschools.co.ke</a></div>
+                      <div><strong style={{ color: 'rgba(255,255,255,0.7)' }}>Admissions:</strong> <a href="mailto:admissions@pleasantviewschools.co.ke" style={{ color: '#ffffff', textDecoration: 'none', fontWeight: 700 }}>admissions@pleasantviewschools.co.ke</a></div>
+                      <div><strong style={{ color: 'rgba(255,255,255,0.7)' }}>Information:</strong> <a href="mailto:info@pleasantviewschools.co.ke" style={{ color: '#ffffff', textDecoration: 'none', fontWeight: 700 }}>info@pleasantviewschools.co.ke</a></div>
                       <div><strong style={{ color: 'rgba(255,255,255,0.7)' }}>Finance / Bursar:</strong> <a href="mailto:finance@pleasantviewschools.co.ke" style={{ color: '#ffffff', textDecoration: 'none', fontWeight: 700 }}>finance@pleasantviewschools.co.ke</a></div>
                       <div><strong style={{ color: 'rgba(255,255,255,0.7)' }}>Central Admin:</strong> <a href="mailto:admin@pleasantviewschools.co.ke" style={{ color: '#ffffff', textDecoration: 'none', fontWeight: 700 }}>admin@pleasantviewschools.co.ke</a></div>
                     </div>

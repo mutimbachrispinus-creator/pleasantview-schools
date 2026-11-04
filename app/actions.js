@@ -12,7 +12,7 @@ export async function book(fd) {
   const targetSchool = b.school && b.school !== '0' && b.school !== 'all' ? await getSchool(b.school) : null;
   const schoolId = targetSchool?.id || 0;
   const schoolName = targetSchool?.name || 'Pleasant View Schools Main Campus';
-  const schoolEmail = targetSchool?.email || process.env.SCHOOL_EMAIL || 'admission@pleasantviewschools.co.ke';
+  const schoolEmail = targetSchool?.email || process.env.SCHOOL_EMAIL || 'admissions@pleasantviewschools.co.ke';
   const back = targetSchool ? `/s/${targetSchool.slug}/visit?ok=1` : '/contact?booked=1#visit';
 
   if (b.website || (await limited('v' + (await ip())))) redirect(back);
@@ -26,7 +26,7 @@ export async function book(fd) {
     +b.guests || 1
   ]);
 
-  // Log directly to Inbound Webmail Inbox under admission@pleasantviewschools.co.ke
+  // Log directly to Inbound Webmail Inbox under admissions@pleasantviewschools.co.ke
   try {
     const tourBody = `Campus Tour Booking Details:\n\nVisitor Name: ${b.name}\nPhone: ${b.phone}\nEmail: ${b.email || 'Not specified'}\nPreferred Date: ${b.visit_date}\nGuests: ${b.guests || 1}\nCampus Division: ${schoolName}\nProspective Grade: ${b.grade || 'Not specified'}`;
     await q(
@@ -62,7 +62,7 @@ export async function enquire(fd) {
   const b = Object.fromEntries(fd);
   const s = b.school ? await getSchool(b.school) : null;
   const back = s ? `/s/${s.slug}/contact?ok=1` : '/contact?ok=1';
-  const targetEmail = s?.email || process.env.SCHOOL_EMAIL || 'infor@pleasantviewschools.co.ke';
+  const targetEmail = s?.email || process.env.SCHOOL_EMAIL || 'info@pleasantviewschools.co.ke';
 
   if (b.website || (await limited('c' + (await ip())))) redirect(back);
 
@@ -74,7 +74,7 @@ export async function enquire(fd) {
     b.message
   ]);
 
-  // Log directly to Inbound Webmail Inbox under infor@pleasantviewschools.co.ke
+  // Log directly to Inbound Webmail Inbox under info@pleasantviewschools.co.ke
   try {
     const enqBody = `Admissions & General Inquiry:\n\nSender: ${b.name}\nPhone: ${b.phone}\nEmail: ${b.email || 'Not specified'}\nCampus Division: ${s?.name || 'All Campuses'}\n\nMessage:\n${b.message}`;
     await q(

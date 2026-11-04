@@ -21,8 +21,8 @@ export default function WebmailClient({
 
   // Pre-seed core accounts if empty
   const coreAccounts = [
-    { email: 'infor@pleasantviewschools.co.ke', label: 'Information & General Desk', dept: 'General' },
-    { email: 'admission@pleasantviewschools.co.ke', label: 'Admissions Office', dept: 'Admissions' },
+    { email: 'info@pleasantviewschools.co.ke', label: 'Information & General Desk', dept: 'General' },
+    { email: 'admissions@pleasantviewschools.co.ke', label: 'Admissions Office', dept: 'Admissions' },
     { email: 'finance@pleasantviewschools.co.ke', label: 'Finance & Bursar', dept: 'Finance' },
     { email: 'admin@pleasantviewschools.co.ke', label: 'Central Administration', dept: 'Admin' }
   ];
@@ -51,7 +51,7 @@ export default function WebmailClient({
     type: 'inbound',
     sender: m.sender_email || m.sender_name || 'Anonymous',
     sender_name: m.sender_name || m.sender_email || 'Prospective Parent',
-    recipient: m.recipient || 'infor@pleasantviewschools.co.ke',
+    recipient: m.recipient || 'info@pleasantviewschools.co.ke',
     subject: m.subject || '(No Subject)',
     body: m.body || m.html || '',
     date: m.created || '',
@@ -870,7 +870,7 @@ export default function WebmailClient({
                 </label>
                 <select
                   name="from"
-                  defaultValue={selectedAccount !== 'all' ? selectedAccount : 'admission@pleasantviewschools.co.ke'}
+                  defaultValue={selectedAccount !== 'all' ? selectedAccount : 'admissions@pleasantviewschools.co.ke'}
                   style={{ width: '100%', padding: '9px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '13px', fontWeight: 600 }}
                 >
                   {accountList.map(a => (
@@ -1002,7 +1002,7 @@ export default function WebmailClient({
                 </label>
                 <select
                   name="recipient"
-                  defaultValue="admission@pleasantviewschools.co.ke"
+                  defaultValue="admissions@pleasantviewschools.co.ke"
                   style={{ width: '100%', padding: '9px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '13px', fontWeight: 600 }}
                 >
                   {accountList.map(a => (

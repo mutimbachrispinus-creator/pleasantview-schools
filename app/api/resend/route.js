@@ -19,8 +19,8 @@ export async function GET(req) {
     service: 'Resend Email Service',
     status: isConfigured ? 'configured' : 'missing_api_key',
     configured: isConfigured,
-    from: process.env.MAIL_FROM || 'Pleasant View Schools <infor@pleasantviewschools.co.ke>',
-    defaultTo: process.env.SCHOOL_EMAIL || 'infor@pleasantviewschools.co.ke',
+    from: process.env.MAIL_FROM || 'Pleasant View Schools <info@pleasantviewschools.co.ke>',
+    defaultTo: process.env.SCHOOL_EMAIL || 'info@pleasantviewschools.co.ke',
     inboundEmailCount: countRow ? Number(countRow.c) : 0,
     timestamp: new Date().toISOString()
   });
@@ -46,7 +46,7 @@ export async function POST(req) {
     ) {
       const sender = typeof body.from === 'object' ? (body.from.email || JSON.stringify(body.from)) : String(body.from || '');
       const senderName = body.name || (typeof body.from === 'object' ? body.from.name : '') || sender.split('@')[0];
-      const recipient = body.to || body.recipient || process.env.SCHOOL_EMAIL || 'infor@pleasantviewschools.co.ke';
+      const recipient = body.to || body.recipient || process.env.SCHOOL_EMAIL || 'info@pleasantviewschools.co.ke';
       const subject = body.subject || 'Inbound Inquiry';
       const text = body.text || body.body || '';
       const html = body.html || '';

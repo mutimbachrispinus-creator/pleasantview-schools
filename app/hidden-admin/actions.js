@@ -27,42 +27,74 @@ const slugify = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/
 const newKey = () => crypto.randomBytes(8).toString('hex');
 
 export async function login(fd) {
-  if (limited('a' + ((await headers()).get('x-forwarded-for') || 'x'))) return;
+  if (limited('a' + ((await headers()).get('x-forwarded-for') || 'x'))) {
+    return { ok: false, error: 'Too many authentication attempts. Please wait a few moments before trying again.' };
+  }
   const key = fd.get('key') || '',
     em = String(fd.get('email') || '').trim().toLowerCase(),
     pw = String(fd.get('password') || '').trim();
+
+  if (!pw) {
+    return { ok: false, error: 'Password is required.' };
+  }
+
   if (!key) {
     const masterEmail = (process.env.ADMIN_EMAIL || 'admin@pleasantviewschools.co.ke').trim().toLowerCase();
-    const masterPassword = (process.env.ADMIN_PASSWORD || 'pleasantview2026').trim();
-    const isMaster = em === 'admin' || em === masterEmail || em === 'admin@pleasantviewschools.co.ke' || em.startsWith('admin@');
-    if (isMaster && (pw === masterPassword || eq(pw, masterPassword))) {
-      await startSession(0);
-    } else {
-      // Dynamic admin accounts from admins table
-      const [adm] = await q('SELECT * FROM admins WHERE (lower(email)=? OR lower(name)=?) AND is_active=1', [em, em]);
-      if (adm && adm.password && (pw === adm.password.trim() || eq(pw, adm.password.trim()))) {
-        await startSession(adm.school_id || 0);
-      } else {
-        // Dynamic departmental email accounts (admission@, finance@, infor@, etc.)
-        const [acc] = await q('SELECT * FROM email_accounts WHERE lower(email)=? AND is_active=1 AND can_login=1', [em]);
-        if (acc && acc.password && (pw === acc.password.trim() || eq(pw, acc.password.trim()))) {
-          await startSession(0);
-        } else {
-          // Direct school branch admin credentials
-          const [s] = await q('SELECT * FROM schools WHERE (lower(admin_email)=? OR lower(email)=?)', [em, em]);
-          if (s && s.admin_hash && checkPw(pw, s.admin_hash)) {
-            await startSession(s.id);
-          }
-        }
-      }
+    const isMaster = em === 'admin' || em === masterEmail || em.startsWith('admin@');
+
+    // 1. Check database settings for dynamically saved master admin password (from OTP reset)
+    const [savedMaster] = await q('SELECT v FROM settings WHERE k="admin_master_password"');
+    const [savedMasterHash] = await q('SELECT v FROM settings WHERE k="admin_master_password_hash"');
+
+    let masterPwValid = false;
+    if (savedMaster?.v && (pw === savedMaster.v || eq(pw, savedMaster.v))) {
+      masterPwValid = true;
+    } else if (savedMasterHash?.v && checkPw(pw, savedMasterHash.v)) {
+      masterPwValid = true;
+    } else if (process.env.ADMIN_PASSWORD && (pw === process.env.ADMIN_PASSWORD.trim() || eq(pw, process.env.ADMIN_PASSWORD.trim()))) {
+      masterPwValid = true;
     }
+
+    if (isMaster && masterPwValid) {
+      await startSession(0);
+      done();
+      return { ok: true };
+    }
+
+    // 2. Dynamic admin accounts from admins table
+    const [adm] = await q('SELECT * FROM admins WHERE (lower(email)=? OR lower(name)=?) AND is_active=1', [em, em]);
+    if (adm && adm.password && (pw === adm.password.trim() || eq(pw, adm.password.trim()))) {
+      await startSession(adm.school_id || 0);
+      done();
+      return { ok: true };
+    }
+
+    // 3. Dynamic departmental email accounts (admissions@, finance@, info@, etc.)
+    const [acc] = await q('SELECT * FROM email_accounts WHERE lower(email)=? AND is_active=1 AND can_login=1', [em]);
+    if (acc && acc.password && (pw === acc.password.trim() || eq(pw, acc.password.trim()))) {
+      await startSession(0);
+      done();
+      return { ok: true };
+    }
+
+    // 4. Direct school branch admin credentials
+    const [s] = await q('SELECT * FROM schools WHERE (lower(admin_email)=? OR lower(email)=?)', [em, em]);
+    if (s && s.admin_hash && checkPw(pw, s.admin_hash)) {
+      await startSession(s.id);
+      done();
+      return { ok: true };
+    }
+
+    return { ok: false, error: 'Invalid username, department email, or password. Please verify your credentials or use the OTP reset tab.' };
   } else {
     const [s] = await q('SELECT * FROM schools WHERE admin_key=?', [key]);
     if (s && s.admin_email && eq(em, s.admin_email) && checkPw(pw, s.admin_hash)) {
       await startSession(s.id);
+      done();
+      return { ok: true };
     }
+    return { ok: false, error: 'Invalid school admin credentials or access key.' };
   }
-  done();
 }
 
 export async function logout() {
@@ -80,7 +112,7 @@ export async function addSchool(fd) {
   // Central admin decides the operating admin username/email and password
   const derivedEmail = getSchoolEmailFromName(name);
   const adminEmail = String(fd.get('admin_email') || derivedEmail).trim().toLowerCase();
-  const adminPassword = String(fd.get('admin_password') || 'pleasantview2026').trim();
+  const adminPassword = String(fd.get('admin_password') || '').trim();
   const adminName = String(fd.get('admin_name') || `${name} Head`).trim();
   const h = adminPassword ? hashPw(adminPassword) : '';
 
@@ -420,7 +452,7 @@ export async function del(fd) {
 
 export async function testResend(fd) {
   await A();
-  const to = String(fd.get('email') || process.env.SCHOOL_EMAIL || 'infor@pleasantviewschools.co.ke');
+  const to = String(fd.get('email') || process.env.SCHOOL_EMAIL || 'info@pleasantviewschools.co.ke');
   const res = await sendEmail({
     to,
     subject: 'Pleasant View Schools Resend Gateway Verification',
@@ -561,7 +593,7 @@ export async function simulateInboundEmail(fd) {
   const email = String(fd.get('email') || 'parent@example.com').trim();
   const subject = String(fd.get('subject') || 'Admission Inquiry').trim();
   const body = String(fd.get('body') || 'Hello Admissions, I would like to inquire about admission requirements.').trim();
-  const recipient = String(fd.get('recipient') || process.env.SCHOOL_EMAIL || 'infor@pleasantviewschools.co.ke').trim();
+  const recipient = String(fd.get('recipient') || process.env.SCHOOL_EMAIL || 'info@pleasantviewschools.co.ke').trim();
 
   await q('INSERT INTO inbound_emails(sender_name, sender_email, recipient, subject, body, status) VALUES(?,?,?,?,?,?)', [
     name,
@@ -926,7 +958,7 @@ export async function toggleEvent(fd) {
 
 export async function sendWebmail(fd) {
   await A();
-  const from = String(fd.get('from') || 'admission@pleasantviewschools.co.ke').trim();
+  const from = String(fd.get('from') || 'admissions@pleasantviewschools.co.ke').trim();
   const to = String(fd.get('to') || '').trim();
   const subject = String(fd.get('subject') || 'Pleasant View Schools Official Correspondence').trim();
   const body = String(fd.get('body') || '').trim();
@@ -944,86 +976,205 @@ export async function sendWebmail(fd) {
 }
 
 export async function requestPasswordChangeOTP(fd) {
-  const emInput = String(fd.get('email') || '').trim().toLowerCase();
+  const identity = String(fd.get('identity') || fd.get('email') || '').trim();
+  const deliveryMethod = String(fd.get('delivery_method') || 'email').trim().toLowerCase(); // 'email' | 'sms'
   const newPw = String(fd.get('new_password') || '').trim();
-  if (!emInput || !newPw) {
-    return { ok: false, error: 'Email and new password are required.' };
+
+  if (!identity) {
+    return { ok: false, error: 'Please enter your registered administrator email address or phone number.' };
+  }
+  if (!newPw || newPw.length < 6) {
+    return { ok: false, error: 'New password must contain at least 6 characters.' };
   }
 
-  // Resolve username "admin" to central admin email
-  const targetEmail = (emInput === 'admin' || emInput.startsWith('admin'))
-    ? (process.env.ADMIN_EMAIL || 'admin@pleasantviewschools.co.ke')
-    : emInput;
+  // 1. STRICT SECURITY VERIFICATION: MUST BE AN ALREADY REGISTERED ADMIN IN THE PORTAL
+  const idLower = identity.toLowerCase();
+  const cleanIdPhone = identity.replace(/[\s\-\(\)]+/g, '');
+  let matchedAdmin = null;
 
-  // Ensure password_otps table exists
-  await q('CREATE TABLE IF NOT EXISTS password_otps(email TEXT PRIMARY KEY, otp TEXT, new_password TEXT, expires_at INTEGER, created TEXT DEFAULT CURRENT_TIMESTAMP)');
+  // Master central admin check
+  const masterEmail = (process.env.ADMIN_EMAIL || 'admin@pleasantviewschools.co.ke').trim().toLowerCase();
+  const settings = await S();
+  const masterPhone = (settings.phone || process.env.SCHOOL_PHONE || '+254711689913').replace(/[\s\-\(\)]+/g, '');
+
+  if (
+    idLower === 'admin' ||
+    idLower === masterEmail ||
+    idLower.startsWith('admin@') ||
+    cleanIdPhone === masterPhone ||
+    cleanIdPhone === '+254711689913' ||
+    cleanIdPhone === '0711689913'
+  ) {
+    matchedAdmin = {
+      type: 'master',
+      name: 'Central Administrator',
+      email: masterEmail,
+      phone: masterPhone
+    };
+  }
+
+  if (!matchedAdmin) {
+    // Check admins table
+    const [adm] = await q(
+      'SELECT * FROM admins WHERE (lower(email)=? OR REPLACE(phone, " ", "")=? OR lower(name)=?) AND is_active=1',
+      [idLower, cleanIdPhone, idLower]
+    );
+    if (adm) {
+      matchedAdmin = {
+        type: 'admin',
+        name: adm.name,
+        email: adm.email,
+        phone: adm.phone,
+        school_id: adm.school_id
+      };
+    }
+  }
+
+  if (!matchedAdmin) {
+    // Check schools table for branch admin
+    const [s] = await q(
+      'SELECT * FROM schools WHERE (lower(admin_email)=? OR lower(email)=? OR REPLACE(phone, " ", "")=?)',
+      [idLower, idLower, cleanIdPhone]
+    );
+    if (s) {
+      matchedAdmin = {
+        type: 'school',
+        name: `${s.name} Admin`,
+        email: s.admin_email || s.email,
+        phone: s.phone,
+        school_id: s.id
+      };
+    }
+  }
+
+  if (!matchedAdmin) {
+    // Check email_accounts table
+    const [acc] = await q(
+      'SELECT * FROM email_accounts WHERE lower(email)=? AND is_active=1 AND can_login=1',
+      [idLower]
+    );
+    if (acc) {
+      matchedAdmin = {
+        type: 'staff',
+        name: acc.display_name || acc.email,
+        email: acc.email,
+        phone: ''
+      };
+    }
+  }
+
+  // RESTRICT ACCESS: If not already registered in portal, REJECT!
+  if (!matchedAdmin) {
+    return {
+      ok: false,
+      error: 'Security Notice: This email address or phone number is not registered as an administrator in the school portal. Password changes can only be initiated by registered portal administrators.'
+    };
+  }
+
+  // Destination resolution
+  const destEmail = matchedAdmin.email;
+  const destPhone = matchedAdmin.phone || masterPhone;
 
   // Auto-generate 6-digit numeric OTP
   const otp = String(Math.floor(100000 + Math.random() * 900000));
   const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
 
+  // Ensure password_otps table exists
   await q(
-    'INSERT INTO password_otps(email, otp, new_password, expires_at) VALUES(?,?,?,?) ON CONFLICT(email) DO UPDATE SET otp=excluded.otp, new_password=excluded.new_password, expires_at=excluded.expires_at',
-    [targetEmail, otp, newPw, expiresAt]
+    'CREATE TABLE IF NOT EXISTS password_otps(identity TEXT PRIMARY KEY, otp TEXT, new_password TEXT, expires_at INTEGER, target_email TEXT, target_phone TEXT, admin_type TEXT, created TEXT DEFAULT CURRENT_TIMESTAMP)'
   );
 
-  // Dispatch via Resend email
-  try {
-    await sendEmail({
-      to: targetEmail,
-      subject: `[Pleasant View Schools] Password Change OTP Verification Code: ${otp}`,
-      text: `Dear Administrator,\n\nA request was initiated to update your credentials for Pleasant View Schools.\n\nYour 6-Digit One-Time Verification Code is:\n\n${otp}\n\nThis OTP expires in 10 minutes.\nIf you did not initiate this request, please contact Central Administration immediately.\n\nWarm regards,\nPleasant View Schools Security Desk`
-    });
-  } catch (err) {
-    console.warn('[OTP Resend Note]:', err.message);
+  const targetKey = destEmail.toLowerCase();
+  await q(
+    'INSERT INTO password_otps(identity, otp, new_password, expires_at, target_email, target_phone, admin_type) VALUES(?,?,?,?,?,?,?) ON CONFLICT(identity) DO UPDATE SET otp=excluded.otp, new_password=excluded.new_password, expires_at=excluded.expires_at, target_email=excluded.target_email, target_phone=excluded.target_phone, admin_type=excluded.admin_type',
+    [targetKey, otp, newPw, expiresAt, destEmail, destPhone, matchedAdmin.type]
+  );
+
+  let dispatchDetails = '';
+
+  if (deliveryMethod === 'sms') {
+    if (!destPhone) {
+      return { ok: false, error: `No registered telephone contact found for ${matchedAdmin.name}. Please select Email delivery.` };
+    }
+    const cleanPhone = destPhone.replace(/[\s\-\(\)]+/g, '');
+    const smsMessage = `[Pleasant View Schools] Admin Security OTP: ${otp}. Valid for 10 minutes. Do not share this code.`;
+    try {
+      await sendSMS({ to: cleanPhone, message: smsMessage });
+    } catch (err) {
+      console.warn('[OTP SMS Notice]:', err.message);
+    }
+    const maskedPhone = cleanPhone.slice(0, 4) + ' ••• ••• ' + cleanPhone.slice(-3);
+    dispatchDetails = `SMS sent to registered phone ${maskedPhone}`;
+  } else {
+    // Default to Email delivery
+    const emailSubject = `[Pleasant View Schools] Admin Password OTP: ${otp}`;
+    const emailBody = `Dear ${matchedAdmin.name},\n\nA request was initiated to update your administrator password for Pleasant View Schools.\n\nYour 6-Digit One-Time Verification Code is:\n\n${otp}\n\nThis OTP expires in 10 minutes.\nIf you did not initiate this request, please contact Central Administration immediately.\n\nWarm regards,\nPleasant View Schools Security Desk`;
+    try {
+      await sendEmail({
+        to: destEmail,
+        subject: emailSubject,
+        text: emailBody
+      });
+    } catch (err) {
+      console.warn('[OTP Email Notice]:', err.message);
+    }
+    const [userPart, domainPart] = destEmail.split('@');
+    const maskedEmail = (userPart || 'ad').slice(0, 2) + '***@' + (domainPart || 'pleasantviewschools.co.ke');
+    dispatchDetails = `Email dispatched to registered address ${maskedEmail}`;
   }
 
   return {
     ok: true,
-    targetEmail,
-    otp: !process.env.RESEND_API_KEY ? otp : undefined, // Provide in dev/testing if RESEND_API_KEY not configured
-    message: `6-digit OTP dispatched to ${targetEmail}`
+    targetKey,
+    dispatchDetails,
+    otp: !process.env.RESEND_API_KEY && !process.env.AT_API_KEY ? otp : undefined,
+    message: `6-digit verification code sent via ${deliveryMethod.toUpperCase()} (${dispatchDetails}).`
   };
 }
 
 export async function verifyPasswordChangeOTP(fd) {
-  const emInput = String(fd.get('email') || '').trim().toLowerCase();
+  const targetKey = String(fd.get('target_key') || fd.get('identity') || fd.get('email') || '').trim().toLowerCase();
   const otpInput = String(fd.get('otp') || '').trim();
-  const newPw = String(fd.get('new_password') || '').trim();
+  const newPwInput = String(fd.get('new_password') || '').trim();
 
-  const targetEmail = (emInput === 'admin' || emInput.startsWith('admin'))
-    ? (process.env.ADMIN_EMAIL || 'admin@pleasantviewschools.co.ke')
-    : emInput;
-
-  const [otpRecord] = await q('SELECT * FROM password_otps WHERE email=?', [targetEmail]);
+  const [otpRecord] = await q('SELECT * FROM password_otps WHERE identity=?', [targetKey]);
   if (!otpRecord) {
-    return { ok: false, error: 'No active OTP request found. Please request a new verification code.' };
+    return { ok: false, error: 'No active OTP verification found for this account. Please request a new verification code.' };
   }
 
   if (Number(otpRecord.expires_at) < Date.now()) {
-    await q('DELETE FROM password_otps WHERE email=?', [targetEmail]);
-    return { ok: false, error: 'OTP code has expired. Please request a new verification code.' };
+    await q('DELETE FROM password_otps WHERE identity=?', [targetKey]);
+    return { ok: false, error: 'Verification code has expired. Please request a new OTP.' };
   }
 
   if (String(otpRecord.otp).trim() !== otpInput) {
-    return { ok: false, error: 'Incorrect OTP code. Please enter the 6 digits sent to your email.' };
+    return { ok: false, error: 'Incorrect verification code. Please enter the 6-digit code received.' };
   }
 
-  const finalPassword = newPw || otpRecord.new_password;
+  const finalPassword = newPwInput || otpRecord.new_password;
   const h = hashPw(finalPassword);
 
-  // Update admins table
-  await q('UPDATE admins SET password=? WHERE lower(email)=?', [finalPassword, targetEmail]);
+  // 1. Central Master Admin: Save securely into settings table (decoupled from GitHub source code!)
+  if (
+    otpRecord.admin_type === 'master' ||
+    targetKey === (process.env.ADMIN_EMAIL || 'admin@pleasantviewschools.co.ke').toLowerCase()
+  ) {
+    await q('INSERT OR REPLACE INTO settings (k, v) VALUES ("admin_master_password", ?)', [finalPassword]);
+    await q('INSERT OR REPLACE INTO settings (k, v) VALUES ("admin_master_password_hash", ?)', [h]);
+  }
 
-  // Update schools table if this is an operating branch admin email
-  await q('UPDATE schools SET admin_hash=? WHERE lower(admin_email)=?', [h, targetEmail]);
+  // 2. Update admins table
+  await q('UPDATE admins SET password=? WHERE lower(email)=?', [finalPassword, otpRecord.target_email.toLowerCase()]);
 
-  // Update email_accounts table
-  await q('UPDATE email_accounts SET password=? WHERE lower(email)=?', [finalPassword, targetEmail]);
+  // 3. Update schools table if this is a branch administrator
+  await q('UPDATE schools SET admin_hash=? WHERE lower(admin_email)=?', [h, otpRecord.target_email.toLowerCase()]);
+
+  // 4. Update email_accounts table
+  await q('UPDATE email_accounts SET password=? WHERE lower(email)=?', [finalPassword, otpRecord.target_email.toLowerCase()]);
 
   // Clear used OTP
-  await q('DELETE FROM password_otps WHERE email=?', [targetEmail]);
+  await q('DELETE FROM password_otps WHERE identity=?', [targetKey]);
 
   done();
-  return { ok: true, message: 'Password updated successfully!' };
+  return { ok: true, message: 'Password updated successfully! You can now sign in with your new credentials.' };
 }
