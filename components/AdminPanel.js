@@ -814,7 +814,7 @@ export default async function Panel({ scope, edit }) {
                           {t.status !== 'rejected' && (
                             <form action={rejectTestimonial} style={{ display: 'inline' }}>
                               <input type="hidden" name="id" value={t.id} />
-                              <button type="submit" style={{ background: '#ffc107', color: '#000', border: 0, padding: '4px 10px', borderRadius: '3px', fontSize: '12px', cursor: 'pointer' }}>
+                              <button type="submit" style={{ background: '#495057', color: '#fff', border: 0, padding: '4px 10px', borderRadius: '3px', fontSize: '12px', cursor: 'pointer' }}>
                                 Reject
                               </button>
                             </form>

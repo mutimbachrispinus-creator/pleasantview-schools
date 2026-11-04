@@ -184,7 +184,7 @@ nav.main-nav .wrapper {
 }
 .brand-logo:hover .brand-crest-img {
   transform: scale(1.05);
-  filter: drop-shadow(0 6px 20px rgba(212, 175, 55, 0.75));
+  filter: drop-shadow(0 6px 20px rgba(139, 30, 45, 0.75));
 }
 
 nav.main-nav.scrolled .brand-crest-container {
@@ -296,8 +296,8 @@ nav.main-nav.scrolled .brand-crest-img {
 }
 
 .top-honors-chip {
-  background: rgba(212, 175, 55, 0.16);
-  border: 1px solid rgba(212, 175, 55, 0.5);
+  background: rgba(139, 30, 45, 0.16);
+  border: 1px solid rgba(139, 30, 45, 0.5);
   color: #ffffff !important;
   padding: 3px 10px;
   border-radius: 9999px;
@@ -348,7 +348,7 @@ nav.main-nav.scrolled .brand-crest-img {
   font-size: 13px !important;
   font-weight: 700 !important;
   letter-spacing: 0.5px !important;
-  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.35);
+  box-shadow: 0 4px 14px rgba(139, 30, 45, 0.35);
   border-radius: 4px;
   display: inline-flex;
   align-items: center;
@@ -357,7 +357,7 @@ nav.main-nav.scrolled .brand-crest-img {
 }
 .nav-cta-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.55);
+  box-shadow: 0 6px 20px rgba(139, 30, 45, 0.55);
 }
 
 .nav-arrow {
@@ -1584,7 +1584,7 @@ footer .footer-col.logo .brand-crest-img {
   position: relative;
   height: 45vh;
   min-height: 340px;
-  background: var(--dark-navy);
+  background: #14181E;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1596,8 +1596,8 @@ footer .footer-col.logo .brand-crest-img {
 .subpage-hero .overlay {
   position: absolute;
   inset: 0;
-  /* Crystal-clear subpage photo visibility: no heavy color blocks, photograph is vividly seen */
-  background: linear-gradient(180deg, rgba(20, 24, 30, 0.38) 0%, rgba(0, 0, 0, 0.12) 40%, rgba(20, 24, 30, 0.72) 100%);
+  /* Crystal-clear natural photo visibility: no heavy blue/sky tint, photo is vividly seen */
+  background: linear-gradient(180deg, rgba(15, 20, 28, 0.28) 0%, rgba(0, 0, 0, 0.08) 40%, rgba(15, 20, 28, 0.60) 100%);
 }
 .subpage-hero-content {
   position: relative;
@@ -2200,8 +2200,8 @@ section.director-welcome-section {
   border-left: 3px solid transparent;
 }
 .bottom-nav .sub-menu li a:hover {
-  border-left-color: var(--gold-accent);
-  background: rgba(224, 168, 46, 0.12);
+  border-left-color: var(--primary-red);
+  background: rgba(139, 30, 45, 0.08);
 }
 
 /* SUBPAGE NAVIGATION & BACK BUTTON */
@@ -2416,7 +2416,7 @@ section.director-welcome-section {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, var(--gold-accent), #f3c25b, var(--gold-dark));
+  background: linear-gradient(90deg, var(--primary-red), #C22A3E, var(--dark-red));
 }
 .at-a-glance-grid {
   display: grid;

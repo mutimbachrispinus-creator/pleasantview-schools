@@ -23,7 +23,10 @@ export const metadata = {
     apple: [
       { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }
     ]
-  },
+  }
+};
+
+export const viewport = {
   themeColor: '#8B1E2D'
 };
 
