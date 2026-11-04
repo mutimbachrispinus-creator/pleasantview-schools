@@ -1,5 +1,6 @@
 import Page from '@/components/Page';
 
+export const dynamic = 'force-dynamic';
 export const metadata = {
   title: 'Terms of Service & Institutional Governance',
   description: 'Official Terms of Service, Child Safeguarding Protocols, and Digital Portal Governance at Pleasant View Schools in Githunguri, Kiambu County.'

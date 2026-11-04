@@ -1,5 +1,6 @@
 import Page from '@/components/Page';
 
+export const dynamic = 'force-dynamic';
 export const metadata = {
   title: 'Cookie Policy & Tracking Consent',
   description: 'Official Pleasant View Schools Cookie Policy. Technical details regarding strictly essential cookies, interface preferences, and privacy controls.'

@@ -1,5 +1,6 @@
 import Page from '@/components/Page';
 
+export const dynamic = 'force-dynamic';
 export const metadata = {
   title: 'Privacy Policy (Kenya Data Protection Act 2019)',
   description: 'Official Pleasant View Schools Privacy Policy. Comprehensive data protection, pupil confidentiality, and compliance with the Kenya Data Protection Act 2019 (ODPC).'

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { S, getExamResults } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'About Our Heritage, Mission, Academic Results & Policies' };
+export const metadata = { title: 'About Our Heritage, Mission & Academic Eminence' };
 
 export default async function About() {
   const [s, examResults] = await Promise.all([
