@@ -9,8 +9,8 @@ export async function GET() {
     providers: {
       resend: {
         configured: Boolean(process.env.RESEND_API_KEY),
-        from: process.env.MAIL_FROM || 'Pleasant View Schools <onboarding@resend.dev>',
-        schoolEmail: process.env.SCHOOL_EMAIL || 'info@pleasantview.sc.ke'
+        from: process.env.MAIL_FROM || 'Pleasant View Schools <infor@pleasantviewschools.co.ke>',
+        schoolEmail: process.env.SCHOOL_EMAIL || 'infor@pleasantviewschools.co.ke'
       },
       africasTalking: {
         configured: Boolean(process.env.AT_API_KEY || process.env.AFRICASTALKING_API_KEY),

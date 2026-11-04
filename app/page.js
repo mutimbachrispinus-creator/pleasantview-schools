@@ -332,7 +332,7 @@ export default async function Home({ searchParams }) {
             </h2>
             <div className="gold-divider" style={{ margin: '12px auto' }} />
             <p style={{ color: '#666', fontSize: '15px' }}>
-              From early childhood playgroup through senior high school graduation, discover our age-tailored CBC and 8.4.4 academic programs.
+              From early childhood playgroup through senior high school graduation, discover our age-tailored CBE and senior academic pathways.
             </p>
           </div>
 
@@ -346,8 +346,8 @@ export default async function Home({ searchParams }) {
                   <span className="program-card-badge">{s.category || 'Division'}</span>
                 </div>
                 <div className="program-card-body">
-                  <h4>{s.name}</h4>
-                  <div className="program-level">{s.level}</div>
+                  <h4>{String(s.name || '').replace(/pleasantview/gi, 'Pleasant View')}</h4>
+                  <div className="program-level">{String(s.level || '').replace(/CBC/g, 'CBE').replace(/pleasantview/gi, 'Pleasant View')}</div>
                   <p>{s.tagline || s.about?.slice(0, 110) + '...' || 'Distinctive academic program tailored for holistic excellence.'}</p>
                   <div className="program-card-meta">
                     <span>Enrolled: <strong>{s.learners || 'Enrolled'}</strong></span>
@@ -569,8 +569,8 @@ export default async function Home({ searchParams }) {
                       </div>
                       <div>
                         <span style={{
-                          background: 'rgba(5,40,107,0.08)',
-                          color: 'var(--primary-navy)',
+                          background: 'rgba(139,30,45,0.08)',
+                          color: 'var(--primary-red)',
                           padding: '3px 8px',
                           borderRadius: '3px',
                           fontSize: '11px',
@@ -794,7 +794,7 @@ export default async function Home({ searchParams }) {
                   <div style={{
                     position: 'absolute',
                     inset: 0,
-                    background: 'linear-gradient(to top, rgba(7,28,61,0.85) 0%, transparent 60%)'
+                    background: 'linear-gradient(to top, rgba(20,24,30,0.85) 0%, transparent 60%)'
                   }} />
                   <span style={{
                     position: 'absolute',
@@ -823,7 +823,7 @@ export default async function Home({ searchParams }) {
 
                   <div style={{ paddingTop: '14px', borderTop: '1px solid #edf1f7', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                     {l.favorite_subject && (
-                      <span style={{ background: 'rgba(5,40,107,0.06)', color: 'var(--primary-navy)', padding: '4px 10px', borderRadius: '4px', fontSize: '12px', fontWeight: 600 }}>
+                      <span style={{ background: 'rgba(139,30,45,0.08)', color: 'var(--primary-red)', padding: '4px 10px', borderRadius: '4px', fontSize: '12px', fontWeight: 600 }}>
                         <i className="fa-solid fa-book-open" style={{ marginRight: '5px', color: 'var(--gold-accent)' }} />
                         {l.favorite_subject}
                       </span>
@@ -880,14 +880,14 @@ export default async function Home({ searchParams }) {
                     <div style={{
                       position: 'absolute',
                       inset: 0,
-                      background: 'linear-gradient(to top, rgba(7,28,61,0.85) 0%, transparent 60%)'
+                      background: 'linear-gradient(to top, rgba(20,24,30,0.85) 0%, transparent 60%)'
                     }} />
                     <span style={{
                       position: 'absolute',
                       top: '12px',
                       left: '12px',
-                      background: 'var(--gold-accent)',
-                      color: 'var(--primary-navy)',
+                      background: 'var(--primary-red)',
+                      color: '#ffffff',
                       padding: '4px 10px',
                       borderRadius: '4px',
                       fontSize: '11px',

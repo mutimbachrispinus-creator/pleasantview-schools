@@ -137,14 +137,18 @@ export default function HeaderNav({
                   <Link href="/#schools">Divisions <i className="fa-solid fa-angle-down nav-arrow" /></Link>
                   <ul className="sub-menu">
                     {schools.length > 0 ? (
-                      schools.map(s => (
-                        <li key={s.id}>
-                          <Link href={`/s/${s.slug}`}>
-                            <strong>{s.name}</strong>
-                            <span style={{ display: 'block', fontSize: '11px', color: '#888' }}>{s.level || s.category}</span>
-                          </Link>
-                        </li>
-                      ))
+                      schools.map(s => {
+                        const cleanName = String(s.name || '').replace(/pleasantview/gi, 'Pleasant View');
+                        const cleanLevel = String(s.level || s.category || '').replace(/CBC/g, 'CBE').replace(/pleasantview/gi, 'Pleasant View');
+                        return (
+                          <li key={s.id}>
+                            <Link href={`/s/${s.slug}`}>
+                              <strong>{cleanName}</strong>
+                              <span style={{ display: 'block', fontSize: '11px', color: '#888' }}>{cleanLevel}</span>
+                            </Link>
+                          </li>
+                        );
+                      })
                     ) : (
                       <>
                         <li><Link href="/s/pleasantview-senior">Pleasant View Senior School</Link></li>
@@ -297,8 +301,12 @@ export default function HeaderNav({
                   onClick={() => setMobileMenuOpen(false)}
                   className="accordion-item"
                 >
-                  <div style={{ fontWeight: 700, color: '#ffffff' }}>{s.name}</div>
-                  <small style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11.5px' }}>{s.category} &bull; {s.level}</small>
+                  <div style={{ fontWeight: 700, color: '#ffffff' }}>
+                    {String(s.name || '').replace(/pleasantview/gi, 'Pleasant View')}
+                  </div>
+                  <small style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11.5px' }}>
+                    {s.category} &bull; {String(s.level || '').replace(/CBC/g, 'CBE').replace(/pleasantview/gi, 'Pleasant View')}
+                  </small>
                 </Link>
               ))}
             </div>

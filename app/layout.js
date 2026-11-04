@@ -14,6 +14,16 @@ export const metadata = {
   },
   description: 'Pleasant View Schools — Our Aim is Victory. Leading Christian Day and Boarding Schools in Githunguri, Kiambu County.',
   manifest: '/manifest.json',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon.png', sizes: '192x192', type: 'image/png' },
+      { url: '/images/pwa_icon_512.png', sizes: '512x512', type: 'image/png' }
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }
+    ]
+  },
   themeColor: '#8B1E2D'
 };
 
@@ -34,7 +44,7 @@ export default async function RootLayout({ children }) {
   }
 
   const phone = settings.phone || process.env.SCHOOL_PHONE || '+254 711 689 913';
-  const email = settings.email || process.env.SCHOOL_EMAIL || 'info@pleasantview.sc.ke';
+  const email = settings.email || process.env.SCHOOL_EMAIL || 'infor@pleasantviewschools.co.ke';
   const mapsUrl = settings.maps_url || 'https://maps.app.goo.gl/iBXf1M86VKxqAEft5';
   const whatsappUrl = settings.whatsapp_url || 'https://wa.me/254711689913?text=Hello%20Pleasant%20View%20Schools,%20I%20would%20like%20to%20inquire%20about%20admissions.';
   const adminPath = '/staff-portal';
@@ -62,15 +72,16 @@ export default async function RootLayout({ children }) {
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         />
-        <link rel="manifest" href="/manifest.json" />
+        <link rel="manifest" href="/manifest.json" crossOrigin="anonymous" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/icon.png" type="image/png" sizes="48x48" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="icon" href="/icon.png" type="image/png" sizes="192x192" />
+        <link rel="icon" href="/images/pwa_icon_512.png" type="image/png" sizes="512x512" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+        <link rel="apple-touch-icon" href="/images/pwa_icon_192.png" />
         <meta name="theme-color" content="#8B1E2D" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <link rel="apple-touch-icon" href="/images/pwa_icon_192.png" />
       </head>
       <body>
         {/* MAIN NAVIGATION (St Andrew's Turi Styling with Dynamic Animated Hamburger Drawer) */}
@@ -145,7 +156,7 @@ export default async function RootLayout({ children }) {
                 </div>
               </Link>
               <p style={{ marginTop: '18px' }}>
-                A leading Christian-ethos group of day and boarding schools offering Competency Based Curriculum (CBC) and 8.4.4. Founded in 1998 in Githunguri, Komothai Subcounty, Kiambu County.
+                A leading Christian-ethos group of day and boarding schools offering Competency Based Education (CBE) and senior academic pathways. Founded in 1998 in Githunguri, Komothai Subcounty, Kiambu County.
               </p>
               <div className="footer-socials">
                 {socials.map((s, idx) => (

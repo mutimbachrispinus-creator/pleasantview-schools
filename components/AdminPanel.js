@@ -1,4 +1,7 @@
 import Link from 'next/link';
+import BackButton from '@/components/BackButton';
+import WebmailClient from '@/components/WebmailClient';
+import AdminPasswordChange from '@/components/AdminPasswordChange';
 import {
   q,
   S,
@@ -99,17 +102,18 @@ const Del = ({ t, id }) => (
 export const LoginForm = ({ k = '', title = 'Staff & Admin Portal' }) => (
   <main className="subpage-body">
     <div className="wrapper">
-      <div className="custom-form" style={{ margin: '40px auto', maxWidth: '480px' }}>
+      <BackButton fallback="/" label="Back" current="Staff & Admin Portal Login" />
+      <div className="custom-form" style={{ margin: '30px auto', maxWidth: '480px' }}>
         <div className="admin-badge"><i className="fa-solid fa-lock" /> AUTHENTICATION</div>
         <h2>{title}</h2>
         <p style={{ fontSize: '14px', color: '#666', marginBottom: '20px' }}>
-          Please authenticate with your administrative credentials or authorized staff department email (e.g. <code>admin@...</code>, <code>support@...</code>, <code>info@...</code>, <code>admissions@...</code>).
+          Please authenticate with your administrative credentials (username <code>admin</code> or department email e.g. <code>admission@...</code>, <code>finance@...</code>, <code>infor@...</code>).
         </p>
         <form action={login}>
           <input type="hidden" name="key" value={k} />
           <div className="form-group">
-            <label>Staff / Department Email Address</label>
-            <input name="email" type="email" placeholder="e.g. admin@pleasantview.sc.ke, support@..." defaultValue="admin@pleasantview.sc.ke" required />
+            <label>Admin Username or Department Email Address</label>
+            <input name="email" type="text" placeholder="e.g. admin or senior@pleasantviewschools.co.ke" defaultValue="admin" required />
           </div>
           <div className="form-group">
             <label>Password</label>
@@ -227,6 +231,7 @@ export default async function Panel({ scope, edit }) {
     <main className="subpage-body" style={{ background: '#f4f6fa', minHeight: '100vh', paddingBottom: '60px' }}>
       <div className="wrapper">
         <div className="admin-panel-container">
+          <BackButton fallback="/" label="Back to Website" current="Staff & Admin Console" />
           {/* HEADER BAR */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
             <div>
@@ -266,14 +271,16 @@ export default async function Panel({ scope, edit }) {
           {/* QUICK NAV / JUMP BAR */}
           <div style={{ background: '#ffffff', padding: '12px 18px', borderRadius: '6px', border: '1px solid #dde2ec', marginBottom: '30px', display: 'flex', gap: '10px', flexWrap: 'wrap', fontSize: '13px', fontWeight: 600 }}>
             <span style={{ color: '#888', alignSelf: 'center' }}>Jump To:</span>
+            <a href="#webmail" style={{ color: 'var(--primary-red)', fontWeight: 800 }}>📬 Webmail Hub</a>
             <a href="#campuses" style={{ color: 'var(--primary-navy)' }}>🏫 Campuses</a>
             <a href="#admins" style={{ color: 'var(--primary-navy)' }}>👥 Admins ({adminsList.length})</a>
+            <a href="#security" style={{ color: 'var(--primary-red)', fontWeight: 700 }}>🔒 OTP Security</a>
             <a href="#exams" style={{ color: 'var(--primary-red)', fontWeight: 700 }}>🎓 Exam Results ({examResultsList.length})</a>
-            <a href="#parent-reviews" style={{ color: '#b26a00', fontWeight: 700 }}>
+            <a href="#parent-reviews" style={{ color: 'var(--primary-red)', fontWeight: 700 }}>
               💬 Parent Reviews {parentTestimonialsList.filter(t => t.status === 'pending').length > 0 && `(${parentTestimonialsList.filter(t => t.status === 'pending').length} Pending)`}
             </a>
             <a href="#learner-voices" style={{ color: 'var(--primary-navy)', fontWeight: 700 }}>🌟 Student Voices ({learnersList.length})</a>
-            <a href="#alumni" style={{ color: 'var(--gold-dark)', fontWeight: 700 }}>🏆 Alumni ({alumniList.length})</a>
+            <a href="#alumni" style={{ color: 'var(--primary-red)', fontWeight: 700 }}>🏆 Alumni ({alumniList.length})</a>
             <a href="#events" style={{ color: 'var(--primary-red)', fontWeight: 700 }}>📅 Events ({eventsList.length})</a>
             <a href="#metrics" style={{ color: 'var(--primary-navy)' }}>📊 Distinction Metrics</a>
             <a href="#gallery" style={{ color: 'var(--primary-navy)' }}>📸 Gallery ({schoolLifePhotos.length})</a>
@@ -383,7 +390,21 @@ export default async function Panel({ scope, edit }) {
                   </div>
                   <div className="form-group">
                     <label>Level / Grades *</label>
-                    <input name="level" placeholder="e.g. Grades 10 – 12 (Form 1 – 4)" required />
+                    <input name="level" placeholder="e.g. Grades 10 – 12 (Form 1 – 4)" defaultValue="Grades 10 – 12" required />
+                  </div>
+                  <div className="form-group">
+                    <label>Operating Admin Username / Email</label>
+                    <input name="admin_email" placeholder="e.g. senior@pleasantviewschools.co.ke" />
+                    <small style={{ color: '#888', fontSize: '11px', display: 'block', marginTop: '2px' }}>
+                      Auto-derived based on first name of school (e.g. senior@...) if left blank.
+                    </small>
+                  </div>
+                  <div className="form-group">
+                    <label>Operating Admin Initial Password *</label>
+                    <input name="admin_password" type="password" placeholder="••••••••••••" defaultValue="pleasantview2026" required />
+                    <small style={{ color: '#888', fontSize: '11px', display: 'block', marginTop: '2px' }}>
+                      Subject to change by the operating admin via OTP verification.
+                    </small>
                   </div>
                   <div className="form-group">
                     <label>Campus Location *</label>
@@ -506,7 +527,7 @@ export default async function Panel({ scope, edit }) {
                   </div>
                   <div className="form-group">
                     <label>Email Address *</label>
-                    <input name="email" type="email" placeholder="jmwangi@pleasantview.sc.ke" required />
+                    <input name="email" type="email" placeholder="jmwangi@pleasantviewschools.co.ke" required />
                   </div>
                   <div className="form-group">
                     <label>Password *</label>
@@ -541,6 +562,18 @@ export default async function Panel({ scope, edit }) {
               </div>
             </section>
           )}
+
+          {/* 1B-2. PASSWORD CHANGE WITH AUTO-GENERATED OTP */}
+          <section id="security" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+            <h2 style={{ fontSize: '22px', margin: '0 0 10px', color: 'var(--primary-navy)' }}>
+              <i className="fa-solid fa-key" style={{ color: 'var(--primary-red)', marginRight: '8px' }} />
+              Administrator Security &amp; Password Management (OTP Verified)
+            </h2>
+            <p style={{ color: '#666', fontSize: '14px', marginBottom: '20px' }}>
+              Central administrators (username: <code>admin</code>) and created school operating administrators can update their login credentials. A 6-digit One-Time Password (OTP) is automatically generated and dispatched to the administrator&apos;s verified email address to confirm the update.
+            </p>
+            <AdminPasswordChange defaultEmail="admin@pleasantviewschools.co.ke" />
+          </section>
 
           {/* 1C-1. ACADEMIC EXAMINATION RESULTS (NATIONAL & IN-SCHOOL) */}
           <section id="exams" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
@@ -1303,7 +1336,7 @@ export default async function Panel({ scope, edit }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
               <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
                 <i className="fa-solid fa-pen-to-square" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
-                Editing Details: {es ? `${es.name} (${es.category || 'Division'})` : 'Main Group Institution (PLEASANTVIEW SCHOOLS)'}
+                Editing Details: {es ? `${es.name} (${es.category || 'Division'})` : 'Main Group Institution (PLEASANT VIEW SCHOOLS)'}
               </h2>
               {!scope && es && (
                 <Link href="?" style={{ color: 'var(--medium-blue)', fontWeight: 700 }}>
@@ -1327,7 +1360,7 @@ export default async function Panel({ scope, edit }) {
                 </div>
               ))}
               <button type="submit" className="button button-gold" style={{ gridColumn: '1 / -1', marginTop: '10px', fontSize: '15px' }}>
-                Save Changes to {es ? es.name : 'PLEASANTVIEW SCHOOLS'}
+                Save Changes to {es ? es.name : 'PLEASANT VIEW SCHOOLS'}
               </button>
             </form>
           </section>
@@ -1394,7 +1427,7 @@ export default async function Panel({ scope, edit }) {
                   <select name="role" defaultValue="Director" required>
                     <option value="Director">Director / Board of Directors</option>
                     <option value="Head of Institution (HOI)">Head of Institution (HOI)</option>
-                    <option value="Coordinator">Academic Coordinator / CBC Lead</option>
+                    <option value="Coordinator">Academic Coordinator / CBE Lead</option>
                     <option value="Principal">Campus Principal</option>
                     <option value="Dean of Students">Dean of Students / Pastoral Care</option>
                     <option value="Chaplain">Chaplain / Spiritual Life</option>
@@ -1996,14 +2029,32 @@ export default async function Panel({ scope, edit }) {
           </section>
 
           {/* 9. NOTIFICATION GATEWAYS & INBOUND COMMUNICATIONS HUB */}
-          <section id="inbound" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+          <section id="webmail" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
             <h2 style={{ fontSize: '22px', margin: '0 0 10px', color: 'var(--primary-navy)' }}>
-              <i className="fa-solid fa-headset" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
-              Inbound Communications, SMS &amp; Mailbox Hub
+              <i className="fa-solid fa-envelope-open-text" style={{ color: 'var(--primary-red)', marginRight: '8px' }} />
+              Pleasant View Webmail Hub (Resend Inbound &amp; Outbound Console)
             </h2>
             <p style={{ color: '#666', fontSize: '14px', marginBottom: '20px' }}>
-              Monitor live SMS via Africa&apos;s Talking, emails via Resend, and provision department mailboxes.
+              Gmail-inspired webmail client for <code>@pleasantviewschools.co.ke</code> accounts. Receive admissions inquiries, review parent messages, and compose outbound transactional correspondence.
             </p>
+
+            {/* EMBEDDED GMAIL-STYLE WEBMAIL CLIENT */}
+            <div style={{ marginBottom: '35px' }}>
+              <WebmailClient
+                inboundEmails={inboundEmails}
+                commLogs={commLogs}
+                emailAccounts={emailAccountsList}
+                schools={list}
+                currentAdminEmail="admin@pleasantviewschools.co.ke"
+              />
+            </div>
+
+            <div id="inbound">
+              <h3 style={{ fontSize: '18px', margin: '20px 0 10px', color: 'var(--primary-navy)' }}>
+                <i className="fa-solid fa-headset" style={{ color: 'var(--primary-red)', marginRight: '8px' }} />
+                Telecom SMS Gateways &amp; Real-Time Telemetry
+              </h3>
+            </div>
 
             {/* QUICK STATS */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '15px', marginBottom: '25px' }}>
@@ -2015,9 +2066,9 @@ export default async function Panel({ scope, edit }) {
                 <span style={{ fontSize: '12px', color: '#666', fontWeight: 700 }}>INBOUND EMAILS</span>
                 <div style={{ fontSize: '24px', fontWeight: 800, color: 'var(--primary-navy)' }}>{inboundEmails.length}</div>
               </div>
-              <div style={{ background: 'var(--soft-bg)', padding: '16px', borderRadius: '6px', borderLeft: '4px solid var(--gold-accent)' }}>
+              <div style={{ background: 'var(--soft-bg)', padding: '16px', borderRadius: '6px', borderLeft: '4px solid var(--primary-red)' }}>
                 <span style={{ fontSize: '12px', color: '#666', fontWeight: 700 }}>DEPT ACCOUNTS</span>
-                <div style={{ fontSize: '24px', fontWeight: 800, color: 'var(--gold-dark)' }}>{emailAccountsList.length}</div>
+                <div style={{ fontSize: '24px', fontWeight: 800, color: 'var(--primary-red)' }}>{emailAccountsList.length}</div>
               </div>
               <div style={{ background: 'var(--soft-bg)', padding: '16px', borderRadius: '6px', borderLeft: '4px solid #17a2b8' }}>
                 <span style={{ fontSize: '12px', color: '#666', fontWeight: 700 }}>COMM LOGS</span>
@@ -2031,7 +2082,7 @@ export default async function Panel({ scope, edit }) {
                 <h4 style={{ marginBottom: '8px' }}>Resend Email Gateway</h4>
                 <p style={{ fontSize: '13px', color: '#666', marginBottom: '10px' }}>Verify outbound transactional email delivery.</p>
                 <form action={testResend} style={{ display: 'flex', gap: '8px' }}>
-                  <input name="email" type="email" defaultValue="info@pleasantview.sc.ke" style={{ padding: '8px', fontSize: '13px', flex: 1 }} required />
+                  <input name="email" type="email" defaultValue="infor@pleasantviewschools.co.ke" style={{ padding: '8px', fontSize: '13px', flex: 1 }} required />
                   <button type="submit" className="button button-primary" style={{ padding: '8px 14px', fontSize: '12px' }}>
                     Send Test
                   </button>

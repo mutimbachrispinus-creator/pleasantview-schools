@@ -1,9 +1,11 @@
-const CACHE_NAME = 'pleasantview-v1';
+const CACHE_NAME = 'pleasantview-v3';
 const STATIC_ASSETS = [
-  '/',
   '/manifest.json',
   '/favicon.ico',
-  '/images/logo.svg'
+  '/icon.png',
+  '/images/pwa_icon_192.png',
+  '/images/pwa_icon_512.png',
+  '/images/pvs_crest.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -32,14 +34,24 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
 
-  // Bypass API and non-http(s) schemes
-  if (url.pathname.startsWith('/api/') || !url.protocol.startsWith('http')) return;
+  // Bypass API routes, non-http, and navigation requests (always fresh HTML)
+  if (
+    url.pathname.startsWith('/api/') ||
+    !url.protocol.startsWith('http') ||
+    event.request.mode === 'navigate'
+  ) {
+    return;
+  }
 
+  // Network first for static assets, fall back to cache
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        // Cache successful responses for static assets
-        if (response && response.status === 200 && (url.pathname.startsWith('/_next/static/') || url.pathname.startsWith('/images/'))) {
+        if (
+          response &&
+          response.status === 200 &&
+          (url.pathname.startsWith('/images/') || url.pathname.startsWith('/_next/static/'))
+        ) {
           const responseClone = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseClone);

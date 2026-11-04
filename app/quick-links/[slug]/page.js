@@ -36,7 +36,7 @@ export default async function QuickLinkPage({ params }) {
           <div className="gold-divider" style={{ marginLeft: 0 }} />
 
           <p className="lead" style={{ fontSize: '17px', color: '#444', lineHeight: 1.7, marginBottom: '25px' }}>
-            Pleasant View Schools operates a structured Christian-ethos calendar balancing rigorous Competency Based Curriculum (CBC) delivery, formative assessments, co-curricular adventures, and designated parent visiting days (VISOs).
+            Pleasant View Schools operates a structured Christian-ethos calendar balancing rigorous Competency Based Education (CBE) delivery, formative assessments, co-curricular adventures, and designated parent visiting days (VISOs).
           </p>
 
           <div style={{ display: 'grid', gap: '25px', margin: '30px 0' }}>

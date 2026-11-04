@@ -12,7 +12,7 @@ export async function book(fd) {
   const targetSchool = b.school && b.school !== '0' && b.school !== 'all' ? await getSchool(b.school) : null;
   const schoolId = targetSchool?.id || 0;
   const schoolName = targetSchool?.name || 'Pleasant View Schools Main Campus';
-  const schoolEmail = targetSchool?.email || process.env.SCHOOL_EMAIL || 'info@pleasantview.sc.ke';
+  const schoolEmail = targetSchool?.email || process.env.SCHOOL_EMAIL || 'admission@pleasantviewschools.co.ke';
   const back = targetSchool ? `/s/${targetSchool.slug}/visit?ok=1` : '/contact?booked=1#visit';
 
   if (b.website || (await limited('v' + (await ip())))) redirect(back);
@@ -25,6 +25,15 @@ export async function book(fd) {
     b.visit_date || new Date().toISOString().slice(0, 10),
     +b.guests || 1
   ]);
+
+  // Log directly to Inbound Webmail Inbox under admission@pleasantviewschools.co.ke
+  try {
+    const tourBody = `Campus Tour Booking Details:\n\nVisitor Name: ${b.name}\nPhone: ${b.phone}\nEmail: ${b.email || 'Not specified'}\nPreferred Date: ${b.visit_date}\nGuests: ${b.guests || 1}\nCampus Division: ${schoolName}\nProspective Grade: ${b.grade || 'Not specified'}`;
+    await q(
+      'INSERT INTO inbound_emails(sender_name, sender_email, recipient, subject, body, status) VALUES(?,?,?,?,?,?)',
+      [b.name || 'Campus Visitor', b.email || b.phone || 'tour-visitor@pleasantviewschools.co.ke', schoolEmail, `[Campus Tour Booking] ${b.name} (${b.visit_date})`, tourBody, 'received']
+    );
+  } catch {}
 
   try {
     await notify({
@@ -53,6 +62,7 @@ export async function enquire(fd) {
   const b = Object.fromEntries(fd);
   const s = b.school ? await getSchool(b.school) : null;
   const back = s ? `/s/${s.slug}/contact?ok=1` : '/contact?ok=1';
+  const targetEmail = s?.email || process.env.SCHOOL_EMAIL || 'infor@pleasantviewschools.co.ke';
 
   if (b.website || (await limited('c' + (await ip())))) redirect(back);
 
@@ -64,10 +74,19 @@ export async function enquire(fd) {
     b.message
   ]);
 
+  // Log directly to Inbound Webmail Inbox under infor@pleasantviewschools.co.ke
+  try {
+    const enqBody = `Admissions & General Inquiry:\n\nSender: ${b.name}\nPhone: ${b.phone}\nEmail: ${b.email || 'Not specified'}\nCampus Division: ${s?.name || 'All Campuses'}\n\nMessage:\n${b.message}`;
+    await q(
+      'INSERT INTO inbound_emails(sender_name, sender_email, recipient, subject, body, status) VALUES(?,?,?,?,?,?)',
+      [b.name || 'Prospective Parent', b.email || b.phone || 'parent@pleasantviewschools.co.ke', targetEmail, `[Inquiry] ${b.name}: ${s?.name || 'Pleasant View'}`, enqBody, 'received']
+    );
+  } catch {}
+
   try {
     await notify({
       ...b,
-      to: s?.email || process.env.SCHOOL_EMAIL || 'info@pleasantview.sc.ke',
+      to: targetEmail,
       subject: `[${s?.name || 'Pleasant View Schools'}] Enquiry: ${b.name}`,
       text: `${b.name}\n${b.phone}\n${b.email}\n\n${b.message}`
     });
@@ -107,9 +126,17 @@ export async function applyJob(fd) {
     [+b.job_id || 0, jobTitle, name, email, phone, experience, coverLetter]
   );
 
+  const hrEmail = process.env.SCHOOL_EMAIL || 'admin@pleasantviewschools.co.ke';
+  try {
+    await q(
+      'INSERT INTO inbound_emails(sender_name, sender_email, recipient, subject, body, status) VALUES(?,?,?,?,?,?)',
+      [name, email || phone, hrEmail, `[Career Application] ${jobTitle}: ${name}`, `Job Application for ${jobTitle}\n\nApplicant: ${name}\nEmail: ${email}\nPhone: ${phone}\nExperience: ${experience}\n\nCover Letter:\n${coverLetter}`, 'received']
+    );
+  } catch {}
+
   try {
     await notify({
-      to: process.env.SCHOOL_EMAIL || 'info@pleasantview.sc.ke',
+      to: hrEmail,
       subject: `[Career Application] ${jobTitle}: ${name}`,
       text: `Applicant: ${name}\nEmail: ${email}\nPhone: ${phone}\nPosition: ${jobTitle}\nExperience: ${experience}\nCover Letter:\n${coverLetter}`,
       sms: `Hi ${name}, Pleasant View Schools HR has received your application for ${jobTitle}. We will review your profile shortly.`

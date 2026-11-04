@@ -73,10 +73,10 @@ export default async function SchoolHome({ params }) {
       {/* WELCOME / ABOUT DIVISION */}
       <section className="subpage-body">
         <div className="wrapper">
-          <BackButton fallback="/#schools" label="All Schools" />
+          <BackButton fallback="/#schools" label="All Schools" current={s.name.replace(/Pleasantview/gi, 'Pleasant View')} />
           <div style={{ maxWidth: '960px', margin: '0 auto' }}>
             <span className="lead-badge">WELCOME TO {s.category || 'OUR DIVISION'}</span>
-            <h2>Nurturing Distinction at {s.name}</h2>
+            <h2>Nurturing Distinction at {s.name.replace(/Pleasantview/gi, 'Pleasant View')}</h2>
             <div className="gold-divider" style={{ marginLeft: 0 }} />
 
             <p style={{ fontSize: '18px', lineHeight: 1.8, marginBottom: '25px', color: '#333' }}>

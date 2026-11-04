@@ -57,8 +57,8 @@ export default async function About() {
         Across our 24-year academic journey, Pleasant View has consistently maintained distinguished scholastic performance, achieving an institutional average of <strong>EE (Exceeding Expectations)</strong> in KPSEA and <strong>ME1 (Meeting Expectations &ndash; Top Tier)</strong> in KJSEA, positioning our scholars permanently among the top 10 academic institutions across Kiambu County. In 2016, answering the earnest appeal of our parent community, we established our celebrated Senior School, which achieved a historic maiden mean grade of <strong>B+</strong> in KCSE examinations. As the 8-4-4 system concludes at the end of next year, our Senior School is dynamically transitioning into the <strong>Kenya Senior School Education Assessment (KSSEA)</strong>.
       </p>
 
-      {/* CBC / CBE TRANSITION & STEM */}
-      <h3 id="cbc" style={{ marginTop: '45px', marginBottom: '15px' }}>Transition to Competency Based Curriculum (CBC / CBE)</h3>
+      {/* CBE TRANSITION & STEM */}
+      <h3 id="cbc" style={{ marginTop: '45px', marginBottom: '15px' }}>Competency Based Education (CBE Pathways &amp; STEM)</h3>
       <p style={{ lineHeight: 1.85, fontSize: '16px', marginBottom: '20px', color: '#444' }}>
         Pleasant View has seamlessly pioneered Kenya’s Competency Based Education framework across Early Years, Primary, and Junior Secondary (JSS) levels. With fully equipped Pre-Technical, Integrated Science, Agriculture, and Digital STEM hubs, our learners transition from theoretical rote memorization into real-world innovation, scientific inquiry, and ethical problem solving.
       </p>
@@ -238,7 +238,7 @@ export default async function About() {
 
         <h4 style={{ fontSize: '17px', color: 'var(--primary-navy)', margin: '20px 0 10px' }}>4. Parental &amp; Data Subject Rights</h4>
         <p style={{ fontSize: '14.5px', lineHeight: 1.75, color: '#555', margin: '0 0 10px' }}>
-          Under the KDPA 2019, parents and guardians hold the right to inspect personal data held by the school, request corrections of inaccuracies, withdraw photographic consent, or lodge inquiries with our designated Data Protection Officer via <a href="mailto:privacy@pleasantview.sc.ke" style={{ color: 'var(--primary-red)', fontWeight: 700 }}>privacy@pleasantview.sc.ke</a>.
+          Under the KDPA 2019, parents and guardians hold the right to inspect personal data held by the school, request corrections of inaccuracies, withdraw photographic consent, or lodge inquiries with our designated Data Protection Officer via <a href="mailto:admin@pleasantviewschools.co.ke" style={{ color: 'var(--primary-red)', fontWeight: 700 }}>admin@pleasantviewschools.co.ke</a>.
         </p>
       </section>
 
@@ -312,7 +312,7 @@ export default async function About() {
 
         <h4 style={{ fontSize: '17px', color: 'var(--primary-navy)', margin: '20px 0 10px' }}>Managing Your Cookie Preferences</h4>
         <p style={{ fontSize: '14.5px', lineHeight: 1.75, color: '#555', margin: 0 }}>
-          You can modify or withdraw your cookie consent at any time by clearing your browser cache or choosing &ldquo;Essential Only&rdquo; on our interactive consent banner. For inquiries regarding cookie protocols, contact <a href="mailto:it@pleasantview.sc.ke" style={{ color: 'var(--primary-red)', fontWeight: 700 }}>it@pleasantview.sc.ke</a>.
+          You can modify or withdraw your cookie consent at any time by clearing your browser cache or choosing &ldquo;Essential Only&rdquo; on our interactive consent banner. For inquiries regarding cookie protocols, contact <a href="mailto:admin@pleasantviewschools.co.ke" style={{ color: 'var(--primary-red)', fontWeight: 700 }}>admin@pleasantviewschools.co.ke</a>.
         </p>
       </section>
 

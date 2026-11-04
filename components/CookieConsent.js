@@ -36,11 +36,11 @@ export default function CookieConsent() {
         right: '20px',
         maxWidth: '580px',
         margin: '0 auto',
-        background: '#071c3d',
+        background: '#1E232A',
         color: '#ffffff',
         borderRadius: '8px',
         padding: '22px 26px',
-        boxShadow: '0 12px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(212, 160, 23, 0.3)',
+        boxShadow: '0 12px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(139, 30, 45, 0.4)',
         zIndex: 99999,
         animation: 'slideUp 0.35s ease-out'
       }}
@@ -51,12 +51,12 @@ export default function CookieConsent() {
             width: '42px',
             height: '42px',
             borderRadius: '50%',
-            background: 'rgba(212, 160, 23, 0.18)',
+            background: 'rgba(139, 30, 45, 0.2)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
-            color: '#d4a017',
+            color: '#8B1E2D',
             fontSize: '20px'
           }}
         >
@@ -75,8 +75,8 @@ export default function CookieConsent() {
               type="button"
               onClick={() => handleChoice('all')}
               style={{
-                background: '#d4a017',
-                color: '#071c3d',
+                background: '#8B1E2D',
+                color: '#ffffff',
                 border: 'none',
                 borderRadius: '4px',
                 padding: '9px 18px',
@@ -112,7 +112,7 @@ export default function CookieConsent() {
               href="/about#cookies"
               onClick={() => setVisible(false)}
               style={{
-                color: '#d4a017',
+                color: 'rgba(255, 255, 255, 0.85)',
                 fontSize: '12.5px',
                 textDecoration: 'underline',
                 marginLeft: 'auto',

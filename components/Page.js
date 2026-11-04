@@ -13,7 +13,7 @@ export default function Page({ title, subtitle, image = '/images/banner_3_a.webp
       </div>
       <section className="subpage-body">
         <div className="wrapper">
-          <BackButton />
+          <BackButton current={title} />
           <div style={{ maxWidth: '1240px', margin: '0 auto' }}>
             {children}
           </div>

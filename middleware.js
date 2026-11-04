@@ -11,5 +11,5 @@ export function middleware(req) {
   return NextResponse.next();
 }
 
-export const config = { matcher: ['/((?!_next|images|img|favicon.ico).*)'] };
+export const config = { matcher: ['/((?!_next|images|img|favicon.ico|manifest.json|sw.js|icon.png|apple-touch-icon.png|_headers|_routes.json).*)'] };
 

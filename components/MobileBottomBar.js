@@ -129,7 +129,7 @@ export default function MobileBottomBar({
             className="drawer-item"
           >
             <div className="drawer-item-title">Why Pleasant View Schools</div>
-            <small>24-Year Heritage, KPSEA, KJSEA &amp; CBC</small>
+            <small>24-Year Heritage, KPSEA, KJSEA &amp; CBE</small>
           </Link>
         </div>
       </div>

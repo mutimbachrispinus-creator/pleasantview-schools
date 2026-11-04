@@ -65,12 +65,12 @@ export default function PwaInstallPrompt() {
         bottom: '80px',
         right: '20px',
         zIndex: 99998,
-        background: 'linear-gradient(135deg, #8B1E2D, #1E232A)',
+        background: 'linear-gradient(135deg, #1E232A, #14181E)',
         color: '#ffffff',
         padding: '14px 18px',
         borderRadius: '8px',
-        boxShadow: '0 8px 30px rgba(0,0,0,0.35)',
-        border: '1px solid var(--gold-accent)',
+        boxShadow: '0 8px 30px rgba(0,0,0,0.45)',
+        border: '1.5px solid #8B1E2D',
         display: 'flex',
         alignItems: 'center',
         gap: '14px',
@@ -79,26 +79,24 @@ export default function PwaInstallPrompt() {
       }}
     >
       <div style={{
-        width: '40px',
-        height: '40px',
+        width: '42px',
+        height: '42px',
         borderRadius: '50%',
-        background: 'var(--gold-accent)',
-        color: 'var(--primary-navy)',
+        background: '#ffffff',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontWeight: 800,
-        fontSize: '16px',
-        flexShrink: 0
+        flexShrink: 0,
+        boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
       }}>
-        PV
+        <img src="/images/pvs_crest.png" alt="Pleasant View Crest" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
       </div>
 
       <div style={{ flex: 1, fontSize: '13px' }}>
-        <strong style={{ display: 'block', fontSize: '14px', color: 'var(--gold-accent)' }}>
+        <strong style={{ display: 'block', fontSize: '14px', color: '#ffffff' }}>
           Install Pleasant View App
         </strong>
-        <span>Add to home screen for instant portal access &amp; campus tours.</span>
+        <span style={{ color: 'rgba(255,255,255,0.8)' }}>Add to home screen for instant portal access &amp; campus tours.</span>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -106,12 +104,12 @@ export default function PwaInstallPrompt() {
           type="button"
           onClick={handleInstallClick}
           style={{
-            background: 'var(--gold-accent)',
-            color: 'var(--dark-navy)',
+            background: '#8B1E2D',
+            color: '#ffffff',
             border: 'none',
             fontWeight: 800,
             fontSize: '12px',
-            padding: '8px 12px',
+            padding: '8px 14px',
             borderRadius: '4px',
             cursor: 'pointer',
             textTransform: 'uppercase',

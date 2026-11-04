@@ -19,10 +19,10 @@ export default function VideoShowcase({ videos = [] }) {
   };
 
   return (
-    <section className="video-showcase-section" style={{ background: '#071c3d', color: '#ffffff', padding: '80px 0' }}>
+    <section className="video-showcase-section" style={{ background: 'var(--dark-grey, #1E232A)', color: '#ffffff', padding: '80px 0' }}>
       <div className="wrapper">
         <div className="section-header" style={{ textAlign: 'center', marginBottom: '50px' }}>
-          <h5 style={{ color: 'var(--gold-accent)', letterSpacing: '2px' }}>DISCOVER PLEASANTVIEW IN MOTION</h5>
+          <h5 style={{ color: 'var(--primary-red)', letterSpacing: '2px' }}>DISCOVER PLEASANT VIEW IN MOTION</h5>
           <h2 style={{ color: '#ffffff', fontSize: 'clamp(28px, 3.2vw, 44px)', textTransform: 'uppercase' }}>
             Campus Life &amp; Video Tour
           </h2>
@@ -96,13 +96,13 @@ export default function VideoShowcase({ videos = [] }) {
                   width: '64px',
                   height: '64px',
                   borderRadius: '50%',
-                  background: 'var(--gold-accent)',
-                  color: 'var(--dark-navy)',
+                  background: 'var(--primary-red)',
+                  color: '#ffffff',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontSize: '22px',
-                  boxShadow: '0 0 25px rgba(224,168,46,0.8)',
+                  boxShadow: '0 0 25px rgba(139,30,45,0.7)',
                   position: 'relative',
                   zIndex: 2,
                   transition: 'transform 0.25s ease'

@@ -20,7 +20,7 @@ export default async function ContactPage({ searchParams }) {
   const st = await S();
 
   const phone = st.phone || '+254 711 689 913';
-  const email = st.email || 'info@pleasantview.sc.ke';
+  const email = st.email || 'infor@pleasantviewschools.co.ke';
   const location = st.location || 'Githunguri, Komothai Subcounty, Kiambu County';
 
   return (
@@ -172,7 +172,7 @@ export default async function ContactPage({ searchParams }) {
               </div>
               <h3 style={{ fontSize: '24px', marginBottom: '10px' }}>Have a Question? Send Us a Message</h3>
               <p style={{ fontSize: '14.5px', color: '#555', marginBottom: '25px', lineHeight: 1.6 }}>
-                Have questions regarding fees, CBC curriculum requirements, boarding intake, or school transport routes? Our admissions desk is on standby.
+                Have questions regarding fees, CBE curriculum requirements, boarding intake, or school transport routes? Our admissions desk is on standby.
               </p>
 
               <form action={enquire}>
@@ -333,11 +333,13 @@ export default async function ContactPage({ searchParams }) {
                     <i className="fa-solid fa-envelope" />
                   </div>
                   <div>
-                    <strong style={{ fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>Official Email:</strong>
-                    <div style={{ fontSize: '16px', fontWeight: 700, marginTop: '2px' }}>
-                      <a href={`mailto:${email}`} style={{ color: '#ffffff', textDecoration: 'none' }}>{email}</a>
+                    <strong style={{ fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>Official Email Desks:</strong>
+                    <div style={{ fontSize: '14.5px', marginTop: '4px', lineHeight: 1.6 }}>
+                      <div><strong style={{ color: 'rgba(255,255,255,0.7)' }}>Admissions:</strong> <a href="mailto:admission@pleasantviewschools.co.ke" style={{ color: '#ffffff', textDecoration: 'none', fontWeight: 700 }}>admission@pleasantviewschools.co.ke</a></div>
+                      <div><strong style={{ color: 'rgba(255,255,255,0.7)' }}>Information:</strong> <a href="mailto:infor@pleasantviewschools.co.ke" style={{ color: '#ffffff', textDecoration: 'none', fontWeight: 700 }}>infor@pleasantviewschools.co.ke</a></div>
+                      <div><strong style={{ color: 'rgba(255,255,255,0.7)' }}>Finance / Bursar:</strong> <a href="mailto:finance@pleasantviewschools.co.ke" style={{ color: '#ffffff', textDecoration: 'none', fontWeight: 700 }}>finance@pleasantviewschools.co.ke</a></div>
+                      <div><strong style={{ color: 'rgba(255,255,255,0.7)' }}>Central Admin:</strong> <a href="mailto:admin@pleasantviewschools.co.ke" style={{ color: '#ffffff', textDecoration: 'none', fontWeight: 700 }}>admin@pleasantviewschools.co.ke</a></div>
                     </div>
-                    <small style={{ color: 'rgba(255,255,255,0.7)' }}>Admissions, Inquiries &amp; Transfers</small>
                   </div>
                 </div>
 
