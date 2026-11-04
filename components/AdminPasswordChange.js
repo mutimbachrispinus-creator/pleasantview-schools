@@ -1,68 +1,124 @@
 'use client';
 import { useState, useTransition } from 'react';
-import { requestPasswordChangeOTP, verifyPasswordChangeOTP } from '@/app/hidden-admin/actions';
+import { saveAdminRecoveryProfile, requestPasswordChangeOTP, verifyPasswordChangeOTP } from '@/app/hidden-admin/actions';
 
-export default function AdminPasswordChange({ defaultEmail = 'admin@pleasantviewschools.co.ke' }) {
-  const [step, setStep] = useState(1); // 1 = request OTP, 2 = verify OTP
-  const [email, setEmail] = useState(defaultEmail);
-  const [newPassword, setNewPassword] = useState('');
-  const [otp, setOtp] = useState('');
-  const [statusMsg, setStatusMsg] = useState(null); // { type: 'success' | 'error', text: '' }
+export default function AdminPasswordChange({
+  defaultEmail = 'admin@pleasantviewschools.co.ke',
+  defaultPhone = '+254 711 689 913'
+}) {
+  // Mode: 'profile' (Save recovery email/phone) | 'otp-test' (Test OTP flow)
+  const [activeTab, setActiveTab] = useState('profile');
+
+  // Recovery Profile State
+  const [recoveryEmail, setRecoveryEmail] = useState(defaultEmail);
+  const [recoveryPhone, setRecoveryPhone] = useState(defaultPhone);
+  const [profilePassword, setProfilePassword] = useState('');
+  const [profileStatus, setProfileStatus] = useState(null);
+  const [isProfilePending, startProfileTransition] = useTransition();
+
+  // OTP Test Flow State
+  const [otpStep, setOtpStep] = useState(1);
+  const [deliveryMethod, setDeliveryMethod] = useState('email');
+  const [testPassword, setTestPassword] = useState('');
+  const [otpCode, setOtpCode] = useState('');
+  const [otpStatus, setOtpStatus] = useState(null);
   const [devOtpHint, setDevOtpHint] = useState('');
-  const [isPending, startTransition] = useTransition();
+  const [isOtpPending, startOtpTransition] = useTransition();
+
+  const handleSaveProfile = (e) => {
+    e.preventDefault();
+    setProfileStatus(null);
+    const fd = new FormData(e.currentTarget);
+
+    startProfileTransition(async () => {
+      try {
+        const res = await saveAdminRecoveryProfile(fd);
+        if (res?.ok) {
+          setProfileStatus({
+            type: 'success',
+            text: res.message || 'Administrator recovery details saved successfully!'
+          });
+          setProfilePassword('');
+        } else {
+          setProfileStatus({
+            type: 'error',
+            text: res?.error || 'Failed to update recovery profile.'
+          });
+        }
+      } catch (err) {
+        setProfileStatus({
+          type: 'error',
+          text: err?.message || 'Error communicating with security desk.'
+        });
+      }
+    });
+  };
 
   const handleRequestOTP = (e) => {
     e.preventDefault();
-    setStatusMsg(null);
+    setOtpStatus(null);
+    setDevOtpHint('');
     const fd = new FormData(e.currentTarget);
-    const em = String(fd.get('email') || '').trim();
     const pw = String(fd.get('new_password') || '').trim();
-    setEmail(em);
-    setNewPassword(pw);
+    setTestPassword(pw);
 
-    startTransition(async () => {
+    startOtpTransition(async () => {
       try {
         const res = await requestPasswordChangeOTP(fd);
         if (res?.ok) {
-          setStep(2);
-          setStatusMsg({
+          setOtpStep(2);
+          setOtpStatus({
             type: 'success',
-            text: `A 6-digit OTP has been automatically generated and sent to ${res.targetEmail || em}.`
+            text: res.message || 'OTP successfully generated and dispatched.'
           });
           if (res?.otp) {
             setDevOtpHint(res.otp);
           }
         } else {
-          setStatusMsg({ type: 'error', text: res?.error || 'Failed to send OTP.' });
+          setOtpStatus({
+            type: 'error',
+            text: res?.error || 'Unable to dispatch OTP. Please verify your details.'
+          });
         }
       } catch (err) {
-        setStatusMsg({ type: 'error', text: err.message });
+        setOtpStatus({
+          type: 'error',
+          text: err?.message || 'Error processing OTP request.'
+        });
       }
     });
   };
 
   const handleVerifyOTP = (e) => {
     e.preventDefault();
-    setStatusMsg(null);
+    setOtpStatus(null);
     const fd = new FormData();
-    fd.append('email', email);
-    fd.append('otp', otp);
-    fd.append('new_password', newPassword);
+    fd.append('identity', recoveryEmail);
+    fd.append('otp', otpCode);
+    fd.append('new_password', testPassword);
 
-    startTransition(async () => {
+    startOtpTransition(async () => {
       try {
         const res = await verifyPasswordChangeOTP(fd);
         if (res?.ok) {
-          setStatusMsg({
+          setOtpStatus({
             type: 'success',
-            text: 'Password updated successfully! You can now authenticate with your new credentials.'
+            text: res.message || 'Password verified and updated successfully in database!'
           });
-          setStep(3); // Completed
+          setOtpStep(1);
+          setOtpCode('');
+          setTestPassword('');
         } else {
-          setStatusMsg({ type: 'error', text: res?.error || 'Invalid or expired OTP code.' });
+          setOtpStatus({
+            type: 'error',
+            text: res?.error || 'Invalid or expired OTP code.'
+          });
         }
       } catch (err) {
-        setStatusMsg({ type: 'error', text: err.message });
+        setOtpStatus({
+          type: 'error',
+          text: err?.message || 'Verification process encountered an issue.'
+        });
       }
     });
   };
@@ -73,223 +129,438 @@ export default function AdminPasswordChange({ defaultEmail = 'admin@pleasantview
       border: '1px solid #dde2ec',
       borderRadius: '8px',
       padding: '24px',
-      maxWidth: '600px'
+      maxWidth: '750px',
+      boxShadow: '0 4px 18px rgba(0,0,0,0.04)'
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+      {/* HEADER WITH BADGE */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
         <div style={{
-          width: '36px',
-          height: '36px',
+          width: '42px',
+          height: '42px',
           borderRadius: '50%',
           background: 'rgba(139,30,45,0.1)',
           color: '#8B1E2D',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: '16px'
+          fontSize: '18px'
         }}>
           <i className="fa-solid fa-shield-halved" />
         </div>
         <div>
-          <h4 style={{ margin: 0, fontSize: '16px', color: '#1E232A', fontWeight: 800 }}>
-            Security: Admin Password Change (OTP Verified)
+          <h4 style={{ margin: 0, fontSize: '17px', color: '#1E232A', fontWeight: 800 }}>
+            Administrator Security, Recovery Contacts &amp; Password Management
           </h4>
-          <span style={{ fontSize: '12px', color: '#64748b' }}>
-            Requires auto-generated 6-digit OTP delivered to verified admin email address.
+          <span style={{ fontSize: '13px', color: '#64748b' }}>
+            Configure the verified email address and mobile phone number that receive OTP password reset codes.
           </span>
         </div>
       </div>
 
-      {statusMsg && (
-        <div style={{
-          background: statusMsg.type === 'success' ? '#f0fdf4' : '#fef2f2',
-          color: statusMsg.type === 'success' ? '#15803d' : '#b91c1c',
-          border: `1px solid ${statusMsg.type === 'success' ? '#bbf7d0' : '#fecaca'}`,
-          padding: '10px 14px',
-          borderRadius: '6px',
-          fontSize: '13px',
-          fontWeight: 600,
-          marginBottom: '16px'
-        }}>
-          {statusMsg.text}
-          {devOtpHint && (
-            <div style={{ marginTop: '6px', fontSize: '12px', color: '#1E232A' }}>
-              Verification Code (Direct Key): <strong style={{ color: '#8B1E2D', fontSize: '14px' }}>{devOtpHint}</strong>
+      {/* DUAL MODE TABS */}
+      <div style={{
+        display: 'flex',
+        borderBottom: '2px solid #e2e8f0',
+        marginBottom: '20px',
+        gap: '10px'
+      }}>
+        <button
+          type="button"
+          onClick={() => setActiveTab('profile')}
+          style={{
+            padding: '10px 16px',
+            fontSize: '13.5px',
+            fontWeight: 700,
+            background: 'none',
+            border: 'none',
+            borderBottom: activeTab === 'profile' ? '3px solid #8B1E2D' : '3px solid transparent',
+            color: activeTab === 'profile' ? '#8B1E2D' : '#64748b',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}
+        >
+          <i className="fa-solid fa-address-card" /> Save Recovery Contacts
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('otp-test')}
+          style={{
+            padding: '10px 16px',
+            fontSize: '13.5px',
+            fontWeight: 700,
+            background: 'none',
+            border: 'none',
+            borderBottom: activeTab === 'otp-test' ? '3px solid #8B1E2D' : '3px solid transparent',
+            color: activeTab === 'otp-test' ? '#8B1E2D' : '#64748b',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}
+        >
+          <i className="fa-solid fa-key" /> Test OTP Reset Flow
+        </button>
+      </div>
+
+      {/* TAB 1: SAVE RECOVERY CONTACTS */}
+      {activeTab === 'profile' && (
+        <div>
+          <div style={{
+            background: '#f8fafc',
+            border: '1px solid #e2e8f0',
+            borderRadius: '6px',
+            padding: '14px',
+            marginBottom: '18px',
+            fontSize: '13px',
+            color: '#334155',
+            lineHeight: 1.6
+          }}>
+            <strong style={{ color: '#8B1E2D' }}><i className="fa-solid fa-circle-info" /> Security Protocol:</strong> The email and phone number saved below are registered in the portal database. When anyone requests a password change from the login page, the system verifies that the contact matches this profile before dispatching a 6-digit OTP.
+          </div>
+
+          {profileStatus && (
+            <div style={{
+              background: profileStatus.type === 'success' ? '#f0fdf4' : '#fef2f2',
+              color: profileStatus.type === 'success' ? '#166534' : '#991b1b',
+              border: `1px solid ${profileStatus.type === 'success' ? '#bbf7d0' : '#fecaca'}`,
+              padding: '12px 14px',
+              borderRadius: '6px',
+              fontSize: '13.5px',
+              fontWeight: 600,
+              marginBottom: '16px',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '8px'
+            }}>
+              <i className={`fa-solid ${profileStatus.type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation'}`} style={{ marginTop: '2px' }} />
+              <div>{profileStatus.text}</div>
             </div>
           )}
-        </div>
-      )}
 
-      {step === 1 && (
-        <form onSubmit={handleRequestOTP} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <div>
-            <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 700, color: '#334155', marginBottom: '5px' }}>
-              Admin Email / Username *
-            </label>
-            <input
-              name="email"
-              type="text"
-              defaultValue={email}
-              placeholder="e.g. admin or senior@pleasantviewschools.co.ke"
-              required
-              style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '13px' }}
-            />
-            <small style={{ color: '#64748b', fontSize: '11.5px', marginTop: '3px', display: 'block' }}>
-              Central admin can use <code>admin</code> or full email address.
-            </small>
-          </div>
+          <form onSubmit={handleSaveProfile} style={{ display: 'grid', gap: '16px' }}>
+            <div className="form-group">
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#1e293b', marginBottom: '6px' }}>
+                Administrator Recovery Email Address *
+              </label>
+              <input
+                name="recovery_email"
+                type="email"
+                defaultValue={recoveryEmail}
+                onChange={(e) => setRecoveryEmail(e.target.value)}
+                placeholder="e.g. admin@pleasantviewschools.co.ke"
+                required
+                style={{
+                  width: '100%',
+                  padding: '11px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '14px',
+                  color: '#1e293b',
+                  boxSizing: 'border-box'
+                }}
+              />
+              <small style={{ color: '#64748b', fontSize: '11.5px', marginTop: '4px', display: 'block' }}>
+                Password reset OTPs sent via Email channel will be dispatched to this verified address.
+              </small>
+            </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 700, color: '#334155', marginBottom: '5px' }}>
-              Desired New Password *
-            </label>
-            <input
-              name="new_password"
-              type="password"
-              placeholder="Minimum 6 characters..."
-              required
-              minLength={6}
-              style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '13px' }}
-            />
-          </div>
+            <div className="form-group">
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#1e293b', marginBottom: '6px' }}>
+                Administrator Recovery Mobile Phone Number (+254...) *
+              </label>
+              <input
+                name="recovery_phone"
+                type="text"
+                defaultValue={recoveryPhone}
+                onChange={(e) => setRecoveryPhone(e.target.value)}
+                placeholder="e.g. +254 711 689 913"
+                required
+                style={{
+                  width: '100%',
+                  padding: '11px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '14px',
+                  color: '#1e293b',
+                  boxSizing: 'border-box'
+                }}
+              />
+              <small style={{ color: '#64748b', fontSize: '11.5px', marginTop: '4px', display: 'block' }}>
+                Password reset OTPs sent via SMS channel will be dispatched to this mobile handset.
+              </small>
+            </div>
 
-          <button
-            type="submit"
-            disabled={isPending}
-            style={{
-              background: '#8B1E2D',
-              color: '#ffffff',
-              border: 0,
-              padding: '11px 18px',
-              borderRadius: '4px',
-              fontSize: '13px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              marginTop: '6px'
-            }}
-          >
-            <i className="fa-solid fa-paper-plane" />
-            {isPending ? 'Generating & Sending OTP...' : 'Send Verification OTP to Email'}
-          </button>
-        </form>
-      )}
+            <div className="form-group">
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#1e293b', marginBottom: '6px' }}>
+                Update Administrator Master Password (Optional)
+              </label>
+              <input
+                name="new_password"
+                type="password"
+                value={profilePassword}
+                onChange={(e) => setProfilePassword(e.target.value)}
+                placeholder="Leave blank to keep existing password, or enter new password (min. 6 characters)"
+                minLength={6}
+                style={{
+                  width: '100%',
+                  padding: '11px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '14px',
+                  color: '#1e293b',
+                  boxSizing: 'border-box'
+                }}
+              />
+              <small style={{ color: '#64748b', fontSize: '11.5px', marginTop: '4px', display: 'block' }}>
+                Updating the password here saves directly to the database, decoupled from GitHub source code.
+              </small>
+            </div>
 
-      {step === 2 && (
-        <form onSubmit={handleVerifyOTP} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '6px', fontSize: '13px', color: '#334155' }}>
-            Verification code dispatched to: <strong style={{ color: '#8B1E2D' }}>{email}</strong>
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 700, color: '#334155', marginBottom: '5px' }}>
-              Enter 6-Digit OTP Code *
-            </label>
-            <input
-              type="text"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
-              placeholder="••••••"
-              maxLength={6}
-              required
-              autoFocus
-              style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: '6px',
-                border: '2px solid #8B1E2D',
-                fontSize: '20px',
-                letterSpacing: '8px',
-                textAlign: 'center',
-                fontWeight: 800,
-                color: '#1E232A'
-              }}
-            />
-            <small style={{ color: '#64748b', fontSize: '11.5px', marginTop: '4px', display: 'block', textAlign: 'center' }}>
-              Valid for 10 minutes. Check spam folder if not in primary inbox.
-            </small>
-          </div>
-
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button
-              type="button"
-              onClick={() => { setStep(1); setStatusMsg(null); }}
-              style={{
-                background: '#f1f5f9',
-                border: 0,
-                padding: '11px 16px',
-                borderRadius: '4px',
-                fontSize: '13px',
-                fontWeight: 600,
-                cursor: 'pointer'
-              }}
-            >
-              Back
-            </button>
             <button
               type="submit"
-              disabled={isPending || otp.length < 6}
+              disabled={isProfilePending}
               style={{
-                flex: 1,
-                background: otp.length === 6 ? '#8B1E2D' : '#94a3b8',
+                background: '#8B1E2D',
                 color: '#ffffff',
-                border: 0,
-                padding: '11px 18px',
-                borderRadius: '4px',
-                fontSize: '13px',
+                border: 'none',
+                padding: '12px 20px',
+                borderRadius: '6px',
+                fontSize: '14px',
                 fontWeight: 700,
-                cursor: otp.length === 6 ? 'pointer' : 'not-allowed',
+                cursor: isProfilePending ? 'not-allowed' : 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '8px'
+                gap: '8px',
+                marginTop: '6px'
               }}
             >
-              <i className="fa-solid fa-check" />
-              {isPending ? 'Verifying...' : 'Confirm & Save Password'}
+              <i className="fa-solid fa-floppy-disk" />
+              {isProfilePending ? 'Saving Security Profile...' : 'Save Administrator Recovery Profile & Credentials'}
             </button>
-          </div>
-        </form>
+          </form>
+        </div>
       )}
 
-      {step === 3 && (
-        <div style={{ textAlign: 'center', padding: '16px 0' }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: '50%',
-            background: '#dcfce7',
-            color: '#15803d',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '22px',
-            margin: '0 auto 12px'
-          }}>
-            <i className="fa-solid fa-circle-check" />
-          </div>
-          <h4 style={{ color: '#15803d', margin: '0 0 6px', fontSize: '16px' }}>Password Changed Successfully!</h4>
-          <p style={{ fontSize: '13px', color: '#64748b', margin: '0 0 16px' }}>
-            Your account is updated with the new credentials.
-          </p>
-          <button
-            type="button"
-            onClick={() => { setStep(1); setStatusMsg(null); setOtp(''); setNewPassword(''); }}
-            style={{
-              background: '#1E232A',
-              color: '#ffffff',
-              border: 0,
-              padding: '8px 16px',
-              borderRadius: '4px',
-              fontSize: '12.5px',
+      {/* TAB 2: TEST OTP RESET FLOW */}
+      {activeTab === 'otp-test' && (
+        <div>
+          {otpStatus && (
+            <div style={{
+              background: otpStatus.type === 'success' ? '#f0fdf4' : '#fef2f2',
+              color: otpStatus.type === 'success' ? '#166534' : '#991b1b',
+              border: `1px solid ${otpStatus.type === 'success' ? '#bbf7d0' : '#fecaca'}`,
+              padding: '12px 14px',
+              borderRadius: '6px',
+              fontSize: '13.5px',
               fontWeight: 600,
-              cursor: 'pointer'
-            }}
-          >
-            Change Another Password
-          </button>
+              marginBottom: '16px',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '8px'
+            }}>
+              <i className={`fa-solid ${otpStatus.type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation'}`} style={{ marginTop: '2px' }} />
+              <div>{otpStatus.text}</div>
+            </div>
+          )}
+
+          {devOtpHint && (
+            <div style={{
+              background: '#fffbeb',
+              border: '1px solid #fde68a',
+              color: '#92400e',
+              padding: '10px 14px',
+              borderRadius: '6px',
+              fontSize: '13px',
+              marginBottom: '16px'
+            }}>
+              <strong>Generated OTP (Verification Key):</strong> <code style={{ fontSize: '15px', fontWeight: 800, color: '#8B1E2D' }}>{devOtpHint}</code>
+            </div>
+          )}
+
+          {otpStep === 1 ? (
+            <form onSubmit={handleRequestOTP} style={{ display: 'grid', gap: '16px' }}>
+              <input type="hidden" name="identity" value={recoveryEmail || 'admin'} />
+
+              <div className="form-group">
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#1e293b', marginBottom: '6px' }}>
+                  Choose OTP Delivery Channel
+                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <label style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '10px 12px',
+                    borderRadius: '6px',
+                    border: `1px solid ${deliveryMethod === 'email' ? '#8B1E2D' : '#cbd5e1'}`,
+                    background: deliveryMethod === 'email' ? 'rgba(139,30,45,0.04)' : '#ffffff',
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    color: deliveryMethod === 'email' ? '#8B1E2D' : '#475569'
+                  }}>
+                    <input
+                      type="radio"
+                      name="delivery_method"
+                      value="email"
+                      checked={deliveryMethod === 'email'}
+                      onChange={() => setDeliveryMethod('email')}
+                    />
+                    <i className="fa-solid fa-envelope" /> Saved Email ({recoveryEmail})
+                  </label>
+
+                  <label style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '10px 12px',
+                    borderRadius: '6px',
+                    border: `1px solid ${deliveryMethod === 'sms' ? '#8B1E2D' : '#cbd5e1'}`,
+                    background: deliveryMethod === 'sms' ? 'rgba(139,30,45,0.04)' : '#ffffff',
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    color: deliveryMethod === 'sms' ? '#8B1E2D' : '#475569'
+                  }}>
+                    <input
+                      type="radio"
+                      name="delivery_method"
+                      value="sms"
+                      checked={deliveryMethod === 'sms'}
+                      onChange={() => setDeliveryMethod('sms')}
+                    />
+                    <i className="fa-solid fa-mobile-screen-button" /> Saved Phone ({recoveryPhone})
+                  </label>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#1e293b', marginBottom: '6px' }}>
+                  Desired New Test Password *
+                </label>
+                <input
+                  name="new_password"
+                  type="password"
+                  placeholder="Enter minimum 6 characters..."
+                  minLength={6}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '11px 12px',
+                    borderRadius: '6px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '14px',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isOtpPending}
+                style={{
+                  background: '#1E232A',
+                  color: '#ffffff',
+                  border: 'none',
+                  padding: '12px 20px',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontWeight: 700,
+                  cursor: isOtpPending ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}
+              >
+                <i className="fa-solid fa-paper-plane" />
+                {isOtpPending ? 'Dispatching Test OTP...' : `Dispatch OTP to Saved ${deliveryMethod.toUpperCase()}`}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleVerifyOTP} style={{ display: 'grid', gap: '16px' }}>
+              <div style={{
+                background: '#f8fafc',
+                padding: '12px',
+                borderRadius: '6px',
+                fontSize: '13px',
+                color: '#334155'
+              }}>
+                Verification code dispatched to your saved {deliveryMethod === 'sms' ? `phone (${recoveryPhone})` : `email (${recoveryEmail})`}.
+              </div>
+
+              <div className="form-group">
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#1e293b', marginBottom: '6px' }}>
+                  Enter 6-Digit Verification OTP *
+                </label>
+                <input
+                  type="text"
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
+                  placeholder="••••••"
+                  maxLength={6}
+                  required
+                  autoFocus
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    borderRadius: '6px',
+                    border: '2px solid #8B1E2D',
+                    fontSize: '22px',
+                    letterSpacing: '8px',
+                    textAlign: 'center',
+                    fontWeight: 800,
+                    color: '#1E232A',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => { setOtpStep(1); setOtpStatus(null); }}
+                  style={{
+                    background: '#f1f5f9',
+                    border: 0,
+                    padding: '12px 18px',
+                    borderRadius: '6px',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Back
+                </button>
+                <button
+                  type="submit"
+                  disabled={isOtpPending || otpCode.length < 6}
+                  style={{
+                    flex: 1,
+                    background: otpCode.length === 6 ? '#8B1E2D' : '#94a3b8',
+                    color: '#ffffff',
+                    border: 0,
+                    padding: '12px 20px',
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                    fontWeight: 700,
+                    cursor: otpCode.length === 6 ? 'pointer' : 'not-allowed',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  <i className="fa-solid fa-check" />
+                  {isOtpPending ? 'Verifying OTP...' : 'Verify OTP & Finalize Password'}
+                </button>
+              </div>
+            </form>
+          )}
         </div>
       )}
     </div>

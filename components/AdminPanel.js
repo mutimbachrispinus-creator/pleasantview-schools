@@ -545,7 +545,10 @@ export default async function Panel({ scope, edit }) {
             <p style={{ color: '#666', fontSize: '14px', marginBottom: '20px' }}>
               Central administrators (username: <code>admin</code>) and created school operating administrators can update their login credentials. A 6-digit One-Time Password (OTP) is automatically generated and dispatched to the administrator&apos;s verified email address to confirm the update.
             </p>
-            <AdminPasswordChange defaultEmail="admin@pleasantviewschools.co.ke" />
+            <AdminPasswordChange
+              defaultEmail={vals.admin_recovery_email || vals.admin_email || 'admin@pleasantviewschools.co.ke'}
+              defaultPhone={vals.admin_recovery_phone || vals.admin_sms_phone || vals.phone || '+254 711 689 913'}
+            />
           </section>
 
           {/* 1C-1. ACADEMIC EXAMINATION RESULTS (NATIONAL & IN-SCHOOL) */}

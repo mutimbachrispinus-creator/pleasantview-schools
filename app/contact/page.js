@@ -274,29 +274,31 @@ export default async function ContactPage({ searchParams }) {
             </div>
           </div>
 
-          {/* COLUMN 2: CAMPUS DIRECTORY, ADMISSIONS OFFICE, & SOCIAL LINKS */}
+          {/* COLUMN 2: MINIMIZED CAMPUS DIRECTORY & ADMISSIONS OFFICE */}
           <div className="contact-side-column">
-            {/* ADMISSIONS DESK DIRECTORY */}
+            {/* COMPACT ADMISSIONS DESK CARD */}
             <div style={{
               background: 'linear-gradient(135deg, #8B1E2D, #1E232A)',
               color: '#ffffff',
-              padding: '35px',
-              borderRadius: '6px',
-              marginBottom: '30px',
-              boxShadow: '0 8px 30px rgba(139,30,45,0.2)'
+              padding: '24px 20px',
+              borderRadius: '8px',
+              marginBottom: '24px',
+              boxShadow: '0 8px 24px rgba(139,30,45,0.18)',
+              borderTop: '3px solid var(--gold-accent)'
             }}>
-              <span style={{ color: 'var(--gold-accent)', fontSize: '12px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase' }}>
+              <span style={{ color: 'var(--gold-accent)', fontSize: '11px', fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase' }}>
                 DIRECT ADMISSIONS DESK
               </span>
-              <h3 style={{ color: '#ffffff', fontSize: '24px', marginTop: '6px', marginBottom: '20px' }}>
-                Pleasant View Schools Main Reception
+              <h3 style={{ color: '#ffffff', fontSize: '19px', marginTop: '4px', marginBottom: '16px' }}>
+                Main Reception &amp; Registry
               </h3>
 
-              <div style={{ display: 'grid', gap: '20px' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '15px' }}>
+              <div style={{ display: 'grid', gap: '14px' }}>
+                {/* TELEPHONE */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{
-                    width: '42px',
-                    height: '42px',
+                    width: '36px',
+                    height: '36px',
                     borderRadius: '50%',
                     background: 'rgba(255,255,255,0.12)',
                     display: 'flex',
@@ -304,23 +306,23 @@ export default async function ContactPage({ searchParams }) {
                     justifyContent: 'center',
                     flexShrink: 0,
                     color: 'var(--gold-accent)',
-                    fontSize: '18px'
+                    fontSize: '15px'
                   }}>
                     <i className="fa-solid fa-phone" />
                   </div>
                   <div>
-                    <strong style={{ fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>Telephone / Call Center:</strong>
-                    <div style={{ fontSize: '17px', fontWeight: 700, marginTop: '2px' }}>
+                    <div style={{ fontSize: '15px', fontWeight: 700 }}>
                       <a href={`tel:${phone}`} style={{ color: '#ffffff', textDecoration: 'none' }}>{phone}</a>
                     </div>
-                    <small style={{ color: 'rgba(255,255,255,0.7)' }}>Open Mon &ndash; Sat 8:00 AM &ndash; 5:00 PM</small>
+                    <small style={{ color: 'rgba(255,255,255,0.65)', fontSize: '11.5px' }}>Mon &ndash; Sat 8:00 AM &ndash; 5:00 PM</small>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '15px' }}>
+                {/* EMAILS */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                   <div style={{
-                    width: '42px',
-                    height: '42px',
+                    width: '36px',
+                    height: '36px',
                     borderRadius: '50%',
                     background: 'rgba(255,255,255,0.12)',
                     display: 'flex',
@@ -328,25 +330,28 @@ export default async function ContactPage({ searchParams }) {
                     justifyContent: 'center',
                     flexShrink: 0,
                     color: 'var(--gold-accent)',
-                    fontSize: '18px'
+                    fontSize: '15px',
+                    marginTop: '2px'
                   }}>
                     <i className="fa-solid fa-envelope" />
                   </div>
-                  <div>
-                    <strong style={{ fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>Official Email Desks:</strong>
-                    <div style={{ fontSize: '14.5px', marginTop: '4px', lineHeight: 1.6 }}>
-                      <div><strong style={{ color: 'rgba(255,255,255,0.7)' }}>Admissions:</strong> <a href="mailto:admissions@pleasantviewschools.co.ke" style={{ color: '#ffffff', textDecoration: 'none', fontWeight: 700 }}>admissions@pleasantviewschools.co.ke</a></div>
-                      <div><strong style={{ color: 'rgba(255,255,255,0.7)' }}>Information:</strong> <a href="mailto:info@pleasantviewschools.co.ke" style={{ color: '#ffffff', textDecoration: 'none', fontWeight: 700 }}>info@pleasantviewschools.co.ke</a></div>
-                      <div><strong style={{ color: 'rgba(255,255,255,0.7)' }}>Finance / Bursar:</strong> <a href="mailto:finance@pleasantviewschools.co.ke" style={{ color: '#ffffff', textDecoration: 'none', fontWeight: 700 }}>finance@pleasantviewschools.co.ke</a></div>
-                      <div><strong style={{ color: 'rgba(255,255,255,0.7)' }}>Central Admin:</strong> <a href="mailto:admin@pleasantviewschools.co.ke" style={{ color: '#ffffff', textDecoration: 'none', fontWeight: 700 }}>admin@pleasantviewschools.co.ke</a></div>
+                  <div style={{ fontSize: '13px', lineHeight: 1.5 }}>
+                    <div>
+                      <strong style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px' }}>ADMISSIONS:</strong><br />
+                      <a href="mailto:admissions@pleasantviewschools.co.ke" style={{ color: '#ffffff', textDecoration: 'none', fontWeight: 600 }}>admissions@pleasantviewschools.co.ke</a>
+                    </div>
+                    <div style={{ marginTop: '4px' }}>
+                      <strong style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px' }}>GENERAL INQUIRIES:</strong><br />
+                      <a href="mailto:info@pleasantviewschools.co.ke" style={{ color: '#ffffff', textDecoration: 'none', fontWeight: 600 }}>info@pleasantviewschools.co.ke</a>
                     </div>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '15px' }}>
+                {/* LOCATION */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                   <div style={{
-                    width: '42px',
-                    height: '42px',
+                    width: '36px',
+                    height: '36px',
                     borderRadius: '50%',
                     background: 'rgba(255,255,255,0.12)',
                     display: 'flex',
@@ -354,39 +359,37 @@ export default async function ContactPage({ searchParams }) {
                     justifyContent: 'center',
                     flexShrink: 0,
                     color: 'var(--gold-accent)',
-                    fontSize: '18px'
+                    fontSize: '15px',
+                    marginTop: '2px'
                   }}>
                     <i className="fa-solid fa-location-dot" />
                   </div>
-                  <div>
-                    <strong style={{ fontSize: '14px', color: 'rgba(255,255,255,0.8)' }}>Campus Location:</strong>
-                    <div style={{ fontSize: '15.5px', marginTop: '2px', lineHeight: 1.5 }}>
-                      {location}
-                    </div>
-                    <small style={{ color: 'rgba(255,255,255,0.7)' }}>Adjacent to Komothai Centre, Kiambu County</small>
+                  <div style={{ fontSize: '13px', lineHeight: 1.4 }}>
+                    <div style={{ color: '#ffffff', fontWeight: 600 }}>{location}</div>
+                    <small style={{ color: 'rgba(255,255,255,0.65)', fontSize: '11.5px' }}>Adjacent to Komothai Centre, Kiambu</small>
                   </div>
                 </div>
               </div>
 
               {/* SOCIAL MEDIA CHANNELS */}
-              <div style={{ marginTop: '30px', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.15)' }}>
-                <span style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--gold-accent)', fontWeight: 700, display: 'block', marginBottom: '12px' }}>
-                  Connect on Social Media
+              <div style={{ marginTop: '18px', paddingTop: '14px', borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+                <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--gold-accent)', fontWeight: 700, display: 'block', marginBottom: '8px' }}>
+                  Social Channels
                 </span>
-                <div style={{ display: 'flex', gap: '12px' }}>
-                  <a href={st.social_facebook || 'https://facebook.com'} target="_blank" rel="noopener noreferrer" style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', textDecoration: 'none' }} title="Facebook">
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <a href={st.social_facebook || 'https://facebook.com'} target="_blank" rel="noopener noreferrer" style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', textDecoration: 'none', fontSize: '13px' }} title="Facebook">
                     <i className="fa-brands fa-facebook-f" />
                   </a>
-                  <a href={st.social_twitter || 'https://x.com'} target="_blank" rel="noopener noreferrer" style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', textDecoration: 'none' }} title="X / Twitter">
+                  <a href={st.social_twitter || 'https://x.com'} target="_blank" rel="noopener noreferrer" style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', textDecoration: 'none', fontSize: '13px' }} title="X / Twitter">
                     <i className="fa-brands fa-x-twitter" />
                   </a>
-                  <a href={st.social_instagram || 'https://instagram.com'} target="_blank" rel="noopener noreferrer" style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', textDecoration: 'none' }} title="Instagram">
+                  <a href={st.social_instagram || 'https://instagram.com'} target="_blank" rel="noopener noreferrer" style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', textDecoration: 'none', fontSize: '13px' }} title="Instagram">
                     <i className="fa-brands fa-instagram" />
                   </a>
-                  <a href={st.social_youtube || 'https://youtube.com'} target="_blank" rel="noopener noreferrer" style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', textDecoration: 'none' }} title="YouTube">
+                  <a href={st.social_youtube || 'https://youtube.com'} target="_blank" rel="noopener noreferrer" style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', textDecoration: 'none', fontSize: '13px' }} title="YouTube">
                     <i className="fa-brands fa-youtube" />
                   </a>
-                  <a href={st.social_linkedin || 'https://linkedin.com'} target="_blank" rel="noopener noreferrer" style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', textDecoration: 'none' }} title="LinkedIn">
+                  <a href={st.social_linkedin || 'https://linkedin.com'} target="_blank" rel="noopener noreferrer" style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', textDecoration: 'none', fontSize: '13px' }} title="LinkedIn">
                     <i className="fa-brands fa-linkedin-in" />
                   </a>
                 </div>
@@ -394,28 +397,28 @@ export default async function ContactPage({ searchParams }) {
             </div>
 
             {/* CAMPUS SPECIFIC CONTACTS */}
-            <div style={{ background: '#ffffff', padding: '30px', borderRadius: '6px', border: '1px solid #dde2ec' }}>
-              <h4 style={{ fontSize: '18px', marginBottom: '16px', color: 'var(--primary-navy)' }}>
+            <div style={{ background: '#ffffff', padding: '22px 18px', borderRadius: '8px', border: '1px solid #dde2ec', boxShadow: '0 4px 16px rgba(0,0,0,0.03)' }}>
+              <h4 style={{ fontSize: '16px', marginBottom: '14px', color: 'var(--primary-navy)', fontWeight: 800 }}>
                 Academic Division Desks
               </h4>
-              <div style={{ display: 'grid', gap: '14px' }}>
+              <div style={{ display: 'grid', gap: '10px' }}>
                 {schList.map(s => {
                   const cleanedName = s.name.replace(/Pleasantview/gi, 'Pleasant View');
                   return (
-                    <div key={s.id} style={{ padding: '14px', background: 'var(--soft-bg)', borderRadius: '6px', borderLeft: `4px solid ${s.color || 'var(--primary-navy)'}` }}>
+                    <div key={s.id} style={{ padding: '10px 12px', background: 'var(--soft-bg)', borderRadius: '6px', borderLeft: `3px solid ${s.color || 'var(--primary-navy)'}` }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <strong style={{ fontSize: '14.5px', color: 'var(--primary-navy)' }}>{cleanedName}</strong>
-                        <span style={{ fontSize: '11px', background: '#fff', padding: '2px 8px', borderRadius: '3px', fontWeight: 700, color: s.color || 'var(--primary-navy)', border: '1px solid #e1e7f0' }}>
+                        <strong style={{ fontSize: '13.5px', color: 'var(--primary-navy)' }}>{cleanedName}</strong>
+                        <span style={{ fontSize: '10px', background: '#fff', padding: '2px 6px', borderRadius: '3px', fontWeight: 700, color: s.color || 'var(--primary-navy)', border: '1px solid #e1e7f0' }}>
                           {s.category}
                         </span>
                       </div>
-                      <div style={{ fontSize: '13px', color: '#555', marginTop: '6px' }}>
-                        <i className="fa-solid fa-phone" style={{ marginRight: '6px', color: 'var(--medium-blue)' }} />
+                      <div style={{ fontSize: '12px', color: '#555', marginTop: '4px' }}>
+                        <i className="fa-solid fa-phone" style={{ marginRight: '5px', color: 'var(--medium-blue)' }} />
                         <a href={`tel:${s.phone || phone}`} style={{ color: '#333', textDecoration: 'none' }}>{s.phone || phone}</a>
                       </div>
-                      <div style={{ marginTop: '8px' }}>
-                        <Link href={`/s/${s.slug}/visit`} style={{ fontSize: '12px', fontWeight: 700, color: 'var(--primary-red)', textDecoration: 'none' }}>
-                          Book {cleanedName} Tour &rarr;
+                      <div style={{ marginTop: '6px' }}>
+                        <Link href={`/s/${s.slug}/visit`} style={{ fontSize: '11.5px', fontWeight: 700, color: 'var(--primary-red)', textDecoration: 'none' }}>
+                          Book Division Tour &rarr;
                         </Link>
                       </div>
                     </div>

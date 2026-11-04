@@ -61,20 +61,22 @@ export default function ScrollReveal() {
 
       containers.forEach(container => {
         const rect = container.getBoundingClientRect();
-        // Trigger range: starts illuminating when top is at 88% of window, fully illuminated when bottom reaches 20%
-        const triggerStart = windowHeight * 0.88;
-        const triggerEnd = windowHeight * 0.22;
+        // Dynamic trigger: Starts smooth illumination at 90% viewport, fully illuminated by 15%
+        const triggerStart = windowHeight * 0.90;
+        const triggerEnd = windowHeight * 0.15;
         const totalDistance = rect.height + (triggerStart - triggerEnd);
         const scrolledDistance = triggerStart - rect.top;
         const rawProgress = totalDistance > 0 ? scrolledDistance / totalDistance : 0;
-        const progress = Math.min(Math.max(rawProgress, 0), 1);
+        const linearProgress = Math.min(Math.max(rawProgress, 0), 1);
+        // Cinematic sinusoidal smooth easing
+        const progress = Math.sin((linearProgress * Math.PI) / 2);
 
         const words = container.querySelectorAll('.scroll-word');
         const totalWords = words.length;
         if (totalWords === 0) return;
 
-        // Multiply by 1.15 so the paragraph is fully lit slightly before user finishes scrolling past it
-        const targetLitCount = Math.floor(progress * totalWords * 1.15);
+        // Multiply by 1.12 so paragraph finishes illuminating right before scrolling past
+        const targetLitCount = Math.floor(progress * totalWords * 1.12);
 
         for (let i = 0; i < totalWords; i++) {
           if (i < targetLitCount) {
@@ -104,7 +106,7 @@ export default function ScrollReveal() {
     // Initial pass to illuminate elements already above the fold
     updateWordIllumination();
 
-    // 3. INTERSECTION OBSERVER FOR BLOCK & HEADING ENTRANCES (.reveal-on-scroll)
+    // 3. INTERSECTION OBSERVER FOR PANELS, CARDS & SECTIONS ENTRANCES (.panel-reveal, .reveal-on-scroll)
     let observer = null;
     if ('IntersectionObserver' in window) {
       observer = new IntersectionObserver(
@@ -117,21 +119,21 @@ export default function ScrollReveal() {
           });
         },
         {
-          rootMargin: '0px 0px -30px 0px',
-          threshold: 0.1
+          rootMargin: '0px 0px -40px 0px',
+          threshold: 0.08
         }
       );
 
-      // Automatically observe designated elements and major headings across the portal
+      // Automatically observe designated panels, forms, cards, and major headings across the portal
       const observeElements = () => {
         const elements = document.querySelectorAll(
-          '.reveal-on-scroll:not(.is-revealed), .text-component h2:not(.is-revealed), .text-component .lead-badge:not(.is-revealed), .four-pillars-section h2:not(.is-revealed), .pillar-card:not(.is-revealed), .at-a-glance-card:not(.is-revealed), .program-card:not(.is-revealed), .overview-card:not(.is-revealed)'
+          '.panel-reveal:not(.is-revealed), .custom-form:not(.is-revealed), .contact-side-column > div:not(.is-revealed), .overview-card:not(.is-revealed), .pillar-card:not(.is-revealed), .division-card:not(.is-revealed), .testimonial-card:not(.is-revealed), .stat-card:not(.is-revealed), .metric-card:not(.is-revealed), .news-card:not(.is-revealed), .spotlight-card:not(.is-revealed), .at-a-glance-card:not(.is-revealed), .program-card:not(.is-revealed), .reveal-on-scroll:not(.is-revealed), .text-component h2:not(.is-revealed)'
         );
         elements.forEach(el => {
-          el.classList.add('reveal-on-scroll');
-          // If already in top viewport, reveal immediately
+          el.classList.add('panel-reveal');
+          // If already visible above or within the fold, reveal immediately without any delay
           const b = el.getBoundingClientRect();
-          if (b.top < window.innerHeight * 0.95) {
+          if (b.top < window.innerHeight * 0.92) {
             el.classList.add('is-revealed');
           } else {
             observer.observe(el);

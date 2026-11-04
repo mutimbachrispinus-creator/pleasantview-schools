@@ -31,7 +31,7 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
         if (res && res.error) {
           setLoginError(res.error);
         } else if (res && res.ok) {
-          window.location.reload();
+          window.location.href = '/staff-portal';
         }
       } catch (err) {
         setLoginError(err?.message || 'Authentication error. Please try again.');

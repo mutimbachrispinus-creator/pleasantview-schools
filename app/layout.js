@@ -2,6 +2,7 @@ import './globals.css';
 import Link from 'next/link';
 import { schools, S, getQuickLinks } from '@/lib/db';
 import HeaderNav from '@/components/HeaderNav';
+import HeroButtons from '@/components/HeroButtons';
 import PwaInstallPrompt from '@/components/PwaInstallPrompt';
 import MobileBottomBar from '@/components/MobileBottomBar';
 import CookieConsent from '@/components/CookieConsent';
@@ -96,26 +97,7 @@ export default async function RootLayout({ children }) {
         />
 
         {/* ROTATED HERO SIDE BUTTONS (ST ANDREW'S TURI SIGNATURE - School Red & Grey) */}
-        <div className="hero-buttons">
-          <a
-            className="hero-button dark-blue"
-            href={mapsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Directions to Campus on Google Maps"
-            style={{ background: 'var(--dark-grey)', borderColor: 'rgba(255,255,255,0.2)' }}
-          >
-            <i className="fa-solid fa-location-dot" /> VISIT
-          </a>
-          <Link
-            className="hero-button light-blue"
-            href="/contact"
-            title="Contact Us"
-            style={{ background: 'var(--primary-red)', borderColor: 'rgba(255,255,255,0.2)' }}
-          >
-            <i className="fa-regular fa-envelope" /> CONTACT
-          </Link>
-        </div>
+        <HeroButtons mapsUrl={mapsUrl} />
 
         {/* FLOATING ACCESSIBILITY BUTTON */}
         <button
