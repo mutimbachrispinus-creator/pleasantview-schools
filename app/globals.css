@@ -2732,3 +2732,37 @@ main, .subpage-body, .director-welcome-section, .schools-overview, .video-showca
 .reveal-delay-2 { transition-delay: 0.2s; }
 .reveal-delay-3 { transition-delay: 0.3s; }
 .reveal-delay-4 { transition-delay: 0.4s; }
+
+/* GRADUAL WORD-BY-WORD SCROLL REVEAL (ST ANDREW'S TURI & APPLE SIGNATURE TEXT ILLUMINATION) */
+.scroll-word-reveal {
+  position: relative;
+}
+.scroll-word {
+  display: inline-block;
+  opacity: 0.22;
+  transform: translateY(3px);
+  filter: blur(0.5px);
+  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.25s ease;
+  will-change: opacity, transform, filter;
+}
+.scroll-word.is-lit {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  filter: blur(0) !important;
+  color: inherit !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-word {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+  .reveal-on-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

@@ -5,18 +5,45 @@ import Link from 'next/link';
 export default function ErrorBoundary({ error, reset }) {
   useEffect(() => {
     console.error('[Application Client Error]:', error);
-    // If it's a chunk loading error from a new deployment, reload page automatically once
-    if (
+    // If it's a chunk loading error from a new deployment, auto-reload cleanly
+    const isChunkError =
       error?.name === 'ChunkLoadError' ||
       error?.message?.includes('Loading chunk') ||
-      error?.message?.includes('failed to fetch')
-    ) {
-      if (!sessionStorage.getItem('pvs_chunk_reloaded')) {
-        sessionStorage.setItem('pvs_chunk_reloaded', '1');
+      error?.message?.includes('failed to fetch') ||
+      error?.message?.includes('Dynamically imported module');
+
+    if (isChunkError && typeof window !== 'undefined') {
+      const lastReload = parseInt(sessionStorage.getItem('pvs_chunk_reload_time') || '0', 10);
+      if (Date.now() - lastReload > 5000) {
+        sessionStorage.setItem('pvs_chunk_reload_time', String(Date.now()));
+        // Force refresh service worker caches
+        if ('caches' in window) {
+          caches.keys().then(names => names.forEach(n => caches.delete(n)));
+        }
         window.location.reload();
       }
     }
   }, [error]);
+
+  const handleHardRefresh = () => {
+    if (typeof window !== 'undefined') {
+      try {
+        sessionStorage.removeItem('pvs_chunk_reloaded');
+        sessionStorage.removeItem('pvs_chunk_reload_time');
+        if ('caches' in window) {
+          caches.keys().then(names => names.forEach(n => caches.delete(n)));
+        }
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(regs => {
+            for (const r of regs) r.unregister();
+          });
+        }
+      } catch {}
+      window.location.href = window.location.pathname + '?_v=' + Date.now();
+    } else {
+      reset();
+    }
+  };
 
   return (
     <div style={{
@@ -60,10 +87,8 @@ export default function ErrorBoundary({ error, reset }) {
         </p>
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
           <button
-            onClick={() => {
-              if (typeof window !== 'undefined') window.location.reload();
-              else reset();
-            }}
+            type="button"
+            onClick={handleHardRefresh}
             style={{
               background: '#8B1E2D',
               color: '#ffffff',

@@ -214,9 +214,15 @@ export default async function RootLayout({ children }) {
             <div className="footer-col links">
               <h5 className="column-title">Our Campuses</h5>
               <ul>
-                {schList.map(s => (
-                  <li key={s.id}><Link href={`/s/${s.slug}`}>{s.name} ({s.category || 'School'})</Link></li>
-                ))}
+                {schList.map(s => {
+                  const cleanName = String(s.name || '').replace(/pleasantview/gi, 'Pleasant View');
+                  const cleanCat = String(s.category || 'School').replace(/CBC/g, 'CBE');
+                  return (
+                    <li key={s.id}>
+                      <Link href={`/s/${s.slug}`}>{cleanName} ({cleanCat})</Link>
+                    </li>
+                  );
+                })}
                 <li><Link href="/about#legacy">24-Year Academic Legacy</Link></li>
                 <li><Link href="/news">Latest News &amp; Notices</Link></li>
                 <li><Link href="/contact#visit">Book Campus Visit</Link></li>

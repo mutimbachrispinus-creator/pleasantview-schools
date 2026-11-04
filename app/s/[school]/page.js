@@ -75,11 +75,11 @@ export default async function SchoolHome({ params }) {
         <div className="wrapper">
           <BackButton fallback="/#schools" label="All Schools" current={s.name.replace(/Pleasantview/gi, 'Pleasant View')} />
           <div style={{ maxWidth: '960px', margin: '0 auto' }}>
-            <span className="lead-badge">WELCOME TO {s.category || 'OUR DIVISION'}</span>
-            <h2>Nurturing Distinction at {s.name.replace(/Pleasantview/gi, 'Pleasant View')}</h2>
-            <div className="gold-divider" style={{ marginLeft: 0 }} />
+            <span className="lead-badge reveal-on-scroll">WELCOME TO {s.category || 'OUR DIVISION'}</span>
+            <h2 className="reveal-on-scroll">Nurturing Distinction at {s.name.replace(/Pleasantview/gi, 'Pleasant View')}</h2>
+            <div className="gold-divider reveal-on-scroll" style={{ marginLeft: 0 }} />
 
-            <p style={{ fontSize: '18px', lineHeight: 1.8, marginBottom: '25px', color: '#333' }}>
+            <p className="scroll-word-reveal" style={{ fontSize: '18px', lineHeight: 1.8, marginBottom: '25px', color: '#333' }}>
               {s.about || s.welcome}
             </p>
 
