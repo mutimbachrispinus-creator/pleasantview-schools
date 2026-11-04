@@ -109,7 +109,7 @@ export default function CookieConsent() {
             </button>
 
             <Link
-              href="/about#cookies"
+              href="/cookies"
               onClick={() => setVisible(false)}
               style={{
                 color: 'rgba(255, 255, 255, 0.85)',

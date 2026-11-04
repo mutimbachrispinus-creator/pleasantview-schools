@@ -245,9 +245,9 @@ export default async function RootLayout({ children }) {
               &copy; {new Date().getFullYear()} Pleasant View Schools. All Rights Reserved. &ldquo;Our Aim is Victory&rdquo;
             </div>
             <ul className="copyright-links">
-              <li><Link href="/about#privacy">Privacy Policy</Link></li>
-              <li><Link href="/about#terms">Data Protection Policy</Link></li>
-              <li><Link href="/about#cookies">Cookie Policy</Link></li>
+              <li><Link href="/privacy">Privacy Policy</Link></li>
+              <li><Link href="/terms">Terms &amp; Data Protection</Link></li>
+              <li><Link href="/cookies">Cookie Policy</Link></li>
               <li><Link href="/quick-links/term-dates">Term Dates &amp; VISOs</Link></li>
               <li><Link href={adminPath}>Staff Portal</Link></li>
             </ul>

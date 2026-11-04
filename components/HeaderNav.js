@@ -128,7 +128,7 @@ export default function HeaderNav({
                     <li><Link href="/about#academics">Curriculum &amp; Assessment Honors</Link></li>
                     <li><Link href="/about#christian">Christian Ethos &amp; Faith</Link></li>
                     <li><Link href="/about#leadership">Leadership &amp; Governance</Link></li>
-                    <li><Link href="/about#policies">Policies &amp; Safeguarding</Link></li>
+                    <li><Link href="/about#boarding">Boarding &amp; Pastoral Care</Link></li>
                   </ul>
                 </li>
 
@@ -338,8 +338,8 @@ export default function HeaderNav({
               <Link href="/about#leadership" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
                 Executive Leadership
               </Link>
-              <Link href="/about#policies" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
-                Child Safeguarding &amp; Policies
+              <Link href="/about#boarding" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Boarding &amp; Pastoral Care
               </Link>
             </div>
           </div>
