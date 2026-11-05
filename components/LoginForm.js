@@ -6,7 +6,6 @@ import { login, requestPasswordChangeOTP, verifyPasswordChangeOTP } from '@/app/
 
 export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
   const [activeTab, setActiveTab] = useState('login'); // 'login' | 'otp'
-  const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [isLoginPending, startLoginTransition] = useTransition();
 
@@ -327,25 +326,9 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
                 </div>
 
                 <div className="form-group" style={{ marginBottom: '22px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                    <label style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b' }}>
-                      Password *
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#64748b',
-                        fontSize: '12px',
-                        cursor: 'pointer',
-                        padding: 0
-                      }}
-                    >
-                      <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`} /> {showPassword ? 'Hide' : 'Show'}
-                    </button>
-                  </div>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#1e293b', marginBottom: '6px' }}>
+                    Password *
+                  </label>
                   <div style={{ position: 'relative' }}>
                     <i className="fa-solid fa-key" style={{
                       position: 'absolute',
@@ -357,7 +340,7 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
                     }} />
                     <input
                       name="password"
-                      type={showPassword ? 'text' : 'password'}
+                      type="password"
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                       placeholder="Type administrator password manually"
