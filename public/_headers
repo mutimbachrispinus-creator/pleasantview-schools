@@ -12,6 +12,24 @@
   Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=0, must-revalidate
 
+/icon.png
+  Cache-Control: public, max-age=0, must-revalidate
+
+/favicon.ico
+  Cache-Control: public, max-age=0, must-revalidate
+
+/apple-touch-icon.png
+  Cache-Control: public, max-age=0, must-revalidate
+
+/images/pvs_crest*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/images/logo*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/images/pwa_*
+  Cache-Control: public, max-age=0, must-revalidate
+
 /images/*
   Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=86400

@@ -2,7 +2,7 @@
 import crypto from 'crypto';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
-import { q, saveImg, saveVideo, D, CATS, SF, getSchoolEmailFromName } from '@/lib/db';
+import { q, saveImg, saveVideo, D, CATS, SF, getSchoolEmailFromName, S } from '@/lib/db';
 import { getAdmin, eq, checkPw, hashPw, startSession, endSession, limited } from '@/lib/auth';
 import { sendEmail, sendSMS } from '@/lib/notify';
 

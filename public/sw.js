@@ -1,11 +1,11 @@
-const CACHE_NAME = 'pleasantview-v6';
+const CACHE_NAME = 'pleasantview-v8';
 const STATIC_ASSETS = [
   '/manifest.json',
   '/favicon.ico',
   '/icon.png',
   '/images/pwa_icon_192.png',
   '/images/pwa_icon_512.png',
-  '/images/pvs_crest.png'
+  '/images/pvs_crest.png?v=20261105'
 ];
 
 self.addEventListener('install', (event) => {
@@ -47,7 +47,23 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Only cache standalone images
+  // Network-first for logo and crest to ensure never stale
+  if (url.pathname.includes('pvs_crest') || url.pathname.includes('logo') || url.pathname.includes('icon')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Stale-while-revalidate for general images
   if (url.pathname.startsWith('/images/')) {
     event.respondWith(
       caches.open(CACHE_NAME).then((cache) => {

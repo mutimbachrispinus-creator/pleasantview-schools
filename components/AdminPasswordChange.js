@@ -20,6 +20,7 @@ export default function AdminPasswordChange({
   const [otpStep, setOtpStep] = useState(1);
   const [deliveryMethod, setDeliveryMethod] = useState('email');
   const [testPassword, setTestPassword] = useState('');
+  const [targetKey, setTargetKey] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [otpStatus, setOtpStatus] = useState(null);
   const [devOtpHint, setDevOtpHint] = useState('');
@@ -67,6 +68,7 @@ export default function AdminPasswordChange({
         const res = await requestPasswordChangeOTP(fd);
         if (res?.ok) {
           setOtpStep(2);
+          if (res?.targetKey) setTargetKey(res.targetKey);
           setOtpStatus({
             type: 'success',
             text: res.message || 'OTP successfully generated and dispatched.'
@@ -93,6 +95,7 @@ export default function AdminPasswordChange({
     e.preventDefault();
     setOtpStatus(null);
     const fd = new FormData();
+    fd.append('target_key', targetKey || recoveryEmail);
     fd.append('identity', recoveryEmail);
     fd.append('otp', otpCode);
     fd.append('new_password', testPassword);

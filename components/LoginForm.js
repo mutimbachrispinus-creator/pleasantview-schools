@@ -150,7 +150,7 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
               justifyContent: 'center'
             }}>
               <img
-                src="/images/pvs_crest.png"
+                src="/images/pvs_crest.png?v=20261105"
                 alt="Pleasant View Schools Crest"
                 style={{ width: '100%', height: '100%', objectFit: 'contain' }}
               />

@@ -422,7 +422,7 @@ export default async function Home({ searchParams }) {
             <h5>HOLISTIC CHRISTIAN EDUCATION</h5>
             <h2>Transforming Hearts, Minds, Bodies &amp; Souls</h2>
             <div className="gold-divider" />
-            <p className="lead" style={{ fontSize: '17px', color: '#555', margin: 0 }}>
+            <p className="lead scroll-word-reveal" style={{ fontSize: '17px', color: '#555', margin: 0 }}>
               Guided by our motto &ldquo;Our Aim is Victory&rdquo;, we educate the whole child through four foundational pillars that equip every learner to thrive academically, spiritually, and socially.
             </p>
           </div>
@@ -963,7 +963,7 @@ export default async function Home({ searchParams }) {
             {learnerVoices.map((l, idx) => (
               <div
                 key={l.id || idx}
-                className={`reveal-on-scroll reveal-delay-${(idx % 3) + 1}`}
+                className="voices-card panel-reveal"
                 style={{
                   background: '#ffffff',
                   borderRadius: '10px',
@@ -1008,7 +1008,7 @@ export default async function Home({ searchParams }) {
                 </div>
 
                 <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <p style={{ fontSize: '14.5px', color: '#444', lineHeight: 1.65, fontStyle: 'italic', margin: '0 0 16px' }}>
+                  <p className="voices-quote" style={{ fontSize: '14.5px', color: '#444', lineHeight: 1.65, fontStyle: 'italic', margin: '0 0 16px' }}>
                     &ldquo;{l.comment}&rdquo;
                   </p>
 
@@ -1050,7 +1050,7 @@ export default async function Home({ searchParams }) {
               {alumniStories.map((a, idx) => (
                 <div
                   key={a.id || idx}
-                  className={`reveal-on-scroll reveal-delay-${(idx % 2) + 1}`}
+                  className="alumni-card panel-reveal"
                   style={{
                     background: '#ffffff',
                     borderRadius: '10px',
@@ -1102,7 +1102,7 @@ export default async function Home({ searchParams }) {
                         {a.university_or_company}
                       </div>
                       {a.quote && (
-                        <blockquote style={{
+                        <blockquote className="alumni-quote" style={{
                           margin: '0 0 14px',
                           padding: '12px 14px',
                           background: 'var(--soft-bg)',

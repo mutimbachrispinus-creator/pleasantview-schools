@@ -1,11 +1,19 @@
 'use client';
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function ScrollReveal() {
+  const pathname = usePathname();
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // 1. HELPER: WRAP TEXT NODES INTO WORD SPANS FOR GRADUAL WORD ILLUMINATION
+    let isMutating = false;
+    let animationFrameId = null;
+    let observer = null;
+    let mutationObserver = null;
+
+    // 1. ROBUST RECURSIVE WORD SPLITTER
     const wrapWordsInNode = (node) => {
       if (node.nodeType === 3) {
         // Text node
@@ -25,7 +33,16 @@ export default function ScrollReveal() {
           }
         });
         return fragment;
-      } else if (node.nodeType === 1 && !node.classList.contains('scroll-word') && !node.classList.contains('no-word-split')) {
+      } else if (node.nodeType === 1) {
+        // Element node: skip if already wrapped or marked no-split
+        if (node.classList.contains('scroll-word') || node.classList.contains('no-word-split')) {
+          return null;
+        }
+        // Do not split inside form inputs, buttons, icons, or badges
+        const tag = node.tagName.toLowerCase();
+        if (['button', 'input', 'select', 'textarea', 'i', 'svg', 'code'].includes(tag)) {
+          return null;
+        }
         const children = Array.from(node.childNodes);
         children.forEach(child => {
           const replacement = wrapWordsInNode(child);
@@ -37,46 +54,59 @@ export default function ScrollReveal() {
       return null;
     };
 
-    // Initialize all containers with .scroll-word-reveal
+    // 2. SETUP WORD REVEAL CONTAINERS (Resilient against React Re-renders)
     const setupWordRevealContainers = () => {
-      // Target explicitly designated containers as well as editorial text blocks across the portal
-      const containers = document.querySelectorAll(
-        '.scroll-word-reveal:not([data-words-ready]), .text-component p:not([data-words-ready]), .director-content p:not([data-words-ready]), .director-quote:not([data-words-ready]), .subpage-body p:not([data-words-ready]):not(.custom-form p):not(.subpage-nav-bar p)'
-      );
+      const selectors = [
+        '.scroll-word-reveal',
+        '.director-content p',
+        '.director-quote',
+        '.text-component p',
+        '.subpage-body p:not(.custom-form p):not(.subpage-nav-bar p)',
+        '.lead:not(.custom-form *)',
+        '.section-intro',
+        '.voices-quote',
+        '.alumni-quote',
+        '.head-message p'
+      ];
+
+      const containers = document.querySelectorAll(selectors.join(', '));
+      if (!containers || containers.length === 0) return;
+
+      isMutating = true;
       containers.forEach(container => {
-        container.setAttribute('data-words-ready', 'true');
-        container.classList.add('scroll-word-reveal');
-        wrapWordsInNode(container);
+        // Check if words are already wrapped
+        const existingWords = container.querySelectorAll('.scroll-word');
+        if (existingWords.length === 0 && container.textContent.trim().length > 0) {
+          container.classList.add('scroll-word-reveal');
+          wrapWordsInNode(container);
+        }
       });
+      isMutating = false;
     };
 
-    setupWordRevealContainers();
-
-    // 2. SCROLL DRIVEN WORD ILLUMINATION (Apple & St Andrew's Turi Signature Experience)
-    let animationFrameId = null;
-
+    // 3. CONTINUOUS SCROLL-LINKED WORD ILLUMINATION
     const updateWordIllumination = () => {
-      const containers = document.querySelectorAll('.scroll-word-reveal[data-words-ready="true"]');
+      const containers = document.querySelectorAll('.scroll-word-reveal');
       const windowHeight = window.innerHeight || 800;
 
       containers.forEach(container => {
         const rect = container.getBoundingClientRect();
-        // Dynamic trigger: Starts smooth illumination at 90% viewport, fully illuminated by 15%
-        const triggerStart = windowHeight * 0.90;
-        const triggerEnd = windowHeight * 0.15;
+        // Illuminates progressively as element enters viewport
+        const triggerStart = windowHeight * 0.92;
+        const triggerEnd = windowHeight * 0.18;
         const totalDistance = rect.height + (triggerStart - triggerEnd);
         const scrolledDistance = triggerStart - rect.top;
         const rawProgress = totalDistance > 0 ? scrolledDistance / totalDistance : 0;
         const linearProgress = Math.min(Math.max(rawProgress, 0), 1);
-        // Cinematic sinusoidal smooth easing
+        // Smooth sine ease
         const progress = Math.sin((linearProgress * Math.PI) / 2);
 
         const words = container.querySelectorAll('.scroll-word');
         const totalWords = words.length;
         if (totalWords === 0) return;
 
-        // Multiply by 1.12 so paragraph finishes illuminating right before scrolling past
-        const targetLitCount = Math.floor(progress * totalWords * 1.12);
+        // Multiply by 1.15 to ensure paragraph is fully illuminated when centered
+        const targetLitCount = Math.floor(progress * totalWords * 1.15);
 
         for (let i = 0; i < totalWords; i++) {
           if (i < targetLitCount) {
@@ -92,6 +122,64 @@ export default function ScrollReveal() {
       });
     };
 
+    // 4. INTERSECTION OBSERVER FOR SITE-WIDE PANEL & CARD TRANSITIONS
+    const setupPanelTransitions = () => {
+      const panelSelectors = [
+        '.panel-reveal',
+        '.custom-form',
+        '.contact-side-column > div',
+        '.overview-card',
+        '.pillar-card',
+        '.division-card',
+        '.testimonial-card',
+        '.stat-card',
+        '.metric-card',
+        '.news-card',
+        '.spotlight-card',
+        '.at-a-glance-card',
+        '.program-card',
+        '.voices-card',
+        '.review-card',
+        '.campus-card',
+        '.academic-card',
+        '.reveal-on-scroll'
+      ];
+
+      if ('IntersectionObserver' in window) {
+        if (observer) observer.disconnect();
+
+        observer = new IntersectionObserver(
+          entries => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-revealed');
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          {
+            rootMargin: '0px 0px -40px 0px',
+            threshold: 0.05
+          }
+        );
+
+        const panels = document.querySelectorAll(panelSelectors.join(', '));
+        const windowHeight = window.innerHeight || 800;
+
+        panels.forEach(panel => {
+          panel.classList.add('panel-reveal');
+          const rect = panel.getBoundingClientRect();
+          // If already in or above viewport, reveal immediately without flicker
+          if (rect.top < windowHeight * 0.95 && rect.bottom > 0) {
+            panel.classList.add('is-revealed');
+          } else if (!panel.classList.contains('is-revealed')) {
+            observer.observe(panel);
+          }
+        });
+      }
+    };
+
+    // 5. EVENT BINDING WITH THROTTLED ANIMATION FRAME
     const onScrollOrResize = () => {
       if (animationFrameId) return;
       animationFrameId = requestAnimationFrame(() => {
@@ -100,73 +188,37 @@ export default function ScrollReveal() {
       });
     };
 
+    // Run initial passes
+    setupWordRevealContainers();
+    setupPanelTransitions();
+    updateWordIllumination();
+
     window.addEventListener('scroll', onScrollOrResize, { passive: true });
     window.addEventListener('resize', onScrollOrResize, { passive: true });
 
-    // Initial pass to illuminate elements already above the fold
-    updateWordIllumination();
-
-    // 3. INTERSECTION OBSERVER FOR PANELS, CARDS & SECTIONS ENTRANCES (.panel-reveal, .reveal-on-scroll)
-    let observer = null;
-    if ('IntersectionObserver' in window) {
-      observer = new IntersectionObserver(
-        entries => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('is-revealed');
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        {
-          rootMargin: '0px 0px -40px 0px',
-          threshold: 0.08
-        }
-      );
-
-      // Automatically observe designated panels, forms, cards, and major headings across the portal
-      const observeElements = () => {
-        const elements = document.querySelectorAll(
-          '.panel-reveal:not(.is-revealed), .custom-form:not(.is-revealed), .contact-side-column > div:not(.is-revealed), .overview-card:not(.is-revealed), .pillar-card:not(.is-revealed), .division-card:not(.is-revealed), .testimonial-card:not(.is-revealed), .stat-card:not(.is-revealed), .metric-card:not(.is-revealed), .news-card:not(.is-revealed), .spotlight-card:not(.is-revealed), .at-a-glance-card:not(.is-revealed), .program-card:not(.is-revealed), .reveal-on-scroll:not(.is-revealed), .text-component h2:not(.is-revealed)'
-        );
-        elements.forEach(el => {
-          el.classList.add('panel-reveal');
-          // If already visible above or within the fold, reveal immediately without any delay
-          const b = el.getBoundingClientRect();
-          if (b.top < window.innerHeight * 0.92) {
-            el.classList.add('is-revealed');
-          } else {
-            observer.observe(el);
-          }
-        });
-      };
-
-      observeElements();
-
-      // Mutation observer to handle newly mounted components or dynamic routes
-      const mutationObserver = new MutationObserver(() => {
+    // 6. MUTATION OBSERVER WITH RE-ENTRANCY SAFEGUARD
+    mutationObserver = new MutationObserver((mutations) => {
+      if (isMutating) return;
+      // Debounce slight DOM adjustments
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      animationFrameId = requestAnimationFrame(() => {
         setupWordRevealContainers();
-        observeElements();
+        setupPanelTransitions();
         updateWordIllumination();
+        animationFrameId = null;
       });
+    });
 
-      mutationObserver.observe(document.body, { childList: true, subtree: true });
-
-      return () => {
-        window.removeEventListener('scroll', onScrollOrResize);
-        window.removeEventListener('resize', onScrollOrResize);
-        if (animationFrameId) cancelAnimationFrame(animationFrameId);
-        if (observer) observer.disconnect();
-        mutationObserver.disconnect();
-      };
-    }
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
 
     return () => {
       window.removeEventListener('scroll', onScrollOrResize);
       window.removeEventListener('resize', onScrollOrResize);
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      if (observer) observer.disconnect();
+      if (mutationObserver) mutationObserver.disconnect();
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }

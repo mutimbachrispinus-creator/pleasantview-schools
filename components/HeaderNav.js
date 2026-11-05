@@ -57,7 +57,7 @@ export default function HeaderNav({
           <Link href="/" className="brand-logo" title="Pleasant View Schools - Our Aim is Victory">
             <div className="brand-crest-container">
               <img
-                src="/images/pvs_crest.png"
+                src="/images/pvs_crest.png?v=20261105"
                 alt="Pleasant View Schools Official Crest"
                 className="brand-crest-img"
               />
@@ -261,7 +261,7 @@ export default function HeaderNav({
         <div className="drawer-top">
           <div className="drawer-brand">
             <img
-              src="/images/pvs_crest.png"
+              src="/images/pvs_crest.png?v=20261105"
               alt="Pleasant View Schools Crest"
               className="drawer-crest"
             />
