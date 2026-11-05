@@ -17,12 +17,12 @@ export const metadata = {
   manifest: '/manifest.json',
   icons: {
     icon: [
-      { url: '/favicon.ico?v=20261105', sizes: 'any' },
-      { url: '/icon.png?v=20261105', sizes: '192x192', type: 'image/png' },
-      { url: '/images/pwa_icon_512.png?v=20261105', sizes: '512x512', type: 'image/png' }
+      { url: '/favicon.ico?v=20261105b', sizes: 'any' },
+      { url: '/icon.png?v=20261105b', sizes: '192x192', type: 'image/png' },
+      { url: '/images/pwa_icon_512.png?v=20261105b', sizes: '512x512', type: 'image/png' }
     ],
     apple: [
-      { url: '/apple-touch-icon.png?v=20261105', sizes: '180x180', type: 'image/png' }
+      { url: '/apple-touch-icon.png?v=20261105b', sizes: '180x180', type: 'image/png' }
     ]
   }
 };
@@ -77,11 +77,11 @@ export default async function RootLayout({ children }) {
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         />
         <link rel="manifest" href="/manifest.json" crossOrigin="anonymous" />
-        <link rel="icon" href="/favicon.ico?v=20261105" sizes="any" />
-        <link rel="icon" href="/icon.png?v=20261105" type="image/png" sizes="192x192" />
-        <link rel="icon" href="/images/pwa_icon_512.png?v=20261105" type="image/png" sizes="512x512" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20261105" sizes="180x180" />
-        <link rel="apple-touch-icon" href="/images/pwa_icon_192.png?v=20261105" />
+        <link rel="icon" href="/favicon.ico?v=20261105b" sizes="any" />
+        <link rel="icon" href="/icon.png?v=20261105b" type="image/png" sizes="192x192" />
+        <link rel="icon" href="/images/pwa_icon_512.png?v=20261105b" type="image/png" sizes="512x512" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20261105b" sizes="180x180" />
+        <link rel="apple-touch-icon" href="/images/pwa_icon_192.png?v=20261105b" />
         <meta name="theme-color" content="#8B1E2D" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -130,7 +130,7 @@ export default async function RootLayout({ children }) {
               <Link href="/" className="brand-logo" style={{ color: 'var(--primary-navy)' }}>
                 <div className="brand-crest-container">
                   <img
-                    src="/images/pvs_crest.png?v=20261105"
+                    src="/images/pvs_crest.png?v=20261105b"
                     alt="Pleasant View Schools Official Crest"
                     className="brand-crest-img"
                   />

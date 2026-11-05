@@ -23,7 +23,6 @@ export default function AdminPasswordChange({
   const [targetKey, setTargetKey] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [otpStatus, setOtpStatus] = useState(null);
-  const [devOtpHint, setDevOtpHint] = useState('');
   const [isOtpPending, startOtpTransition] = useTransition();
 
   const handleSaveProfile = (e) => {
@@ -58,7 +57,6 @@ export default function AdminPasswordChange({
   const handleRequestOTP = (e) => {
     e.preventDefault();
     setOtpStatus(null);
-    setDevOtpHint('');
     const fd = new FormData(e.currentTarget);
     const pw = String(fd.get('new_password') || '').trim();
     setTestPassword(pw);
@@ -71,11 +69,8 @@ export default function AdminPasswordChange({
           if (res?.targetKey) setTargetKey(res.targetKey);
           setOtpStatus({
             type: 'success',
-            text: res.message || 'OTP successfully generated and dispatched.'
+            text: res.message || 'OTP verification code successfully dispatched.'
           });
-          if (res?.otp) {
-            setDevOtpHint(res.otp);
-          }
         } else {
           setOtpStatus({
             type: 'error',
@@ -322,6 +317,29 @@ export default function AdminPasswordChange({
               </small>
             </div>
 
+            <div className="form-group">
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#1e293b', marginBottom: '6px' }}>
+                Resend Email API Key (RESEND_API_KEY) (Optional)
+              </label>
+              <input
+                name="resend_api_key"
+                type="text"
+                placeholder="re_xxxxxxxxxxxxxxxxxxxxxxxx"
+                style={{
+                  width: '100%',
+                  padding: '11px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '14px',
+                  color: '#1e293b',
+                  boxSizing: 'border-box'
+                }}
+              />
+              <small style={{ color: '#64748b', fontSize: '11.5px', marginTop: '4px', display: 'block' }}>
+                Save your Resend API key here directly, or add it in Cloudflare Pages Dashboard &gt; Settings &gt; Environment variables.
+              </small>
+            </div>
+
             <button
               type="submit"
               disabled={isProfilePending}
@@ -367,20 +385,6 @@ export default function AdminPasswordChange({
             }}>
               <i className={`fa-solid ${otpStatus.type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation'}`} style={{ marginTop: '2px' }} />
               <div>{otpStatus.text}</div>
-            </div>
-          )}
-
-          {devOtpHint && (
-            <div style={{
-              background: '#fffbeb',
-              border: '1px solid #fde68a',
-              color: '#92400e',
-              padding: '10px 14px',
-              borderRadius: '6px',
-              fontSize: '13px',
-              marginBottom: '16px'
-            }}>
-              <strong>Generated OTP (Verification Key):</strong> <code style={{ fontSize: '15px', fontWeight: 800, color: '#8B1E2D' }}>{devOtpHint}</code>
             </div>
           )}
 

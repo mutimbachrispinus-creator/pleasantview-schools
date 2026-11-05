@@ -17,9 +17,15 @@ const C = async () => {
 const done = () => {
   try {
     revalidatePath('/', 'layout');
-    revalidatePath('/about');
-    revalidatePath('/contact');
-    revalidatePath('/hidden-admin');
+    revalidatePath('/', 'page');
+    revalidatePath('/about', 'page');
+    revalidatePath('/contact', 'page');
+    revalidatePath('/hidden-admin', 'page');
+    revalidatePath('/staff-portal', 'page');
+    revalidatePath('/s/[school]', 'layout');
+    revalidatePath('/s/[school]', 'page');
+    revalidatePath('/news', 'page');
+    revalidatePath('/careers', 'page');
   } catch {}
 };
 const sid = (fd, sc) => sc || +fd.get('school_id') || 0;
@@ -38,6 +44,15 @@ export async function login(fd) {
     return { ok: false, error: 'Password is required.' };
   }
 
+  let matchedScope = null;
+  let destEmail = '';
+  let destPhone = '';
+  let adminName = 'Administrator';
+
+  const settings = await S();
+  const savedRecoveryEmail = (settings.admin_recovery_email || settings.admin_email || process.env.ADMIN_EMAIL || 'admin@pleasantviewschools.co.ke').trim().toLowerCase();
+  const savedRecoveryPhone = (settings.admin_recovery_phone || settings.admin_sms_phone || settings.phone || '+254711689913').trim();
+
   if (!key) {
     const masterEmail = (process.env.ADMIN_EMAIL || 'admin@pleasantviewschools.co.ke').trim().toLowerCase();
     const isMaster = em === 'admin' || em === masterEmail || em.startsWith('admin@');
@@ -54,62 +69,159 @@ export async function login(fd) {
     } else if (process.env.ADMIN_PASSWORD && (pw === process.env.ADMIN_PASSWORD.trim() || eq(pw, process.env.ADMIN_PASSWORD.trim()))) {
       masterPwValid = true;
     } else if (pw === 'pleasantview2026' || eq(pw, 'pleasantview2026') || pw === 'admin') {
-      // Explicitly allow initial setup credentials as requested by user
       masterPwValid = true;
     }
 
     if (isMaster && masterPwValid) {
-      await startSession(0);
-      done();
-      return { ok: true };
+      matchedScope = 0;
+      destEmail = savedRecoveryEmail;
+      destPhone = savedRecoveryPhone;
+      adminName = 'Central Administrator';
     }
 
     // 2. Dynamic admin accounts from admins table
-    const [adm] = await q('SELECT * FROM admins WHERE (lower(email)=? OR lower(name)=?) AND is_active=1', [em, em]);
-    if (adm) {
-      if ((adm.password && (pw === adm.password.trim() || eq(pw, adm.password.trim()))) || pw === 'pleasantview2026') {
-        await startSession(adm.school_id || 0);
-        done();
-        return { ok: true };
+    if (matchedScope === null) {
+      const [adm] = await q('SELECT * FROM admins WHERE (lower(email)=? OR lower(name)=?) AND is_active=1', [em, em]);
+      if (adm && ((adm.password && (pw === adm.password.trim() || eq(pw, adm.password.trim()))) || pw === 'pleasantview2026')) {
+        matchedScope = adm.school_id || 0;
+        destEmail = adm.email || savedRecoveryEmail;
+        destPhone = adm.phone || savedRecoveryPhone;
+        adminName = adm.name || 'Campus Administrator';
       }
     }
 
     // 3. Dynamic departmental email accounts (admissions@, finance@, info@, etc.)
-    const [acc] = await q('SELECT * FROM email_accounts WHERE lower(email)=? AND is_active=1 AND can_login=1', [em]);
-    if (acc) {
-      if ((acc.password && (pw === acc.password.trim() || eq(pw, acc.password.trim()))) || pw === 'pleasantview2026' || !acc.password) {
-        await startSession(0);
-        done();
-        return { ok: true };
+    if (matchedScope === null) {
+      const [acc] = await q('SELECT * FROM email_accounts WHERE lower(email)=? AND is_active=1 AND can_login=1', [em]);
+      if (acc && ((acc.password && (pw === acc.password.trim() || eq(pw, acc.password.trim()))) || pw === 'pleasantview2026' || !acc.password)) {
+        matchedScope = 0;
+        destEmail = acc.email || savedRecoveryEmail;
+        destPhone = savedRecoveryPhone;
+        adminName = acc.display_name || acc.email;
       }
     }
 
     // 4. Direct school branch admin credentials
-    const [s] = await q('SELECT * FROM schools WHERE (lower(admin_email)=? OR lower(email)=?)', [em, em]);
-    if (s) {
-      if ((s.admin_hash && checkPw(pw, s.admin_hash)) || pw === 'pleasantview2026') {
-        await startSession(s.id);
-        done();
-        return { ok: true };
+    if (matchedScope === null) {
+      const [s] = await q('SELECT * FROM schools WHERE (lower(admin_email)=? OR lower(email)=?)', [em, em]);
+      if (s && ((s.admin_hash && checkPw(pw, s.admin_hash)) || pw === 'pleasantview2026')) {
+        matchedScope = s.id;
+        destEmail = s.admin_email || s.email || savedRecoveryEmail;
+        destPhone = s.phone || savedRecoveryPhone;
+        adminName = `${s.name || 'Branch'} Admin`;
       }
     }
 
     // 5. Direct fail-safe for setup login with pleasantview2026
-    if (pw === 'pleasantview2026') {
-      await startSession(0);
-      done();
-      return { ok: true };
+    if (matchedScope === null && pw === 'pleasantview2026') {
+      matchedScope = 0;
+      destEmail = savedRecoveryEmail;
+      destPhone = savedRecoveryPhone;
+      adminName = 'Central Administrator';
     }
-
-    return { ok: false, error: 'Invalid username, department email, or password. Please verify your credentials or use the OTP reset tab.' };
   } else {
     const [s] = await q('SELECT * FROM schools WHERE admin_key=?', [key]);
     if (s && s.admin_email && eq(em, s.admin_email) && (checkPw(pw, s.admin_hash) || pw === 'pleasantview2026')) {
-      await startSession(s.id);
-      done();
-      return { ok: true };
+      matchedScope = s.id;
+      destEmail = s.admin_email;
+      destPhone = s.phone || savedRecoveryPhone;
+      adminName = `${s.name || 'Branch'} Admin`;
     }
-    return { ok: false, error: 'Invalid school admin credentials or access key.' };
+  }
+
+  if (matchedScope === null) {
+    return { ok: false, error: 'Invalid username, department email, or password. Please verify your credentials or use the OTP reset tab.' };
+  }
+
+  // Check if Resend API key is configured (either in process.env or settings table)
+  let hasResendKey = Boolean(process.env.RESEND_API_KEY);
+  if (!hasResendKey) {
+    try {
+      const [r] = await q('SELECT v FROM settings WHERE k="resend_api_key"');
+      if (r?.v && r.v.trim().length > 0) hasResendKey = true;
+    } catch {}
+  }
+
+  // If email API key is not yet configured, allow sign-in so admin can configure their API key safely
+  if (!hasResendKey) {
+    await startSession(matchedScope);
+    done();
+    return { ok: true };
+  }
+
+  // 2FA VERIFICATION CODE GENERATION & DISPATCH
+  const otp = String(Math.floor(100000 + Math.random() * 900000));
+  const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+  try {
+    await q('CREATE TABLE IF NOT EXISTS login_otps(identity TEXT PRIMARY KEY, otp TEXT, scope INTEGER, target_email TEXT, target_phone TEXT, expires_at INTEGER, created TEXT DEFAULT CURRENT_TIMESTAMP)');
+    await q('DELETE FROM login_otps WHERE identity=?', [em]);
+    await q('INSERT INTO login_otps(identity, otp, scope, target_email, target_phone, expires_at) VALUES(?,?,?,?,?,?)', [
+      em, otp, matchedScope, destEmail, destPhone, expiresAt
+    ]);
+  } catch (e) {
+    console.warn('[login_otps warning]:', e?.message);
+  }
+
+  const emailSubject = `[Pleasant View Schools] Login Verification Code: ${otp}`;
+  const emailBody = `Dear ${adminName},\n\nA login request was initiated for your Pleasant View Schools administration account.\n\nYour 6-Digit One-Time Login Code is:\n\n${otp}\n\nThis verification code expires in 10 minutes.\nIf you did not initiate this login, please contact Central Administration immediately.\n\nWarm regards,\nPleasant View Schools Security Desk`;
+
+  const emailRes = await sendEmail({
+    to: destEmail,
+    subject: emailSubject,
+    text: emailBody
+  });
+
+  const parts = String(destEmail).split('@');
+  const maskedContact = (parts[0] || 'ad').slice(0, 3) + '***@' + (parts[1] || 'pleasantviewschools.co.ke');
+
+  if (!emailRes.success) {
+    return {
+      ok: false,
+      error: `Credentials verified, but email dispatch failed: ${emailRes.error || 'RESEND_API_KEY is not configured in Cloudflare Pages'}. Please add RESEND_API_KEY under Cloudflare Pages Settings (Environment variables) or Portal Security.`
+    };
+  }
+
+  return {
+    ok: true,
+    requireOtp: true,
+    targetKey: em,
+    maskedContact,
+    message: `A 6-digit login verification code was dispatched to ${maskedContact}. Please enter it below to complete sign-in.`
+  };
+}
+
+export async function verifyLoginOTP(fd) {
+  try {
+    const identity = String(fd.get('target_key') || fd.get('identity') || fd.get('email') || '').trim().toLowerCase();
+    const otp = String(fd.get('otp') || '').trim();
+
+    if (!identity || !otp) {
+      return { ok: false, error: 'Please enter the 6-digit OTP code received in your email.' };
+    }
+
+    const [record] = await q('SELECT * FROM login_otps WHERE identity=?', [identity]);
+    if (!record) {
+      return { ok: false, error: 'No active login verification session found. Please enter your credentials again.' };
+    }
+
+    if (Number(record.expires_at) < Date.now()) {
+      await q('DELETE FROM login_otps WHERE identity=?', [identity]);
+      return { ok: false, error: 'Verification code has expired. Please sign in again to receive a fresh code.' };
+    }
+
+    if (String(record.otp).trim() !== otp) {
+      return { ok: false, error: 'Incorrect verification code. Please check your email and try again.' };
+    }
+
+    await q('DELETE FROM login_otps WHERE identity=?', [identity]);
+    await startSession(record.scope || 0);
+    done();
+
+    return { ok: true, message: 'Two-factor authentication successful! Redirecting to administrator console...' };
+  } catch (err) {
+    console.error('[verifyLoginOTP error]:', err);
+    return { ok: false, error: err?.message || 'Verification failed. Please try again.' };
   }
 }
 
@@ -1017,6 +1129,11 @@ export async function saveAdminRecoveryProfile(fd) {
       await q('INSERT INTO settings(k,v) VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', ['admin_sms_phone', recoveryPhone]);
     }
 
+    const resendApiKey = String(fd.get('resend_api_key') || '').trim();
+    if (resendApiKey) {
+      await q('INSERT INTO settings(k,v) VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', ['resend_api_key', resendApiKey]);
+    }
+
     // If new password is provided, persist immediately
     if (newPassword) {
       if (newPassword.length < 6) {
@@ -1198,20 +1315,51 @@ export async function requestPasswordChangeOTP(fd) {
       dispatchDetails = `Email dispatched to registered address ${maskedEmail}`;
     }
 
-    // In development or when external API keys are not present / dispatch unconfirmed, display code so admin is never locked out
-    const showOtpDirectly = !process.env.RESEND_API_KEY || !process.env.AT_API_KEY || !dispatchSuccess;
+    if (!dispatchSuccess) {
+      return {
+        ok: false,
+        error: `Could not deliver verification OTP via ${deliveryMethod.toUpperCase()}: ${deliveryMethod === 'sms' ? 'AT_API_KEY is not configured' : 'RESEND_API_KEY is not configured in Cloudflare Pages'}. Please add RESEND_API_KEY under Cloudflare Pages Settings (Environment variables) or in Portal Security Settings.`
+      };
+    }
 
     return {
       ok: true,
       targetKey,
       dispatchDetails,
-      otp: showOtpDirectly ? otp : undefined,
-      message: `Verification code dispatched via ${deliveryMethod.toUpperCase()} (${dispatchDetails}).${showOtpDirectly ? ` [Verification Code: ${otp}]` : ''}`
+      message: `Verification code successfully dispatched via ${deliveryMethod.toUpperCase()} (${dispatchDetails}). Please check your inbox and enter the 6-digit code.`
     };
   } catch (err) {
     console.error('[requestPasswordChangeOTP Server Error]:', err);
     return { ok: false, error: err?.message || 'Server error processing OTP request. Please try again or sign in directly.' };
   }
+}
+
+export async function saveApiIntegrations(fd) {
+  await C();
+  const resendKey = String(fd.get('resend_api_key') || '').trim();
+  const resendFrom = String(fd.get('resend_from') || '').trim();
+  const atKey = String(fd.get('at_api_key') || '').trim();
+  const atUser = String(fd.get('at_username') || '').trim();
+  const atSender = String(fd.get('at_sender_id') || '').trim();
+
+  if (resendKey) {
+    await q('INSERT INTO settings(k,v) VALUES("resend_api_key",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', [resendKey]);
+  }
+  if (resendFrom) {
+    await q('INSERT INTO settings(k,v) VALUES("resend_from",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', [resendFrom]);
+  }
+  if (atKey) {
+    await q('INSERT INTO settings(k,v) VALUES("at_api_key",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', [atKey]);
+  }
+  if (atUser) {
+    await q('INSERT INTO settings(k,v) VALUES("at_username",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', [atUser]);
+  }
+  if (atSender) {
+    await q('INSERT INTO settings(k,v) VALUES("at_sender_id",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', [atSender]);
+  }
+
+  done();
+  return { ok: true, message: 'API credentials saved successfully in portal database!' };
 }
 
 export async function verifyPasswordChangeOTP(fd) {

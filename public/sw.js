@@ -1,11 +1,11 @@
-const CACHE_NAME = 'pleasantview-v8';
+const CACHE_NAME = 'pleasantview-v9';
 const STATIC_ASSETS = [
   '/manifest.json',
   '/favicon.ico',
   '/icon.png',
   '/images/pwa_icon_192.png',
   '/images/pwa_icon_512.png',
-  '/images/pvs_crest.png?v=20261105'
+  '/images/pvs_crest.png?v=20261105b'
 ];
 
 self.addEventListener('install', (event) => {

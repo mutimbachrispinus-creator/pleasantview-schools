@@ -89,7 +89,7 @@ export default function PwaInstallPrompt() {
         flexShrink: 0,
         boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
       }}>
-        <img src="/images/pvs_crest.png?v=20261105" alt="Pleasant View Crest" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
+        <img src="/images/pvs_crest.png?v=20261105b" alt="Pleasant View Crest" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
       </div>
 
       <div style={{ flex: 1, fontSize: '13px' }}>

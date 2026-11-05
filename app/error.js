@@ -38,8 +38,7 @@ export default function ErrorBoundary({ error, reset }) {
           const regs = await navigator.serviceWorker.getRegistrations();
           await Promise.all(regs.map(r => r.unregister()));
         }
-        // Clear session cookie in case of expired or mismatched authentication token
-        document.cookie = 'pv=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
+        // Keep session intact - do not wipe authentication cookies
       } catch {}
       window.location.href = window.location.pathname.split('?')[0] + '?_nocache=' + Date.now();
     } else {
@@ -84,9 +83,25 @@ export default function ErrorBoundary({ error, reset }) {
         <h2 style={{ fontSize: '22px', color: '#1E232A', marginBottom: '8px' }}>
           Notice &bull; Updating Page
         </h2>
-        <p style={{ fontSize: '14.5px', color: '#666', lineHeight: 1.6, marginBottom: '25px' }}>
+        <p style={{ fontSize: '14.5px', color: '#666', lineHeight: 1.6, marginBottom: '15px' }}>
           We detected an interface update. Please tap below to refresh the page or return to the main portal.
         </p>
+        {error?.message && (
+          <div style={{
+            background: '#fef2f2',
+            color: '#991b1b',
+            border: '1px solid #fecaca',
+            padding: '8px 12px',
+            borderRadius: '6px',
+            fontSize: '12px',
+            fontFamily: 'monospace',
+            marginBottom: '20px',
+            wordBreak: 'break-word',
+            textAlign: 'left'
+          }}>
+            {error.message}
+          </div>
+        )}
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
           <button
             type="button"

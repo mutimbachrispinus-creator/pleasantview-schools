@@ -3,6 +3,7 @@ import BackButton from '@/components/BackButton';
 import WebmailClient from '@/components/WebmailClient';
 import AdminPasswordChange from '@/components/AdminPasswordChange';
 import DeleteButton from '@/components/DeleteButton';
+import AdminSyncNotice from '@/components/AdminSyncNotice';
 import {
   q,
   S,
@@ -205,6 +206,7 @@ export default async function Panel({ scope, edit }) {
     <main className="subpage-body" style={{ background: '#f4f6fa', minHeight: '100vh', paddingBottom: '60px' }}>
       <div className="wrapper">
         <div className="admin-panel-container">
+          <AdminSyncNotice />
           <BackButton fallback="/" label="Back to Website" current="Staff & Admin Console" />
           {/* HEADER BAR */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
