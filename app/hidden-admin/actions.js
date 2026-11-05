@@ -2,7 +2,7 @@
 import crypto from 'crypto';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
-import { q, saveImg, saveVideo, D, CATS, SF, getSchoolEmailFromName, S } from '@/lib/db';
+import { q, getDb, saveImg, saveVideo, D, CATS, SF, getSchoolEmailFromName, S } from '@/lib/db';
 import { getAdmin, eq, checkPw, hashPw, startSession, endSession, limited } from '@/lib/auth';
 import { sendEmail, sendSMS } from '@/lib/notify';
 
@@ -17,16 +17,9 @@ const C = async () => {
 const done = () => {
   try {
     revalidatePath('/', 'layout');
-    revalidatePath('/', 'page');
-    revalidatePath('/about', 'page');
-    revalidatePath('/contact', 'page');
-    revalidatePath('/hidden-admin', 'page');
-    revalidatePath('/staff-portal', 'page');
-    revalidatePath('/s/[school]', 'layout');
-    revalidatePath('/s/[school]', 'page');
-    revalidatePath('/news', 'page');
-    revalidatePath('/careers', 'page');
-  } catch {}
+  } catch (err) {
+    console.warn('[revalidatePath Notice]:', err?.message);
+  }
 };
 const sid = (fd, sc) => sc || +fd.get('school_id') || 0;
 const slugify = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -297,25 +290,47 @@ export async function setSchoolAdmin(fd) {
 export async function saveSchool(fd) {
   const sc = await A(),
     id = sc || +fd.get('school_id') || 0;
+  const client = getDb();
   if (!id) {
+    const stmts = [];
     for (const k of Object.keys(D)) {
       if (fd.get(k) != null) {
-        await q(
-          'INSERT INTO settings(k,v) VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v',
-          [k, fd.get(k)]
-        );
+        stmts.push({
+          sql: 'INSERT INTO settings(k,v) VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v',
+          args: [k, fd.get(k)]
+        });
       }
+    }
+    if (stmts.length) {
+      await client.batch(stmts, 'write');
     }
   } else {
     const uploadedImg = await saveImg(fd.get('image_file'));
     const imgUrl = String(fd.get('image_url') || '').trim();
+    const stmts = [];
     if (uploadedImg || imgUrl) {
-      await q('UPDATE schools SET image=? WHERE id=?', [uploadedImg || imgUrl, id]);
+      stmts.push({
+        sql: 'UPDATE schools SET image=? WHERE id=?',
+        args: [uploadedImg || imgUrl, id]
+      });
     }
+    const updateCols = [];
+    const updateArgs = [];
     for (const k of SF) {
       if (k !== 'image' && fd.get(k) != null) {
-        await q(`UPDATE schools SET ${k}=? WHERE id=?`, [fd.get(k), id]);
+        updateCols.push(`${k}=?`);
+        updateArgs.push(fd.get(k));
       }
+    }
+    if (updateCols.length) {
+      updateArgs.push(id);
+      stmts.push({
+        sql: `UPDATE schools SET ${updateCols.join(', ')} WHERE id=?`,
+        args: updateArgs
+      });
+    }
+    if (stmts.length) {
+      await client.batch(stmts, 'write');
     }
   }
   done();
@@ -819,6 +834,8 @@ export async function deleteAdminAccount(fd) {
 
 export async function saveGlanceMetrics(fd) {
   await A();
+  const client = getDb();
+  const stmts = [];
   for (let i = 1; i <= 6; i++) {
     const val = String(fd.get(`metric_${i}_val`) || '').trim();
     const label = String(fd.get(`metric_${i}_label`) || '').trim();
@@ -826,11 +843,14 @@ export async function saveGlanceMetrics(fd) {
     const id = Number(fd.get(`metric_${i}_id`)) || i;
 
     if (val && label) {
-      await q(
-        'INSERT INTO glance_metrics(id, stat_value, stat_label, stat_desc, sort) VALUES(?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET stat_value=excluded.stat_value, stat_label=excluded.stat_label, stat_desc=excluded.stat_desc',
-        [id, val, label, desc, i]
-      );
+      stmts.push({
+        sql: 'INSERT INTO glance_metrics(id, stat_value, stat_label, stat_desc, sort) VALUES(?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET stat_value=excluded.stat_value, stat_label=excluded.stat_label, stat_desc=excluded.stat_desc',
+        args: [id, val, label, desc, i]
+      });
     }
+  }
+  if (stmts.length) {
+    await client.batch(stmts, 'write');
   }
   done();
 }

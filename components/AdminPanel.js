@@ -4,6 +4,7 @@ import WebmailClient from '@/components/WebmailClient';
 import AdminPasswordChange from '@/components/AdminPasswordChange';
 import DeleteButton from '@/components/DeleteButton';
 import AdminSyncNotice from '@/components/AdminSyncNotice';
+import FormSubmitButton from '@/components/FormSubmitButton';
 import {
   q,
   S,
@@ -84,8 +85,8 @@ const Del = ({ t, id }) => (
   <form action={del} style={{ display: 'inline', marginLeft: '6px' }}>
     <input type="hidden" name="t" value={t} />
     <input type="hidden" name="id" value={String(id)} />
-    <button
-      type="submit"
+    <DeleteButton
+      confirmMessage="Are you sure you want to delete this record?"
       style={{
         background: '#d9534f',
         color: '#fff',
@@ -98,7 +99,7 @@ const Del = ({ t, id }) => (
       }}
     >
       Delete
-    </button>
+    </DeleteButton>
   </form>
 );
 
@@ -364,9 +365,13 @@ export default async function Panel({ scope, edit }) {
                     <label>Division Cover Photo</label>
                     <input type="file" name="image" accept="image/*" />
                   </div>
-                  <button type="submit" className="button button-secondary" style={{ gridColumn: '1 / -1', marginTop: '5px' }}>
-                    + Publish New School Branch
-                  </button>
+                  <FormSubmitButton
+                    label="+ Publish New School Branch"
+                    pendingLabel="Publishing & Syncing..."
+                    successLabel="✓ Branch Published & Synced Live!"
+                    variant="secondary"
+                    style={{ gridColumn: '1 / -1', marginTop: '5px' }}
+                  />
                 </form>
               </div>
             </section>
@@ -424,8 +429,8 @@ export default async function Panel({ scope, edit }) {
                         <td>
                           <form action={deleteAdminAccount} style={{ display: 'inline' }}>
                             <input type="hidden" name="id" value={a.id} />
-                            <button
-                              type="submit"
+                            <DeleteButton
+                              confirmMessage="Permanently remove this administrator account?"
                               style={{
                                 background: '#d9534f',
                                 color: '#fff',
@@ -438,7 +443,7 @@ export default async function Panel({ scope, edit }) {
                               }}
                             >
                               Delete
-                            </button>
+                            </DeleteButton>
                           </form>
                         </td>
                       </tr>
@@ -485,9 +490,13 @@ export default async function Panel({ scope, edit }) {
                     <label>Mobile Handset Phone (For SMS Alerts)</label>
                     <input name="phone" placeholder="+254 711 000 000" defaultValue="+254 711 689 913" />
                   </div>
-                  <button type="submit" className="button button-gold" style={{ gridColumn: '1 / -1', marginTop: '5px' }}>
-                    + Register Administrator Account
-                  </button>
+                  <FormSubmitButton
+                    label="+ Register Administrator Account"
+                    pendingLabel="Registering & Syncing..."
+                    successLabel="✓ Administrator Registered & Synced Live!"
+                    variant="gold"
+                    style={{ gridColumn: '1 / -1', marginTop: '5px' }}
+                  />
                 </form>
               </div>
             </section>
@@ -652,9 +661,14 @@ export default async function Panel({ scope, edit }) {
                   <input type="hidden" name="sort" value="1" />
                 </div>
 
-                <button type="submit" className="button button-gold" style={{ gridColumn: '1 / -1', padding: '12px' }}>
-                  <i className="fa-solid fa-floppy-disk" style={{ marginRight: '8px' }} /> Save &amp; Sync Exam Result
-                </button>
+                <FormSubmitButton
+                  label="Save & Sync Exam Result"
+                  pendingLabel="Saving & Syncing Live..."
+                  successLabel="✓ Exam Result Saved & Synced Live!"
+                  icon="fa-solid fa-floppy-disk"
+                  variant="gold"
+                  style={{ gridColumn: '1 / -1', marginTop: '6px' }}
+                />
               </form>
             </div>
           </section>
@@ -860,9 +874,14 @@ export default async function Panel({ scope, edit }) {
                   <label>Learner Comment / Perspective *</label>
                   <textarea name="comment" rows="3" placeholder="Share what the scholar enjoys about studying, laboratory experiments, or boarding at Pleasant View..." required />
                 </div>
-                <button type="submit" className="button button-primary" style={{ gridColumn: '1 / -1', padding: '12px' }}>
-                  <i className="fa-solid fa-plus" style={{ marginRight: '6px' }} /> Publish Student Voice
-                </button>
+                <FormSubmitButton
+                  label="Publish Student Voice"
+                  pendingLabel="Publishing & Syncing Live..."
+                  successLabel="✓ Student Voice Published & Synced Live!"
+                  icon="fa-solid fa-plus"
+                  variant="primary"
+                  style={{ gridColumn: '1 / -1', marginTop: '6px' }}
+                />
               </form>
             </div>
           </section>
@@ -974,9 +993,14 @@ export default async function Panel({ scope, edit }) {
                   <label>Full Alumni Career &amp; Campus Story *</label>
                   <textarea name="story" rows="3" placeholder="Describe their academic journey at Pleasant View, high school achievements, and subsequent professional impact..." required />
                 </div>
-                <button type="submit" className="button button-gold" style={{ gridColumn: '1 / -1', padding: '12px' }}>
-                  <i className="fa-solid fa-plus" style={{ marginRight: '6px' }} /> Publish Alumni Story
-                </button>
+                <FormSubmitButton
+                  label="Publish Alumni Story"
+                  pendingLabel="Publishing & Syncing Live..."
+                  successLabel="✓ Alumni Story Published & Synced Live!"
+                  icon="fa-solid fa-plus"
+                  variant="gold"
+                  style={{ gridColumn: '1 / -1', marginTop: '6px' }}
+                />
               </form>
             </div>
           </section>
@@ -1117,9 +1141,14 @@ export default async function Panel({ scope, edit }) {
                   </label>
                   <input type="hidden" name="is_active" value="1" />
                 </div>
-                <button type="submit" className="button button-gold" style={{ gridColumn: '1 / -1', padding: '12px' }}>
-                  <i className="fa-solid fa-calendar-plus" style={{ marginRight: '6px' }} /> Publish Calendar Event
-                </button>
+                <FormSubmitButton
+                  label="Publish Calendar Event"
+                  pendingLabel="Publishing & Syncing Live..."
+                  successLabel="✓ Calendar Event Published & Synced Live!"
+                  icon="fa-solid fa-calendar-plus"
+                  variant="gold"
+                  style={{ gridColumn: '1 / -1', marginTop: '6px' }}
+                />
               </form>
             </div>
           </section>
@@ -1162,9 +1191,14 @@ export default async function Panel({ scope, edit }) {
                     </div>
                   ))}
                 </div>
-                <button type="submit" className="button button-gold" style={{ padding: '12px 24px', fontSize: '14px' }}>
-                  <i className="fa-solid fa-floppy-disk" style={{ marginRight: '8px' }} /> Save Distinction Metrics
-                </button>
+                <FormSubmitButton
+                  label="Save Distinction Metrics"
+                  pendingLabel="Saving & Syncing Live..."
+                  successLabel="✓ Distinction Metrics Saved & Synced Live!"
+                  icon="fa-solid fa-floppy-disk"
+                  variant="gold"
+                  style={{ marginTop: '12px' }}
+                />
               </form>
             </section>
           )}
@@ -1202,9 +1236,12 @@ export default async function Panel({ scope, edit }) {
                       </p>
                       <form action={delPhoto} style={{ textAlign: 'right' }}>
                         <input type="hidden" name="id" value={p.id} />
-                        <button type="submit" style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}>
+                        <DeleteButton
+                          confirmMessage="Are you sure you want to delete this photo?"
+                          style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
+                        >
                           Delete Photo
-                        </button>
+                        </DeleteButton>
                       </form>
                     </div>
                   </div>
@@ -1251,9 +1288,13 @@ export default async function Panel({ scope, edit }) {
                     <label>Or Paste Image URL</label>
                     <input name="image_url" placeholder="e.g. /images/hero_science_lab.jpg" />
                   </div>
-                  <button type="submit" className="button button-gold" style={{ gridColumn: '1 / -1', marginTop: '5px' }}>
-                    + Publish Picture to School Life Gallery
-                  </button>
+                  <FormSubmitButton
+                    label="+ Publish Picture to School Life Gallery"
+                    pendingLabel="Publishing & Syncing Live..."
+                    successLabel="✓ Picture Published & Synced Live!"
+                    variant="gold"
+                    style={{ gridColumn: '1 / -1', marginTop: '5px' }}
+                  />
                 </form>
               </div>
             </section>
@@ -1287,9 +1328,13 @@ export default async function Panel({ scope, edit }) {
                   )}
                 </div>
               ))}
-              <button type="submit" className="button button-gold" style={{ gridColumn: '1 / -1', marginTop: '10px', fontSize: '15px' }}>
-                Save Changes to {es ? es.name : 'PLEASANT VIEW SCHOOLS'}
-              </button>
+              <FormSubmitButton
+                label={`Save Changes to ${es ? es.name : 'PLEASANT VIEW SCHOOLS'}`}
+                pendingLabel="Saving & Syncing Live..."
+                successLabel={`✓ ${es ? es.name : 'School'} Details Saved & Synced Live!`}
+                variant="gold"
+                style={{ gridColumn: '1 / -1', marginTop: '10px' }}
+              />
             </form>
           </section>
 
@@ -1336,9 +1381,12 @@ export default async function Panel({ scope, edit }) {
                   <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
                     <form action={delLeadershipMessage}>
                       <input type="hidden" name="id" value={m.id} />
-                      <button type="submit" style={{ background: '#d9534f', color: '#fff', border: 0, padding: '4px 10px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}>
+                      <DeleteButton
+                        confirmMessage="Remove this leadership message?"
+                        style={{ background: '#d9534f', color: '#fff', border: 0, padding: '4px 10px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
+                      >
                         Remove Message
-                      </button>
+                      </DeleteButton>
                     </form>
                   </div>
                 </div>
@@ -1389,9 +1437,13 @@ export default async function Panel({ scope, edit }) {
                   <label>Display Sort Order</label>
                   <input name="sort" type="number" defaultValue="1" style={{ width: '100px' }} />
                 </div>
-                <button type="submit" className="button button-secondary" style={{ gridColumn: '1 / -1', marginTop: '8px' }}>
-                  + Publish Leadership Message
-                </button>
+                <FormSubmitButton
+                  label="+ Publish Leadership Message"
+                  pendingLabel="Publishing & Syncing Live..."
+                  successLabel="✓ Leadership Message Published & Synced Live!"
+                  variant="secondary"
+                  style={{ gridColumn: '1 / -1', marginTop: '8px' }}
+                />
               </form>
             </div>
           </section>
@@ -1450,9 +1502,12 @@ export default async function Panel({ scope, edit }) {
                       <td>
                         <form action={delQuickLink} style={{ display: 'inline' }}>
                           <input type="hidden" name="id" value={l.id} />
-                          <button type="submit" style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}>
+                          <DeleteButton
+                            confirmMessage="Delete this quick link?"
+                            style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
+                          >
                             Delete
-                          </button>
+                          </DeleteButton>
                         </form>
                       </td>
                     </tr>
@@ -1485,9 +1540,13 @@ export default async function Panel({ scope, edit }) {
                   <label>Sort Order Index</label>
                   <input name="sort" type="number" defaultValue="1" style={{ width: '100px' }} />
                 </div>
-                <button type="submit" className="button button-secondary" style={{ gridColumn: '1 / -1', marginTop: '6px' }}>
-                  + Add Quick Link
-                </button>
+                <FormSubmitButton
+                  label="+ Add Quick Link"
+                  pendingLabel="Adding & Syncing Live..."
+                  successLabel="✓ Quick Link Added & Synced Live!"
+                  variant="secondary"
+                  style={{ gridColumn: '1 / -1', marginTop: '6px' }}
+                />
               </form>
             </div>
           </section>
@@ -1522,9 +1581,12 @@ export default async function Panel({ scope, edit }) {
                       <small style={{ color: '#888' }}>{v.sname || 'All Campuses'}</small>
                       <form action={delVideo}>
                         <input type="hidden" name="id" value={v.id} />
-                        <button type="submit" style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}>
+                        <DeleteButton
+                          confirmMessage="Delete this video?"
+                          style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
+                        >
                           Delete
-                        </button>
+                        </DeleteButton>
                       </form>
                     </div>
                   </div>
@@ -1578,9 +1640,13 @@ export default async function Panel({ scope, edit }) {
                   <label>Video Description</label>
                   <textarea name="description" rows={2} placeholder="Brief summary of what this video showcases..." />
                 </div>
-                <button type="submit" className="button button-secondary" style={{ gridColumn: '1 / -1', marginTop: '6px' }}>
-                  + Publish Video to Showcase
-                </button>
+                <FormSubmitButton
+                  label="+ Publish Video to Showcase"
+                  pendingLabel="Publishing & Syncing Live..."
+                  successLabel="✓ Video Published & Synced Live!"
+                  variant="secondary"
+                  style={{ gridColumn: '1 / -1', marginTop: '6px' }}
+                />
               </form>
             </div>
           </section>
@@ -1639,9 +1705,12 @@ export default async function Panel({ scope, edit }) {
                       <td>
                         <form action={delJob} style={{ display: 'inline' }}>
                           <input type="hidden" name="id" value={j.id} />
-                          <button type="submit" style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}>
+                          <DeleteButton
+                            confirmMessage="Delete this job vacancy?"
+                            style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
+                          >
                             Delete
-                          </button>
+                          </DeleteButton>
                         </form>
                       </td>
                     </tr>
@@ -1692,9 +1761,13 @@ export default async function Panel({ scope, edit }) {
                   <label>Requirements &amp; Qualifications</label>
                   <textarea name="requirements" rows={3} placeholder="TSC Certificate, Bachelor of Education, 3+ years experience..." />
                 </div>
-                <button type="submit" className="button button-secondary" style={{ gridColumn: '1 / -1', marginTop: '6px' }}>
-                  + Publish Job Vacancy
-                </button>
+                <FormSubmitButton
+                  label="+ Publish Job Vacancy"
+                  pendingLabel="Publishing & Syncing Live..."
+                  successLabel="✓ Job Vacancy Published & Synced Live!"
+                  variant="secondary"
+                  style={{ gridColumn: '1 / -1', marginTop: '6px' }}
+                />
               </form>
             </div>
 
@@ -1748,9 +1821,12 @@ export default async function Panel({ scope, edit }) {
                         <td>
                           <form action={delApplication} style={{ display: 'inline' }}>
                             <input type="hidden" name="id" value={a.id} />
-                            <button type="submit" style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}>
+                            <DeleteButton
+                              confirmMessage="Delete this job application?"
+                              style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
+                            >
                               Del
-                            </button>
+                            </DeleteButton>
                           </form>
                         </td>
                       </tr>
@@ -1845,9 +1921,13 @@ export default async function Panel({ scope, edit }) {
                   <label>Sort Order</label>
                   <input name="sort" type="number" defaultValue="1" style={{ width: '100px' }} />
                 </div>
-                <button type="submit" className="button button-secondary" style={{ gridColumn: '1 / -1', marginTop: '6px' }}>
-                  + Publish Hero Banner
-                </button>
+                <FormSubmitButton
+                  label="+ Publish Hero Banner"
+                  pendingLabel="Publishing & Syncing Live..."
+                  successLabel="✓ Hero Slide Published & Synced Live!"
+                  variant="gold"
+                  style={{ gridColumn: '1 / -1', marginTop: '6px' }}
+                />
               </form>
             </div>
           </section>
@@ -1899,9 +1979,12 @@ export default async function Panel({ scope, edit }) {
                         <td>
                           <form action={delVisit} style={{ display: 'inline' }}>
                             <input type="hidden" name="id" value={v.id} />
-                            <button type="submit" style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}>
+                            <DeleteButton
+                              confirmMessage="Delete this campus visit booking?"
+                              style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
+                            >
                               Del
-                            </button>
+                            </DeleteButton>
                           </form>
                         </td>
                       </tr>
@@ -1943,9 +2026,12 @@ export default async function Panel({ scope, edit }) {
                         <td>
                           <form action={delEnquiry} style={{ display: 'inline' }}>
                             <input type="hidden" name="id" value={e.id} />
-                            <button type="submit" style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}>
+                            <DeleteButton
+                              confirmMessage="Delete this parent enquiry?"
+                              style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
+                            >
                               Del
-                            </button>
+                            </DeleteButton>
                           </form>
                         </td>
                       </tr>
@@ -2038,9 +2124,13 @@ export default async function Panel({ scope, edit }) {
                 </p>
                 <form action={saveAdminSmsSettings} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <input name="admin_sms_phone" type="text" defaultValue={vals.admin_sms_phone || '+254 711 689 913'} placeholder="+254711689913, +254722000000" style={{ padding: '8px', fontSize: '13px', width: '100%' }} required />
-                  <button type="submit" className="button button-secondary" style={{ padding: '8px 14px', fontSize: '12px', alignSelf: 'flex-start' }}>
-                    Save Recipient Numbers
-                  </button>
+                  <FormSubmitButton
+                    label="Save Recipient Numbers"
+                    pendingLabel="Saving & Syncing Live..."
+                    successLabel="✓ Numbers Saved & Synced Live!"
+                    variant="secondary"
+                    style={{ alignSelf: 'flex-start' }}
+                  />
                 </form>
               </div>
             </div>
