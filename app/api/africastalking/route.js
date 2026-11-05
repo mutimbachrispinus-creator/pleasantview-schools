@@ -55,13 +55,30 @@ export async function POST(req) {
       );
 
       console.log(`[Africa's Talking Inbound SMS]: From ${sender}: "${text}"`);
+
+      // Forward inbound parent SMS directly to admin handset phone numbers
+      try {
+        const [phoneSetting] = await q('SELECT v FROM settings WHERE k="admin_sms_phone"');
+        const rawAdminNumbers = String(phoneSetting?.v || process.env.ADMIN_SMS_PHONE || '+254711689913');
+        const adminNumbers = rawAdminNumbers.split(/[,;\n]+/).map(n => n.trim()).filter(Boolean);
+        const forwardMsg = `[Parent SMS] From: ${sender}: "${text.slice(0, 120)}"`;
+        for (const num of adminNumbers) {
+          // Avoid infinite forwarding loop if the admin himself sent the message
+          if (formatKenyanPhone(num) !== sender) {
+            await sendSMS({ to: num, message: forwardMsg });
+          }
+        }
+      } catch (fwdErr) {
+        console.warn('[Inbound SMS Forwarding Error]:', fwdErr?.message);
+      }
+
       return NextResponse.json({
         success: true,
         service: "Africa's Talking",
         event: 'inbound_sms_received',
         from: sender,
         text,
-        message: 'Inbound SMS logged successfully to Central Admin inbox'
+        message: 'Inbound SMS logged and forwarded to administrator handset'
       });
     }
 

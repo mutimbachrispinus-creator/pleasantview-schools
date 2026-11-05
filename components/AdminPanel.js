@@ -5,6 +5,7 @@ import AdminPasswordChange from '@/components/AdminPasswordChange';
 import DeleteButton from '@/components/DeleteButton';
 import AdminSyncNotice from '@/components/AdminSyncNotice';
 import FormSubmitButton from '@/components/FormSubmitButton';
+import TelecomGatewayTester from '@/components/TelecomGatewayTester';
 import {
   q,
   S,
@@ -2102,38 +2103,19 @@ export default async function Panel({ scope, edit }) {
                   </button>
                 </form>
               </div>
-
-              <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px', borderLeft: '4px solid var(--gold-accent)' }}>
-                <h4 style={{ marginBottom: '8px' }}>Africa&apos;s Talking SMS Gateway</h4>
-                <p style={{ fontSize: '13px', color: '#666', marginBottom: '10px' }}>Verify outbound SMS delivery.</p>
-                <form action={testAfricasTalking} style={{ display: 'flex', gap: '8px' }}>
-                  <input name="phone" type="tel" defaultValue="+254711689913" style={{ padding: '8px', fontSize: '13px', flex: 1 }} required />
-                  <button type="submit" className="button button-gold" style={{ padding: '8px 14px', fontSize: '12px' }}>
-                    Send Test
-                  </button>
-                </form>
-              </div>
-
-              <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px', borderLeft: '4px solid #28a745' }}>
-                <h4 style={{ marginBottom: '8px' }}>
-                  <i className="fa-solid fa-mobile-screen" style={{ color: '#28a745', marginRight: '6px' }} />
-                  Admin Handset Numbers (Receive Visitor SMS Alerts)
-                </h4>
-                <p style={{ fontSize: '13px', color: '#666', marginBottom: '10px' }}>
-                  Visitor inquiries and tour bookings are dispatched directly to these mobile handset numbers via SMS (with <strong>strictly zero auto-reply SMS</strong> sent back to visitors). Enter multiple numbers separated by commas.
-                </p>
-                <form action={saveAdminSmsSettings} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <input name="admin_sms_phone" type="text" defaultValue={vals.admin_sms_phone || '+254 711 689 913'} placeholder="+254711689913, +254722000000" style={{ padding: '8px', fontSize: '13px', width: '100%' }} required />
-                  <FormSubmitButton
-                    label="Save Recipient Numbers"
-                    pendingLabel="Saving & Syncing Live..."
-                    successLabel="✓ Numbers Saved & Synced Live!"
-                    variant="secondary"
-                    style={{ alignSelf: 'flex-start' }}
-                  />
-                </form>
-              </div>
             </div>
+
+            {/* TELECOM GATEWAY SETTINGS & INTERACTIVE TESTER */}
+            <TelecomGatewayTester
+              initialSettings={{
+                at_api_key: vals.at_api_key || '',
+                at_username: vals.at_username || '',
+                at_sender_id: vals.at_sender_id || '',
+                admin_sms_phone: vals.admin_sms_phone || '+254 711 689 913'
+              }}
+              hasEnvAtKey={Boolean(process.env.AT_API_KEY || process.env.AFRICASTALKING_API_KEY)}
+              hasEnvAtUser={Boolean(process.env.AT_USERNAME || process.env.AFRICASTALKING_USERNAME)}
+            />
 
             {/* INBOUND SMS TABLE */}
             <h4 style={{ fontSize: '16px', marginBottom: '12px' }}>Recent Inbound SMS Messages</h4>

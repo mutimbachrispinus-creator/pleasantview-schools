@@ -561,7 +561,16 @@ export async function testAfricasTalking(fd) {
     message: 'Pleasant View Schools: Africa\'s Talking gateway verification message. Service operational.'
   });
   done();
-  return res;
+  if (res.success) {
+    return {
+      ok: true,
+      message: `Test SMS dispatched successfully to ${phone}! (ID: ${res.messageId || 'sent'})`
+    };
+  }
+  return {
+    ok: false,
+    error: res.error || 'SMS dispatch failed. Please verify AT_API_KEY and AT_USERNAME.'
+  };
 }
 
 export async function replySMS(fd) {
@@ -1309,25 +1318,23 @@ export async function saveApiIntegrations(fd) {
   const atKey = String(fd.get('at_api_key') || '').trim();
   const atUser = String(fd.get('at_username') || '').trim();
   const atSender = String(fd.get('at_sender_id') || '').trim();
+  const adminSmsPhone = String(fd.get('admin_sms_phone') || '').trim();
 
-  if (resendKey) {
-    await q('INSERT INTO settings(k,v) VALUES("resend_api_key",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', [resendKey]);
-  }
-  if (resendFrom) {
-    await q('INSERT INTO settings(k,v) VALUES("resend_from",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', [resendFrom]);
-  }
-  if (atKey) {
-    await q('INSERT INTO settings(k,v) VALUES("at_api_key",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', [atKey]);
-  }
-  if (atUser) {
-    await q('INSERT INTO settings(k,v) VALUES("at_username",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', [atUser]);
-  }
-  if (atSender) {
-    await q('INSERT INTO settings(k,v) VALUES("at_sender_id",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', [atSender]);
+  const client = getDb();
+  const batch = [];
+  if (resendKey) batch.push({ sql: 'INSERT INTO settings(k,v) VALUES("resend_api_key",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', args: [resendKey] });
+  if (resendFrom) batch.push({ sql: 'INSERT INTO settings(k,v) VALUES("resend_from",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', args: [resendFrom] });
+  if (atKey) batch.push({ sql: 'INSERT INTO settings(k,v) VALUES("at_api_key",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', args: [atKey] });
+  if (atUser) batch.push({ sql: 'INSERT INTO settings(k,v) VALUES("at_username",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', args: [atUser] });
+  if (atSender) batch.push({ sql: 'INSERT INTO settings(k,v) VALUES("at_sender_id",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', args: [atSender] });
+  if (adminSmsPhone) batch.push({ sql: 'INSERT INTO settings(k,v) VALUES("admin_sms_phone",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', args: [adminSmsPhone] });
+
+  if (batch.length) {
+    await client.batch(batch, 'write');
   }
 
   done();
-  return { ok: true, message: 'API credentials saved successfully in portal database!' };
+  return { ok: true, message: 'Gateway & Telecom credentials saved successfully!' };
 }
 
 export async function verifyPasswordChangeOTP(fd) {
