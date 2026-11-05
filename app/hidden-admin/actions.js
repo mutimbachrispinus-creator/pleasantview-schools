@@ -126,62 +126,10 @@ export async function login(fd) {
     return { ok: false, error: 'Invalid username, department email, or password. Please verify your credentials or use the OTP reset tab.' };
   }
 
-  // Check if Resend API key is configured (either in process.env or settings table)
-  let hasResendKey = Boolean(process.env.RESEND_API_KEY);
-  if (!hasResendKey) {
-    try {
-      const [r] = await q('SELECT v FROM settings WHERE k="resend_api_key"');
-      if (r?.v && r.v.trim().length > 0) hasResendKey = true;
-    } catch {}
-  }
-
-  // If email API key is not yet configured, allow sign-in so admin can configure their API key safely
-  if (!hasResendKey) {
-    await startSession(matchedScope);
-    done();
-    return { ok: true };
-  }
-
-  // 2FA VERIFICATION CODE GENERATION & DISPATCH
-  const otp = String(Math.floor(100000 + Math.random() * 900000));
-  const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
-
-  try {
-    await q('CREATE TABLE IF NOT EXISTS login_otps(identity TEXT PRIMARY KEY, otp TEXT, scope INTEGER, target_email TEXT, target_phone TEXT, expires_at INTEGER, created TEXT DEFAULT CURRENT_TIMESTAMP)');
-    await q('DELETE FROM login_otps WHERE identity=?', [em]);
-    await q('INSERT INTO login_otps(identity, otp, scope, target_email, target_phone, expires_at) VALUES(?,?,?,?,?,?)', [
-      em, otp, matchedScope, destEmail, destPhone, expiresAt
-    ]);
-  } catch (e) {
-    console.warn('[login_otps warning]:', e?.message);
-  }
-
-  const emailSubject = `[Pleasant View Schools] Login Verification Code: ${otp}`;
-  const emailBody = `Dear ${adminName},\n\nA login request was initiated for your Pleasant View Schools administration account.\n\nYour 6-Digit One-Time Login Code is:\n\n${otp}\n\nThis verification code expires in 10 minutes.\nIf you did not initiate this login, please contact Central Administration immediately.\n\nWarm regards,\nPleasant View Schools Security Desk`;
-
-  const emailRes = await sendEmail({
-    to: destEmail,
-    subject: emailSubject,
-    text: emailBody
-  });
-
-  const parts = String(destEmail).split('@');
-  const maskedContact = (parts[0] || 'ad').slice(0, 3) + '***@' + (parts[1] || 'pleasantviewschools.co.ke');
-
-  if (!emailRes.success) {
-    return {
-      ok: false,
-      error: `Credentials verified, but email dispatch failed: ${emailRes.error || 'RESEND_API_KEY is not configured in Cloudflare Pages'}. Please add RESEND_API_KEY under Cloudflare Pages Settings (Environment variables) or Portal Security.`
-    };
-  }
-
-  return {
-    ok: true,
-    requireOtp: true,
-    targetKey: em,
-    maskedContact,
-    message: `A 6-digit login verification code was dispatched to ${maskedContact}. Please enter it below to complete sign-in.`
-  };
+  // DIRECT LOGIN: No OTP on login (OTP is strictly reserved for password resets)
+  await startSession(matchedScope);
+  done();
+  return { ok: true, message: 'Authentication successful! Redirecting to staff portal...' };
 }
 
 export async function verifyLoginOTP(fd) {
@@ -1407,25 +1355,45 @@ export async function verifyPasswordChangeOTP(fd) {
       return { ok: false, error: 'Password must contain at least 6 characters.' };
     }
     const h = hashPw(finalPassword);
+    const targetEmail = (otpRecord.target_email || targetKey || '').toLowerCase();
 
-    // 1. Central Master Admin: Save securely into settings table (decoupled from GitHub source code!)
-    await q('INSERT INTO settings (k, v) VALUES ("admin_master_password", ?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', [finalPassword]);
-    await q('INSERT INTO settings (k, v) VALUES ("admin_master_password_hash", ?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', [h]);
+    const client = getDb();
+    const batchStmts = [
+      // 1. Central Master Admin: Save securely into settings table
+      {
+        sql: 'INSERT INTO settings (k, v) VALUES ("admin_master_password", ?) ON CONFLICT(k) DO UPDATE SET v=excluded.v',
+        args: [finalPassword]
+      },
+      {
+        sql: 'INSERT INTO settings (k, v) VALUES ("admin_master_password_hash", ?) ON CONFLICT(k) DO UPDATE SET v=excluded.v',
+        args: [h]
+      },
+      // 2. Sync to admins table (super administrators, matching email, or matching identity)
+      {
+        sql: 'UPDATE admins SET password=? WHERE role="Super Administrator" OR school_id=0 OR lower(email)=? OR lower(name)=?',
+        args: [finalPassword, targetEmail, targetKey]
+      },
+      // 3. Sync to schools table (branch administrators)
+      {
+        sql: 'UPDATE schools SET admin_hash=? WHERE lower(admin_email)=? OR lower(email)=?',
+        args: [h, targetEmail, targetEmail]
+      },
+      // 4. Sync to email_accounts table
+      {
+        sql: 'UPDATE email_accounts SET password=? WHERE lower(email)=?',
+        args: [finalPassword, targetEmail]
+      },
+      // 5. Clear used OTP
+      {
+        sql: 'DELETE FROM password_otps WHERE identity=?',
+        args: [targetKey]
+      }
+    ];
 
-    // 2. Update admins table
-    await q('UPDATE admins SET password=? WHERE role="Super Administrator" OR school_id=0 OR lower(email)=?', [finalPassword, (otpRecord.target_email || '').toLowerCase()]);
-
-    // 3. Update schools table if this is a branch administrator
-    if (otpRecord.target_email) {
-      await q('UPDATE schools SET admin_hash=? WHERE lower(admin_email)=?', [h, otpRecord.target_email.toLowerCase()]);
-      await q('UPDATE email_accounts SET password=? WHERE lower(email)=?', [finalPassword, otpRecord.target_email.toLowerCase()]);
-    }
-
-    // Clear used OTP
-    await q('DELETE FROM password_otps WHERE identity=?', [targetKey]);
+    await client.batch(batchStmts, 'write');
 
     done();
-    return { ok: true, message: 'Password updated successfully! You can now sign in with your new credentials.' };
+    return { ok: true, message: 'Password updated and synchronized successfully! You can now sign in immediately with your new password.' };
   } catch (err) {
     console.error('[verifyPasswordChangeOTP Error]:', err);
     return { ok: false, error: err?.message || 'Verification process encountered an issue.' };

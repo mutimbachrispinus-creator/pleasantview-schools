@@ -237,7 +237,7 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
                 transition: 'all 0.2s ease'
               }}
             >
-              <i className="fa-solid fa-lock" /> Sign In (2FA Verified)
+              <i className="fa-solid fa-lock" /> Administrator Sign In
             </button>
             <button
               type="button"
@@ -299,7 +299,7 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
                     fontSize: '13px'
                   }}>
                     <i className="fa-solid fa-shield-halved" style={{ color: '#8B1E2D' }} />
-                    <span>Enter administrative credentials. A verification OTP will be sent to confirm access.</span>
+                    <span>Enter administrative credentials to sign in directly.</span>
                   </div>
 
                   <div className="form-group" style={{ marginBottom: '18px' }}>
@@ -409,8 +409,8 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
                       gap: '8px'
                     }}
                   >
-                    <i className="fa-solid fa-shield" />
-                    {isLoginPending ? 'Verifying Credentials...' : 'Authenticate & Send Login OTP'}
+                    <i className="fa-solid fa-right-to-bracket" />
+                    {isLoginPending ? 'Signing In...' : 'Sign In to Staff Portal'}
                   </button>
                 </form>
               ) : (
