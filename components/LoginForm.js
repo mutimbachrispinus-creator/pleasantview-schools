@@ -13,6 +13,7 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
   // Credentials Login State
   const [loginPassword, setLoginPassword] = useState('');
   const [loginUsername, setLoginUsername] = useState('');
+  const [inputReady, setInputReady] = useState(false);
 
   // Password Reset OTP State
   const [otpStep, setOtpStep] = useState(1); // 1 = request, 2 = verify
@@ -29,6 +30,8 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
     e.preventDefault();
     setLoginError('');
     const fd = new FormData(e.currentTarget);
+    // Erase password from component state immediately to prevent memory retention
+    setLoginPassword('');
 
     startLoginTransition(async () => {
       try {
@@ -256,8 +259,18 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
                 </div>
               )}
 
-              {/* DIRECT CREDENTIALS SIGN-IN (USERNAME & PASSWORD) - NO OTP ON LOGIN */}
-              <form onSubmit={handleLoginSubmit} autoComplete="off">
+              {/* DIRECT CREDENTIALS SIGN-IN (USERNAME & PASSWORD) - NO AUTOFILL, NO PASSWORD SAVING */}
+              <form
+                onSubmit={handleLoginSubmit}
+                autoComplete="off"
+                data-form-type="other"
+                data-lpignore="true"
+                data-1p-ignore="true"
+              >
+                {/* Decoy fields to intercept aggressive browser autofill bots */}
+                <input type="text" name="decoy_user" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
+                <input type="password" name="decoy_pass" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
+
                 <input type="hidden" name="key" value={k} />
 
                 <div style={{
@@ -269,7 +282,7 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
                   fontSize: '13px'
                 }}>
                   <i className="fa-solid fa-shield-halved" style={{ color: '#8B1E2D' }} />
-                  <span>Enter administrative credentials to sign in directly.</span>
+                  <span>Manual credential entry required. Passwords are never saved or remembered.</span>
                 </div>
 
                 <div className="form-group" style={{ marginBottom: '18px' }}>
@@ -292,6 +305,13 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
                       onChange={(e) => setLoginUsername(e.target.value)}
                       placeholder="e.g. admin or senior@pleasantviewschools.co.ke"
                       autoComplete="off"
+                      data-lpignore="true"
+                      data-1p-ignore="true"
+                      data-bwignore="true"
+                      data-dashlane-ignore="true"
+                      readOnly={!inputReady}
+                      onFocus={() => setInputReady(true)}
+                      onPointerDown={() => setInputReady(true)}
                       required
                       style={{
                         width: '100%',
@@ -340,9 +360,15 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
                       type={showPassword ? 'text' : 'password'}
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
-                      placeholder="Enter administrator password"
-                      autoComplete="current-password"
+                      placeholder="Type administrator password manually"
+                      autoComplete="new-password"
                       data-lpignore="true"
+                      data-1p-ignore="true"
+                      data-bwignore="true"
+                      data-dashlane-ignore="true"
+                      readOnly={!inputReady}
+                      onFocus={() => setInputReady(true)}
+                      onPointerDown={() => setInputReady(true)}
                       required
                       style={{
                         width: '100%',

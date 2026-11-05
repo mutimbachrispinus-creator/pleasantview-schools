@@ -194,7 +194,7 @@ export default async function Panel({ scope, edit }) {
               <Link href="/" target="_blank" className="button button-gold" style={{ padding: '8px 16px', fontSize: '13px' }}>
                 <i className="fa-solid fa-globe" /> View Live Website
               </Link>
-              <SignOutButton style={{ padding: '8px 16px', fontSize: '13px' }} />
+              <SignOutButton label="Lock & Sign Out" style={{ padding: '8px 16px', fontSize: '13px' }} />
             </div>
           </div>
 
