@@ -2,6 +2,7 @@ import Link from 'next/link';
 import BackButton from '@/components/BackButton';
 import WebmailClient from '@/components/WebmailClient';
 import AdminPasswordChange from '@/components/AdminPasswordChange';
+import DeleteButton from '@/components/DeleteButton';
 import {
   q,
   S,
@@ -616,13 +617,12 @@ export default async function Panel({ scope, edit }) {
                       <td>
                         <form action={deleteExamResult} style={{ display: 'inline' }}>
                           <input type="hidden" name="id" value={e.id} />
-                          <button
-                            type="submit"
+                          <DeleteButton
                             style={{ background: '#d9534f', color: '#fff', border: 0, padding: '4px 10px', borderRadius: '4px', fontSize: '12px', cursor: 'pointer' }}
-                            onClick={evt => { if (!confirm('Delete this exam result?')) evt.preventDefault(); }}
+                            confirmMessage="Delete this exam result?"
                           >
                             Delete
-                          </button>
+                          </DeleteButton>
                         </form>
                       </td>
                     </tr>
@@ -797,13 +797,12 @@ export default async function Panel({ scope, edit }) {
                           )}
                           <form action={deleteTestimonial} style={{ display: 'inline' }}>
                             <input type="hidden" name="id" value={t.id} />
-                            <button
-                              type="submit"
+                            <DeleteButton
                               style={{ background: '#d9534f', color: '#fff', border: 0, padding: '4px 10px', borderRadius: '3px', fontSize: '12px', cursor: 'pointer' }}
-                              onClick={evt => { if (!confirm('Permanently delete this review?')) evt.preventDefault(); }}
+                              confirmMessage="Permanently delete this review?"
                             >
                               Delete
-                            </button>
+                            </DeleteButton>
                           </form>
                         </div>
                       </td>
@@ -852,13 +851,12 @@ export default async function Panel({ scope, edit }) {
                   <div style={{ marginTop: '12px', textAlign: 'right' }}>
                     <form action={deleteLearnerTestimonial} style={{ display: 'inline' }}>
                       <input type="hidden" name="id" value={l.id} />
-                      <button
-                        type="submit"
+                      <DeleteButton
                         style={{ background: '#d9534f', color: '#fff', border: 0, padding: '4px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
-                        onClick={evt => { if (!confirm('Delete this learner comment?')) evt.preventDefault(); }}
+                        confirmMessage="Delete this learner comment?"
                       >
                         Delete
-                      </button>
+                      </DeleteButton>
                     </form>
                   </div>
                 </div>
@@ -956,13 +954,12 @@ export default async function Panel({ scope, edit }) {
                     <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid #eee', textAlign: 'right' }}>
                       <form action={deleteAlumniStory} style={{ display: 'inline' }}>
                         <input type="hidden" name="id" value={a.id} />
-                        <button
-                          type="submit"
+                        <DeleteButton
                           style={{ background: '#d9534f', color: '#fff', border: 0, padding: '4px 10px', borderRadius: '3px', fontSize: '12px', cursor: 'pointer' }}
-                          onClick={evt => { if (!confirm('Delete this alumni story?')) evt.preventDefault(); }}
+                          confirmMessage="Delete this alumni story?"
                         >
                           Delete Story
-                        </button>
+                        </DeleteButton>
                       </form>
                     </div>
                   </div>
@@ -1099,13 +1096,12 @@ export default async function Panel({ scope, edit }) {
                       <td>
                         <form action={deleteEvent} style={{ display: 'inline' }}>
                           <input type="hidden" name="id" value={ev.id} />
-                          <button
-                            type="submit"
+                          <DeleteButton
                             style={{ background: '#d9534f', color: '#fff', border: 0, padding: '4px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
-                            onClick={evt => { if (!confirm('Delete this calendar event?')) evt.preventDefault(); }}
+                            confirmMessage="Delete this calendar event?"
                           >
                             Delete
-                          </button>
+                          </DeleteButton>
                         </form>
                       </td>
                     </tr>
