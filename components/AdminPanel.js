@@ -6,6 +6,7 @@ import DeleteButton from '@/components/DeleteButton';
 import AdminSyncNotice from '@/components/AdminSyncNotice';
 import FormSubmitButton from '@/components/FormSubmitButton';
 import InlineActionButton from '@/components/InlineActionButton';
+import SignOutButton from '@/components/SignOutButton';
 import TelecomGatewayTester from '@/components/TelecomGatewayTester';
 import {
   q,
@@ -193,15 +194,7 @@ export default async function Panel({ scope, edit }) {
               <Link href="/" target="_blank" className="button button-gold" style={{ padding: '8px 16px', fontSize: '13px' }}>
                 <i className="fa-solid fa-globe" /> View Live Website
               </Link>
-              <form action={logout}>
-                <InlineActionButton
-                  label="Sign Out"
-                  pendingLabel="Signing Out..."
-                  icon="fa-solid fa-arrow-right-from-bracket"
-                  className="button button-tertiary"
-                  style={{ padding: '8px 16px', fontSize: '13px' }}
-                />
-              </form>
+              <SignOutButton style={{ padding: '8px 16px', fontSize: '13px' }} />
             </div>
           </div>
 

@@ -52,8 +52,8 @@ export async function login(fd) {
     const isMaster = em === 'admin' || em === masterEmail || em.startsWith('admin@');
 
     // 1. Check database settings for dynamically saved master admin password (from OTP reset)
-    const [savedMaster] = await q('SELECT v FROM settings WHERE k="admin_master_password"');
-    const [savedMasterHash] = await q('SELECT v FROM settings WHERE k="admin_master_password_hash"');
+    const [savedMaster] = await q('SELECT v FROM settings WHERE k=?', ['admin_master_password']);
+    const [savedMasterHash] = await q('SELECT v FROM settings WHERE k=?', ['admin_master_password_hash']);
 
     let masterPwValid = false;
     if (savedMaster?.v && (pw === savedMaster.v || eq(pw, savedMaster.v))) {
@@ -62,7 +62,7 @@ export async function login(fd) {
       masterPwValid = true;
     } else if (process.env.ADMIN_PASSWORD && (pw === process.env.ADMIN_PASSWORD.trim() || eq(pw, process.env.ADMIN_PASSWORD.trim()))) {
       masterPwValid = true;
-    } else if (pw === 'pleasantview2026' || eq(pw, 'pleasantview2026') || pw === 'admin') {
+    } else if (pw === 'pleasantview2026' || eq(pw, 'pleasantview2026')) {
       masterPwValid = true;
     }
 
@@ -87,7 +87,7 @@ export async function login(fd) {
     // 3. Dynamic departmental email accounts (admissions@, finance@, info@, etc.)
     if (matchedScope === null) {
       const [acc] = await q('SELECT * FROM email_accounts WHERE lower(email)=? AND is_active=1 AND can_login=1', [em]);
-      if (acc && ((acc.password && (pw === acc.password.trim() || eq(pw, acc.password.trim()))) || pw === 'pleasantview2026' || !acc.password)) {
+      if (acc && ((acc.password && (pw === acc.password.trim() || eq(pw, acc.password.trim()))) || pw === 'pleasantview2026')) {
         matchedScope = 0;
         destEmail = acc.email || savedRecoveryEmail;
         destPhone = savedRecoveryPhone;
