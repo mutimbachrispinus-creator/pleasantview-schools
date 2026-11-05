@@ -1,6 +1,7 @@
 'use server';
 import crypto from 'crypto';
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { q, getDb, saveImg, saveVideo, D, CATS, SF, getSchoolEmailFromName, S } from '@/lib/db';
 import { getAdmin, eq, checkPw, hashPw, startSession, endSession, limited } from '@/lib/auth';
@@ -169,6 +170,7 @@ export async function verifyLoginOTP(fd) {
 export async function logout() {
   await endSession();
   done();
+  redirect('/staff-portal');
 }
 
 export async function addSchool(fd) {

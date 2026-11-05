@@ -2,7 +2,7 @@
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import BackButton from '@/components/BackButton';
-import { login, verifyLoginOTP, requestPasswordChangeOTP, verifyPasswordChangeOTP } from '@/app/hidden-admin/actions';
+import { login, requestPasswordChangeOTP, verifyPasswordChangeOTP } from '@/app/hidden-admin/actions';
 
 export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
   const [activeTab, setActiveTab] = useState('login'); // 'login' | 'otp'
@@ -10,11 +10,7 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
   const [loginError, setLoginError] = useState('');
   const [isLoginPending, startLoginTransition] = useTransition();
 
-  // 2-Step Login State (Credentials -> 2FA OTP)
-  const [loginStep, setLoginStep] = useState(1); // 1 = credentials, 2 = 2FA OTP
-  const [loginTargetKey, setLoginTargetKey] = useState('');
-  const [loginMaskedContact, setLoginMaskedContact] = useState('');
-  const [loginOtpCode, setLoginOtpCode] = useState('');
+  // Credentials Login State
   const [loginPassword, setLoginPassword] = useState('');
   const [loginUsername, setLoginUsername] = useState('');
 
@@ -28,7 +24,7 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
   const [otpStatus, setOtpStatus] = useState(null); // { type: 'success' | 'error', text: '' }
   const [isOtpPending, startOtpTransition] = useTransition();
 
-  // STEP 1: VERIFY CREDENTIALS & DISPATCH 2FA LOGIN OTP
+  // DIRECT LOGIN: Verify credentials and sign in directly (NO OTP on login)
   const handleLoginSubmit = (e) => {
     e.preventDefault();
     setLoginError('');
@@ -39,38 +35,13 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
         const res = await login(fd);
         if (res && res.error) {
           setLoginError(res.error);
-        } else if (res && res.requireOtp) {
-          setLoginTargetKey(res.targetKey || loginUsername);
-          setLoginMaskedContact(res.maskedContact || 'your verified administrator email');
-          setLoginStep(2);
-          setLoginPassword(''); // Clear password from memory immediately
         } else if (res && res.ok) {
           window.location.href = '/staff-portal';
+        } else {
+          setLoginError('Authentication failed. Please check your username and password.');
         }
       } catch (err) {
         setLoginError(err?.message || 'Authentication service error. Please try again.');
-      }
-    });
-  };
-
-  // STEP 2: VERIFY 2FA LOGIN OTP
-  const handleVerifyLoginSubmit = (e) => {
-    e.preventDefault();
-    setLoginError('');
-    const fd = new FormData();
-    fd.append('target_key', loginTargetKey);
-    fd.append('otp', loginOtpCode);
-
-    startLoginTransition(async () => {
-      try {
-        const res = await verifyLoginOTP(fd);
-        if (res && res.ok) {
-          window.location.href = '/staff-portal';
-        } else {
-          setLoginError(res?.error || 'Invalid or expired verification code.');
-        }
-      } catch (err) {
-        setLoginError(err?.message || 'Verification error. Please try again.');
       }
     });
   };
@@ -263,7 +234,7 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
             </button>
           </div>
 
-          {/* TAB 1: DIRECT SIGN IN WITH 2FA OTP VERIFICATION */}
+          {/* TAB 1: DIRECT CREDENTIALS SIGN-IN (USERNAME & PASSWORD) */}
           {activeTab === 'login' && (
             <div style={{ padding: '26px 28px 30px' }}>
               {loginError && (
@@ -285,228 +256,133 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
                 </div>
               )}
 
-              {loginStep === 1 ? (
-                /* STEP 1: USERNAME & PASSWORD INPUT (NO AUTOFILL, NO REMEMBER ME) */
-                <form onSubmit={handleLoginSubmit} autoComplete="off">
-                  <input type="hidden" name="key" value={k} />
+              {/* DIRECT CREDENTIALS SIGN-IN (USERNAME & PASSWORD) - NO OTP ON LOGIN */}
+              <form onSubmit={handleLoginSubmit} autoComplete="off">
+                <input type="hidden" name="key" value={k} />
 
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    marginBottom: '18px',
-                    color: '#64748b',
-                    fontSize: '13px'
-                  }}>
-                    <i className="fa-solid fa-shield-halved" style={{ color: '#8B1E2D' }} />
-                    <span>Enter administrative credentials to sign in directly.</span>
-                  </div>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  marginBottom: '18px',
+                  color: '#64748b',
+                  fontSize: '13px'
+                }}>
+                  <i className="fa-solid fa-shield-halved" style={{ color: '#8B1E2D' }} />
+                  <span>Enter administrative credentials to sign in directly.</span>
+                </div>
 
-                  <div className="form-group" style={{ marginBottom: '18px' }}>
-                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#1e293b', marginBottom: '6px' }}>
-                      Admin Username or Department Email *
-                    </label>
-                    <div style={{ position: 'relative' }}>
-                      <i className="fa-solid fa-user-shield" style={{
-                        position: 'absolute',
-                        left: '12px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        color: '#94a3b8',
-                        fontSize: '14px'
-                      }} />
-                      <input
-                        name="email"
-                        type="text"
-                        value={loginUsername}
-                        onChange={(e) => setLoginUsername(e.target.value)}
-                        placeholder="e.g. admin or senior@pleasantviewschools.co.ke"
-                        autoComplete="off"
-                        required
-                        style={{
-                          width: '100%',
-                          padding: '11px 12px 11px 36px',
-                          border: '1px solid #cbd5e1',
-                          borderRadius: '6px',
-                          fontSize: '14px',
-                          color: '#1e293b',
-                          boxSizing: 'border-box'
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-group" style={{ marginBottom: '22px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                      <label style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b' }}>
-                        Password *
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          color: '#64748b',
-                          fontSize: '12px',
-                          cursor: 'pointer',
-                          padding: 0
-                        }}
-                      >
-                        <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`} /> {showPassword ? 'Hide' : 'Show'}
-                      </button>
-                    </div>
-                    <div style={{ position: 'relative' }}>
-                      <i className="fa-solid fa-key" style={{
-                        position: 'absolute',
-                        left: '12px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        color: '#94a3b8',
-                        fontSize: '14px'
-                      }} />
-                      <input
-                        name="password"
-                        type={showPassword ? 'text' : 'password'}
-                        value={loginPassword}
-                        onChange={(e) => setLoginPassword(e.target.value)}
-                        placeholder="Enter password (type manually)"
-                        autoComplete="new-password"
-                        data-lpignore="true"
-                        required
-                        style={{
-                          width: '100%',
-                          padding: '11px 12px 11px 36px',
-                          border: '1px solid #cbd5e1',
-                          borderRadius: '6px',
-                          fontSize: '14px',
-                          color: '#1e293b',
-                          boxSizing: 'border-box'
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={isLoginPending}
-                    style={{
-                      width: '100%',
-                      background: 'linear-gradient(135deg, #8B1E2D 0%, #6D1421 100%)',
-                      color: '#ffffff',
-                      border: 'none',
-                      padding: '13px',
-                      borderRadius: '6px',
-                      fontSize: '14.5px',
-                      fontWeight: 700,
-                      letterSpacing: '0.5px',
-                      cursor: isLoginPending ? 'not-allowed' : 'pointer',
-                      boxShadow: '0 4px 12px rgba(139,30,45,0.3)',
-                      transition: 'all 0.2s ease',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px'
-                    }}
-                  >
-                    <i className="fa-solid fa-right-to-bracket" />
-                    {isLoginPending ? 'Signing In...' : 'Sign In to Staff Portal'}
-                  </button>
-                </form>
-              ) : (
-                /* STEP 2: 2-FACTOR OTP VERIFICATION */
-                <div>
-                  <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                    <div style={{
-                      width: '52px',
-                      height: '52px',
-                      borderRadius: '50%',
-                      background: 'rgba(139,30,45,0.08)',
-                      color: '#8B1E2D',
-                      margin: '0 auto 12px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '22px'
-                    }}>
-                      <i className="fa-solid fa-envelope-circle-check" />
-                    </div>
-                    <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#1E232A', margin: '0 0 6px' }}>
-                      Two-Factor Verification
-                    </h3>
-                    <p style={{ fontSize: '13px', color: '#64748b', margin: 0, lineHeight: 1.5 }}>
-                      A 6-digit login verification code was sent to <strong>{loginMaskedContact}</strong>.
-                      Please enter it below to complete access.
-                    </p>
-                  </div>
-
-                  <form onSubmit={handleVerifyLoginSubmit}>
-                    <div className="form-group" style={{ marginBottom: '18px' }}>
-                      <input
-                        type="text"
-                        value={loginOtpCode}
-                        onChange={(e) => setLoginOtpCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
-                        placeholder="••••••"
-                        maxLength={6}
-                        required
-                        autoFocus
-                        style={{
-                          width: '100%',
-                          padding: '12px',
-                          borderRadius: '6px',
-                          border: '2px solid #8B1E2D',
-                          fontSize: '24px',
-                          letterSpacing: '10px',
-                          textAlign: 'center',
-                          fontWeight: 800,
-                          color: '#1E232A',
-                          boxSizing: 'border-box'
-                        }}
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isLoginPending || loginOtpCode.length < 6}
+                <div className="form-group" style={{ marginBottom: '18px' }}>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#1e293b', marginBottom: '6px' }}>
+                    Admin Username or Department Email *
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <i className="fa-solid fa-user-shield" style={{
+                      position: 'absolute',
+                      left: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      color: '#94a3b8',
+                      fontSize: '14px'
+                    }} />
+                    <input
+                      name="email"
+                      type="text"
+                      value={loginUsername}
+                      onChange={(e) => setLoginUsername(e.target.value)}
+                      placeholder="e.g. admin or senior@pleasantviewschools.co.ke"
+                      autoComplete="off"
+                      required
                       style={{
                         width: '100%',
-                        background: loginOtpCode.length === 6 ? '#8B1E2D' : '#94a3b8',
-                        color: '#ffffff',
-                        border: 'none',
-                        padding: '13px',
+                        padding: '11px 12px 11px 36px',
+                        border: '1px solid #cbd5e1',
                         borderRadius: '6px',
-                        fontSize: '14.5px',
-                        fontWeight: 700,
-                        cursor: loginOtpCode.length === 6 && !isLoginPending ? 'pointer' : 'not-allowed',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '8px'
+                        fontSize: '14px',
+                        color: '#1e293b',
+                        boxSizing: 'border-box'
                       }}
-                    >
-                      <i className="fa-solid fa-lock-open" />
-                      {isLoginPending ? 'Verifying OTP...' : 'Verify OTP & Enter Console'}
-                    </button>
+                    />
+                  </div>
+                </div>
 
+                <div className="form-group" style={{ marginBottom: '22px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b' }}>
+                      Password *
+                    </label>
                     <button
                       type="button"
-                      onClick={() => { setLoginStep(1); setLoginOtpCode(''); setLoginError(''); }}
+                      onClick={() => setShowPassword(!showPassword)}
                       style={{
-                        width: '100%',
                         background: 'none',
                         border: 'none',
                         color: '#64748b',
-                        fontSize: '13px',
-                        fontWeight: 600,
-                        marginTop: '12px',
-                        cursor: 'pointer'
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        padding: 0
                       }}
                     >
-                      &larr; Back to Credentials Sign-In
+                      <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`} /> {showPassword ? 'Hide' : 'Show'}
                     </button>
-                  </form>
+                  </div>
+                  <div style={{ position: 'relative' }}>
+                    <i className="fa-solid fa-key" style={{
+                      position: 'absolute',
+                      left: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      color: '#94a3b8',
+                      fontSize: '14px'
+                    }} />
+                    <input
+                      name="password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      placeholder="Enter administrator password"
+                      autoComplete="current-password"
+                      data-lpignore="true"
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '11px 12px 11px 36px',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '6px',
+                        fontSize: '14px',
+                        color: '#1e293b',
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                  </div>
                 </div>
-              )}
+
+                <button
+                  type="submit"
+                  disabled={isLoginPending}
+                  style={{
+                    width: '100%',
+                    background: 'linear-gradient(135deg, #8B1E2D 0%, #6D1421 100%)',
+                    color: '#ffffff',
+                    border: 'none',
+                    padding: '13px',
+                    borderRadius: '6px',
+                    fontSize: '14.5px',
+                    fontWeight: 700,
+                    letterSpacing: '0.5px',
+                    cursor: isLoginPending ? 'not-allowed' : 'pointer',
+                    boxShadow: '0 4px 12px rgba(139,30,45,0.3)',
+                    transition: 'all 0.2s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  <i className="fa-solid fa-right-to-bracket" />
+                  {isLoginPending ? 'Signing In...' : 'Sign In to Staff Portal'}
+                </button>
+              </form>
 
               <div style={{
                 marginTop: '20px',

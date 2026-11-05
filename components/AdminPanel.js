@@ -5,6 +5,7 @@ import AdminPasswordChange from '@/components/AdminPasswordChange';
 import DeleteButton from '@/components/DeleteButton';
 import AdminSyncNotice from '@/components/AdminSyncNotice';
 import FormSubmitButton from '@/components/FormSubmitButton';
+import InlineActionButton from '@/components/InlineActionButton';
 import TelecomGatewayTester from '@/components/TelecomGatewayTester';
 import {
   q,
@@ -193,9 +194,13 @@ export default async function Panel({ scope, edit }) {
                 <i className="fa-solid fa-globe" /> View Live Website
               </Link>
               <form action={logout}>
-                <button type="submit" className="button button-tertiary" style={{ padding: '8px 16px', fontSize: '13px' }}>
-                  Sign Out
-                </button>
+                <InlineActionButton
+                  label="Sign Out"
+                  pendingLabel="Signing Out..."
+                  icon="fa-solid fa-arrow-right-from-bracket"
+                  className="button button-tertiary"
+                  style={{ padding: '8px 16px', fontSize: '13px' }}
+                />
               </form>
             </div>
           </div>
@@ -277,7 +282,7 @@ export default async function Panel({ scope, edit }) {
                         <td>{s.boarders || '200 Boarders'}</td>
                         <td>{s.ratio || '1:20'}</td>
                         <td>
-                          <form action={setSchoolAdmin} style={{ display: 'flex', gap: '6px' }}>
+                          <form action={setSchoolAdmin} style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                             <input type="hidden" name="school_id" value={s.id} />
                             <input
                               name="admin_email"
@@ -291,9 +296,12 @@ export default async function Panel({ scope, edit }) {
                               placeholder="New password"
                               style={{ padding: '5px', fontSize: '12px', width: '90px' }}
                             />
-                            <button type="submit" style={{ padding: '5px 8px', fontSize: '11px' }}>
-                              Save
-                            </button>
+                            <InlineActionButton
+                              label="Save"
+                              pendingLabel="Saving..."
+                              successLabel="✓ Saved!"
+                              style={{ padding: '5px 8px', fontSize: '11px', background: '#05286B', color: '#fff', border: 0, borderRadius: '3px' }}
+                            />
                           </form>
                         </td>
                         <td>
@@ -753,17 +761,23 @@ export default async function Panel({ scope, edit }) {
                           {t.status !== 'approved' && (
                             <form action={approveTestimonial} style={{ display: 'inline' }}>
                               <input type="hidden" name="id" value={t.id} />
-                              <button type="submit" style={{ background: '#28a745', color: '#fff', border: 0, padding: '4px 10px', borderRadius: '3px', fontSize: '12px', cursor: 'pointer', fontWeight: 700 }}>
-                                ✓ Approve
-                              </button>
+                              <InlineActionButton
+                                label="✓ Approve"
+                                pendingLabel="Approving..."
+                                successLabel="✓ Approved!"
+                                style={{ background: '#28a745', color: '#fff', border: 0, padding: '4px 10px', borderRadius: '3px', fontSize: '12px', cursor: 'pointer', fontWeight: 700 }}
+                              />
                             </form>
                           )}
                           {t.status !== 'rejected' && (
                             <form action={rejectTestimonial} style={{ display: 'inline' }}>
                               <input type="hidden" name="id" value={t.id} />
-                              <button type="submit" style={{ background: '#495057', color: '#fff', border: 0, padding: '4px 10px', borderRadius: '3px', fontSize: '12px', cursor: 'pointer' }}>
-                                Reject
-                              </button>
+                              <InlineActionButton
+                                label="Reject"
+                                pendingLabel="Rejecting..."
+                                successLabel="✓ Rejected"
+                                style={{ background: '#495057', color: '#fff', border: 0, padding: '4px 10px', borderRadius: '3px', fontSize: '12px', cursor: 'pointer' }}
+                              />
                             </form>
                           )}
                           <form action={deleteTestimonial} style={{ display: 'inline' }}>
@@ -1057,8 +1071,10 @@ export default async function Panel({ scope, edit }) {
                         <form action={toggleEvent} style={{ display: 'inline' }}>
                           <input type="hidden" name="id" value={ev.id} />
                           <input type="hidden" name="is_active" value={ev.is_active} />
-                          <button
-                            type="submit"
+                          <InlineActionButton
+                            label={ev.is_active ? 'Active (Live)' : 'Hidden'}
+                            pendingLabel="Updating..."
+                            successLabel="✓ Updated!"
                             style={{
                               background: ev.is_active ? '#d4edda' : '#f8d7da',
                               color: ev.is_active ? '#155724' : '#721c24',
@@ -1069,9 +1085,7 @@ export default async function Panel({ scope, edit }) {
                               fontWeight: 700,
                               cursor: 'pointer'
                             }}
-                          >
-                            {ev.is_active ? 'Active (Live)' : 'Hidden'}
-                          </button>
+                          />
                         </form>
                       </td>
                       <td>
@@ -2096,11 +2110,15 @@ export default async function Panel({ scope, edit }) {
               <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px', borderLeft: '4px solid var(--primary-navy)' }}>
                 <h4 style={{ marginBottom: '8px' }}>Resend Email Gateway</h4>
                 <p style={{ fontSize: '13px', color: '#666', marginBottom: '10px' }}>Verify outbound transactional email delivery.</p>
-                <form action={testResend} style={{ display: 'flex', gap: '8px' }}>
+                <form action={testResend} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   <input name="email" type="email" defaultValue="info@pleasantviewschools.co.ke" style={{ padding: '8px', fontSize: '13px', flex: 1 }} required />
-                  <button type="submit" className="button button-primary" style={{ padding: '8px 14px', fontSize: '12px' }}>
-                    Send Test
-                  </button>
+                  <InlineActionButton
+                    label="Send Test"
+                    pendingLabel="Sending..."
+                    successLabel="✓ Test Sent!"
+                    className="button button-primary"
+                    style={{ padding: '8px 14px', fontSize: '12px' }}
+                  />
                 </form>
               </div>
             </div>
@@ -2162,9 +2180,13 @@ export default async function Panel({ scope, edit }) {
                               <input type="hidden" name="to" value={m.sender} />
                               <input type="hidden" name="sms_id" value={m.id} />
                               <input name="message" placeholder="Type SMS reply..." required style={{ padding: '6px', fontSize: '12px' }} />
-                              <button type="submit" className="button button-gold" style={{ padding: '4px 8px', fontSize: '11px' }}>
-                                Send SMS
-                              </button>
+                              <InlineActionButton
+                                label="Send SMS"
+                                pendingLabel="Sending..."
+                                successLabel="✓ SMS Sent!"
+                                className="button button-gold"
+                                style={{ padding: '5px 10px', fontSize: '11px', width: 'fit-content' }}
+                              />
                             </form>
                           </details>
                         </td>

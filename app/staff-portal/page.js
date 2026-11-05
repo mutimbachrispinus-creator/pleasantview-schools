@@ -1,6 +1,6 @@
 import Panel from '@/components/AdminPanel';
 import LoginForm from '@/components/LoginForm';
-import { getAdmin } from '@/lib/auth';
+import { getAdmin, endSession } from '@/lib/auth';
 import { logout } from '@/app/hidden-admin/actions';
 
 export const dynamic = 'force-dynamic';
@@ -14,6 +14,10 @@ export default async function StaffPortalPage({ searchParams }) {
   try {
     const sp = await searchParams;
     editSlug = sp?.edit || '';
+    if (sp?.logout === '1' || sp?.logout === 'true') {
+      await endSession();
+      return <LoginForm title="Staff & Central Administrative Console" />;
+    }
   } catch {}
 
   let a = null;
