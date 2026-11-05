@@ -327,11 +327,19 @@ export default function WebmailClient({
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '15px' }}>
             <div style={{ flex: 1, minWidth: '280px' }}>
-              <strong style={{ color: '#8B1E2D', fontSize: '14px', display: 'block', marginBottom: '4px' }}>
-                Resend Webhook &amp; Inbound Forwarding Integration
-              </strong>
-              <p style={{ margin: 0, color: '#555', lineHeight: 1.5 }}>
-                To receive live inbound emails directly into this webmail inbox, add your Resend Inbound Webhook:
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                <strong style={{ color: '#8B1E2D', fontSize: '14px' }}>
+                  Resend Webhook &amp; Inbound Forwarding Integration
+                </strong>
+                <span style={{ background: '#e0f2fe', color: '#0369a1', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>
+                  OPTIONAL &bull; Inbound Only
+                </span>
+              </div>
+              <p style={{ margin: 0, color: '#166534', fontWeight: 600, fontSize: '12.5px', marginBottom: '6px' }}>
+                ✓ Outbound OTP codes, password resets, and visitor alerts are already 100% active via your RESEND_API_KEY.
+              </p>
+              <p style={{ margin: 0, color: '#64748b', lineHeight: 1.5, fontSize: '12px' }}>
+                You do NOT need this webhook for OTPs. It is only optional if you wish external visitor emails sent to <code>info@pleasantviewschools.co.ke</code> to land inside this webmail inbox:
               </p>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '8px' }}>
                 <code style={{ background: '#ffffff', border: '1px solid #cbd5e1', padding: '6px 10px', borderRadius: '4px', fontSize: '12px', color: '#1E232A', flex: 1 }}>
