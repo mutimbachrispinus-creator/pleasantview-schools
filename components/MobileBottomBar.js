@@ -7,7 +7,8 @@ export default function MobileBottomBar({
   mapsUrl = 'https://maps.app.goo.gl/iBXf1M86VKxqAEft5',
   whatsappUrl = 'https://wa.me/254711689913?text=Hello%20Pleasant%20View%20Schools,%20I%20would%20like%20to%20inquire%20about%20admissions.',
   schools = [],
-  quickLinks = []
+  quickLinks = [],
+  settings = {}
 }) {
   const [openDrawer, setOpenDrawer] = useState(null); // 'quick' | 'schools' | null
 
@@ -100,6 +101,36 @@ export default function MobileBottomBar({
             <div className="drawer-item-title">Staff Portal</div>
             <small>Admin Management Console</small>
           </Link>
+        </div>
+
+        {/* SOCIAL MEDIA CHANNELS IN MOBILE QUICK DRAWER */}
+        <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid #e2e8f0' }}>
+          <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--primary-navy)', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '12px' }}>
+            Follow Pleasant View Schools
+          </div>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <a href={settings.social_facebook || 'https://www.facebook.com/PleasantViewSchools98'} target="_blank" rel="noopener noreferrer" style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#1877F2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '15px', textDecoration: 'none' }} title="Facebook">
+              <i className="fa-brands fa-facebook-f" />
+            </a>
+            <a href={settings.social_instagram || 'https://www.instagram.com/pleasant_view_schools?mdxt=MWM2eDZvZGxhOTBlZA=='} target="_blank" rel="noopener noreferrer" style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '15px', textDecoration: 'none' }} title="Instagram">
+              <i className="fa-brands fa-instagram" />
+            </a>
+            <a href={settings.social_youtube || 'https://youtube.com/@pleasantviewschools?si=ot3wZjmIo517hyZm'} target="_blank" rel="noopener noreferrer" style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#FF0000', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '15px', textDecoration: 'none' }} title="YouTube">
+              <i className="fa-brands fa-youtube" />
+            </a>
+            <a href={settings.social_twitter || 'https://x.com/pleasantview_ke'} target="_blank" rel="noopener noreferrer" style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#000000', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '15px', textDecoration: 'none' }} title="X / Twitter">
+              <i className="fa-brands fa-x-twitter" />
+            </a>
+            <a href={settings.social_tiktok || 'https://tiktok.com/@pleasantviewschools'} target="_blank" rel="noopener noreferrer" style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#000000', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '15px', textDecoration: 'none' }} title="TikTok">
+              <i className="fa-brands fa-tiktok" />
+            </a>
+            <a href={settings.social_linkedin || 'https://linkedin.com/company/pleasantview-schools'} target="_blank" rel="noopener noreferrer" style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#0A66C2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '15px', textDecoration: 'none' }} title="LinkedIn">
+              <i className="fa-brands fa-linkedin-in" />
+            </a>
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#25D366', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '16px', textDecoration: 'none' }} title="WhatsApp">
+              <i className="fa-brands fa-whatsapp" />
+            </a>
+          </div>
         </div>
       </div>
 

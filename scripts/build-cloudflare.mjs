@@ -45,6 +45,8 @@ const routesJson = {
     "/_next/static/*",
     "/images/*",
     "/favicon.ico",
+    "/icon.png",
+    "/apple-touch-icon.png",
     "/manifest.json",
     "/sw.js"
   ]

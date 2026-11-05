@@ -252,6 +252,7 @@ export default async function RootLayout({ children }) {
           whatsappUrl={whatsappUrl}
           schools={schList}
           quickLinks={quickLinks}
+          settings={settings}
         />
       </body>
     </html>

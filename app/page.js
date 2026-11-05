@@ -184,6 +184,197 @@ export default async function Home({ searchParams }) {
         </div>
       </section>
 
+      {/* COMMUNITY VOICES & PERSPECTIVES FAST-NAV RIBBON */}
+      <section className="voices-nav-ribbon" aria-label="Community Perspectives Directory" style={{ background: '#ffffff', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', padding: '36px 0' }}>
+        <div className="wrapper">
+          <div style={{ textAlign: 'center', marginBottom: '22px' }}>
+            <span style={{ color: 'var(--primary-red)', fontSize: '11.5px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase' }}>
+              VOICES OF OUR SCHOOL COMMUNITY
+            </span>
+            <h3 style={{ fontSize: 'clamp(20px, 2.4vw, 28px)', color: 'var(--primary-navy)', margin: '4px 0 8px', fontFamily: 'Cinzel, serif' }}>
+              Comments &amp; Remarks from School Heads, Parents &amp; Alumni
+            </h3>
+            <p style={{ fontSize: '14.5px', color: '#64748b', maxWidth: '640px', margin: '0 auto' }}>
+              Direct access to reflections, endorsements, and firsthand accounts from our leadership, families, graduates, and scholars.
+            </p>
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gap: '16px'
+          }}>
+            {/* 1. SCHOOL HEADS / DIRECTORS */}
+            <Link
+              href="#leadership"
+              className="voice-link-card panel-reveal"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '14px',
+                padding: '16px 20px',
+                background: 'var(--soft-bg, #f4f5f7)',
+                borderRadius: '8px',
+                borderLeft: '4px solid var(--primary-red)',
+                textDecoration: 'none',
+                color: 'inherit',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <div style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: '50%',
+                background: 'rgba(139, 30, 45, 0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--primary-red)',
+                fontSize: '18px',
+                flexShrink: 0
+              }}>
+                <i className="fa-solid fa-user-tie" />
+              </div>
+              <div>
+                <strong style={{ display: 'block', fontSize: '15px', color: 'var(--primary-navy)', fontWeight: 700 }}>
+                  School Heads &amp; Leadership
+                </strong>
+                <small style={{ color: '#64748b', fontSize: '12.5px' }}>
+                  Remarks from Directors &rarr;
+                </small>
+              </div>
+            </Link>
+
+            {/* 2. PARENT TESTIMONIALS */}
+            <Link
+              href="#parent-reviews"
+              className="voice-link-card panel-reveal"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '14px',
+                padding: '16px 20px',
+                background: 'var(--soft-bg, #f4f5f7)',
+                borderRadius: '8px',
+                borderLeft: '4px solid #1E232A',
+                textDecoration: 'none',
+                color: 'inherit',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <div style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: '50%',
+                background: 'rgba(30, 35, 42, 0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#1E232A',
+                fontSize: '18px',
+                flexShrink: 0
+              }}>
+                <i className="fa-solid fa-comments" />
+              </div>
+              <div>
+                <strong style={{ display: 'block', fontSize: '15px', color: 'var(--primary-navy)', fontWeight: 700 }}>
+                  Parent Endorsements
+                </strong>
+                <small style={{ color: '#64748b', fontSize: '12.5px' }}>
+                  Verified Parent Reviews &rarr;
+                </small>
+              </div>
+            </Link>
+
+            {/* 3. ALUMNI SUCCESS STORIES */}
+            <Link
+              href="#alumni"
+              className="voice-link-card panel-reveal"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '14px',
+                padding: '16px 20px',
+                background: 'var(--soft-bg, #f4f5f7)',
+                borderRadius: '8px',
+                borderLeft: '4px solid var(--primary-red)',
+                textDecoration: 'none',
+                color: 'inherit',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <div style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: '50%',
+                background: 'rgba(139, 30, 45, 0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--primary-red)',
+                fontSize: '18px',
+                flexShrink: 0
+              }}>
+                <i className="fa-solid fa-graduation-cap" />
+              </div>
+              <div>
+                <strong style={{ display: 'block', fontSize: '15px', color: 'var(--primary-navy)', fontWeight: 700 }}>
+                  Alumni Stories &amp; Impact
+                </strong>
+                <small style={{ color: '#64748b', fontSize: '12.5px' }}>
+                  Where Our Alumni Lead &rarr;
+                </small>
+              </div>
+            </Link>
+
+            {/* 4. LEARNER VOICES */}
+            <Link
+              href="#student-voices"
+              className="voice-link-card panel-reveal"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '14px',
+                padding: '16px 20px',
+                background: 'var(--soft-bg, #f4f5f7)',
+                borderRadius: '8px',
+                borderLeft: '4px solid #1E232A',
+                textDecoration: 'none',
+                color: 'inherit',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <div style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: '50%',
+                background: 'rgba(30, 35, 42, 0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#1E232A',
+                fontSize: '18px',
+                flexShrink: 0
+              }}>
+                <i className="fa-solid fa-book-open-reader" />
+              </div>
+              <div>
+                <strong style={{ display: 'block', fontSize: '15px', color: 'var(--primary-navy)', fontWeight: 700 }}>
+                  Learner Perspectives
+                </strong>
+                <small style={{ color: '#64748b', fontSize: '12.5px' }}>
+                  Student Dreams &amp; Ambitions &rarr;
+                </small>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* PLEASANT VIEW AT A GLANCE (The Dunham School & The Walker School Signature Metrics) */}
       <section className="at-a-glance-section" aria-label="Pleasant View at a Glance">
         <div className="wrapper">

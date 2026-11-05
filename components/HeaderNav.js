@@ -126,8 +126,10 @@ export default function HeaderNav({
                     <li><Link href="/about#vision">Vision, Mission &amp; Values</Link></li>
                     <li><Link href="/about#legacy">24-Year Academic Legacy</Link></li>
                     <li><Link href="/about#academics">Curriculum &amp; Assessment Honors</Link></li>
+                    <li><Link href="/#leadership">Leadership &amp; Heads&apos; Remarks</Link></li>
+                    <li><Link href="/#parent-reviews">Parent Reviews &amp; Testimonials</Link></li>
+                    <li><Link href="/#alumni">Alumni Success Stories</Link></li>
                     <li><Link href="/about#christian">Christian Ethos &amp; Faith</Link></li>
-                    <li><Link href="/about#leadership">Leadership &amp; Governance</Link></li>
                     <li><Link href="/about#boarding">Boarding &amp; Pastoral Care</Link></li>
                   </ul>
                 </li>
@@ -166,6 +168,9 @@ export default function HeaderNav({
                   <ul className="sub-menu">
                     <li><Link href="/about#boarding">Pastoral Boarding Life (Grade 4+)</Link></li>
                     <li><Link href="/about#transport">Safe School Transport Fleet</Link></li>
+                    <li><Link href="/#parent-reviews">Parent Reviews &amp; Testimonials</Link></li>
+                    <li><Link href="/#student-voices">Learner Perspectives &amp; Voices</Link></li>
+                    <li><Link href="/#alumni">Alumni Success Stories</Link></li>
                     <li><Link href="/quick-links/sports-fixtures">Sports Fixtures &amp; Athletics</Link></li>
                     <li><Link href="/quick-links/term-dates">Term Dates &amp; VISOs</Link></li>
                     <li><Link href="/about#sports">Co-Curricular Clubs &amp; Arts</Link></li>
@@ -335,8 +340,14 @@ export default function HeaderNav({
               <Link href="/about#christian" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
                 Christian Ethos &amp; Mentorship
               </Link>
-              <Link href="/about#leadership" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
-                Executive Leadership
+              <Link href="/#leadership" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Leadership &amp; Heads&apos; Remarks
+              </Link>
+              <Link href="/#parent-reviews" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Parent Reviews &amp; Testimonials
+              </Link>
+              <Link href="/#alumni" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Alumni Success Stories
               </Link>
               <Link href="/about#boarding" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
                 Boarding &amp; Pastoral Care
@@ -360,6 +371,9 @@ export default function HeaderNav({
               </Link>
               <Link href="/about#transport" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
                 Safe School Transport Fleet
+              </Link>
+              <Link href="/#student-voices" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Learner Perspectives &amp; Voices
               </Link>
               <Link href="/quick-links/sports-fixtures" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
                 Sports Fixtures &amp; Athletics
@@ -463,6 +477,33 @@ export default function HeaderNav({
               <i className="fa-solid fa-comment-sms" style={{ marginRight: '6px' }} />
               Send Direct SMS to Administrator
             </Link>
+          </div>
+
+          {/* SOCIAL MEDIA CHANNELS IN MOBILE NAV DRAWER */}
+          <div style={{ padding: '18px 20px 30px', borderTop: '1px solid rgba(255,255,255,0.1)', background: '#14181E' }}>
+            <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--gold-accent)', fontWeight: 800, display: 'block', marginBottom: '12px' }}>
+              Follow Pleasant View Schools
+            </span>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+              <a href={settings.social_facebook || 'https://www.facebook.com/PleasantViewSchools98'} target="_blank" rel="noopener noreferrer" style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '15px', textDecoration: 'none' }} title="Facebook">
+                <i className="fa-brands fa-facebook-f" />
+              </a>
+              <a href={settings.social_instagram || 'https://www.instagram.com/pleasant_view_schools?mdxt=MWM2eDZvZGxhOTBlZA=='} target="_blank" rel="noopener noreferrer" style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '15px', textDecoration: 'none' }} title="Instagram">
+                <i className="fa-brands fa-instagram" />
+              </a>
+              <a href={settings.social_youtube || 'https://youtube.com/@pleasantviewschools?si=ot3wZjmIo517hyZm'} target="_blank" rel="noopener noreferrer" style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '15px', textDecoration: 'none' }} title="YouTube">
+                <i className="fa-brands fa-youtube" />
+              </a>
+              <a href={settings.social_twitter || 'https://x.com/pleasantview_ke'} target="_blank" rel="noopener noreferrer" style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '15px', textDecoration: 'none' }} title="Twitter / X">
+                <i className="fa-brands fa-x-twitter" />
+              </a>
+              <a href={settings.social_tiktok || 'https://tiktok.com/@pleasantviewschools'} target="_blank" rel="noopener noreferrer" style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '15px', textDecoration: 'none' }} title="TikTok">
+                <i className="fa-brands fa-tiktok" />
+              </a>
+              <a href={settings.social_linkedin || 'https://linkedin.com/company/pleasantview-schools'} target="_blank" rel="noopener noreferrer" style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '15px', textDecoration: 'none' }} title="LinkedIn">
+                <i className="fa-brands fa-linkedin-in" />
+              </a>
+            </div>
           </div>
         </div>
       </aside>
