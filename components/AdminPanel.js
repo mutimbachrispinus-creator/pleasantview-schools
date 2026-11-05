@@ -11,6 +11,7 @@ import {
   CATS,
   D,
   SF,
+  getAdminPanelData,
   getGlanceMetrics,
   getAdmins,
   getPhotos,
@@ -113,7 +114,7 @@ export default async function Panel({ scope, edit }) {
 
   const w = scope ? ' WHERE school_id=' + Number(scope) : '';
 
-  const [
+  const {
     hero,
     posts,
     photos,
@@ -136,54 +137,7 @@ export default async function Panel({ scope, edit }) {
     alumniList,
     learnersList,
     eventsList
-  ] = await Promise.all([
-    q(
-      `SELECT h.*, s.name sname FROM hero h LEFT JOIN schools s ON s.id=h.school_id${
-        scope ? ' WHERE h.school_id=' + Number(scope) : ''
-      } ORDER BY h.school_id ASC, h.sort ASC, h.id ASC`
-    ),
-    q(`SELECT id, title, category FROM posts${w} ORDER BY id DESC`),
-    q(`SELECT * FROM photos${w} ORDER BY id DESC LIMIT 30`),
-    q(
-      `SELECT v.*, s.name sname FROM visits v LEFT JOIN schools s ON s.id=v.school_id${
-        scope ? ' WHERE v.school_id=' + Number(scope) : ''
-      } ORDER BY v.id DESC LIMIT 40`
-    ),
-    q(
-      `SELECT e.*, s.name sname FROM enquiries e LEFT JOIN schools s ON s.id=e.school_id${
-        scope ? ' WHERE e.school_id=' + Number(scope) : ''
-      } ORDER BY e.id DESC LIMIT 40`
-    ),
-    q('SELECT * FROM inbound_sms ORDER BY id DESC LIMIT 40'),
-    q('SELECT * FROM inbound_emails ORDER BY id DESC LIMIT 40'),
-    q('SELECT * FROM comm_logs ORDER BY id DESC LIMIT 40'),
-    q('SELECT * FROM email_accounts ORDER BY id ASC'),
-    q(
-      `SELECT v.*, s.name sname FROM videos v LEFT JOIN schools s ON s.id=v.school_id${
-        scope ? ' WHERE v.school_id=' + Number(scope) : ''
-      } ORDER BY v.sort ASC, v.id DESC`
-    ),
-    q(
-      `SELECT j.*, s.name sname FROM jobs j LEFT JOIN schools s ON s.id=j.school_id${
-        scope ? ' WHERE j.school_id=' + Number(scope) : ''
-      } ORDER BY j.id DESC`
-    ),
-    q('SELECT a.*, j.title job_name FROM job_applications a LEFT JOIN jobs j ON j.id=a.job_id ORDER BY a.id DESC LIMIT 50'),
-    q(
-      `SELECT m.*, s.name sname FROM leadership_messages m LEFT JOIN schools s ON s.id=m.school_id${
-        scope ? ' WHERE m.school_id=' + Number(scope) : ''
-      } ORDER BY m.sort ASC, m.id DESC`
-    ),
-    q('SELECT * FROM quick_links ORDER BY sort ASC, id ASC'),
-    getAdmins(),
-    getGlanceMetrics(),
-    getPhotos(),
-    getAllExamResults(),
-    getAllParentTestimonials(),
-    getAllAlumniStories(),
-    getAllLearnerTestimonials(),
-    getAllEvents()
-  ]);
+  } = await getAdminPanelData(scope);
 
   const Pick = () =>
     scope ? (
