@@ -1740,6 +1740,54 @@ footer .footer-col.logo .brand-crest-img {
   padding: 40px;
   margin: 40px auto;
   max-width: 1100px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.admin-section-panel {
+  padding: 25px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+}
+.form-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.radio-grid-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.contact-entry-panel {
+  padding: 35px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+}
+.login-panel-card {
+  width: 100%;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+}
+.login-panel-body {
+  box-sizing: border-box;
+  width: 100%;
+}
+.portal-entry-container {
+  width: 100%;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
 }
 .admin-badge {
   display: inline-block;
@@ -2699,6 +2747,171 @@ button:active, .button:active, a.button:active, .btn:active, a.btn:active, .nav-
   .card, .stat-card, .metric-card, .division-card, .photo-card, .info-card {
     max-width: 100% !important;
     box-sizing: border-box !important;
+  }
+}
+
+/* COMPREHENSIVE PHONE VIEW RULES: ALL ENTRY PANELS CENTER-ALIGNED & FIT SCREEN ACROSS PORTAL */
+@media (max-width: 768px) {
+  /* 1. Root Containers & Symmetrical Centering */
+  .wrapper {
+    padding: 0 12px !important;
+    max-width: 100vw !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+
+  .admin-panel-container {
+    padding: 16px 12px !important;
+    margin: 12px auto 24px auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  .admin-section-panel {
+    padding: 16px 12px !important;
+    margin: 0 auto 20px auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  .admin-header-bar,
+  .admin-jump-bar {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 10px 12px !important;
+    gap: 8px !important;
+  }
+
+  .admin-header-bar h1 {
+    font-size: 20px !important;
+    line-height: 1.3 !important;
+    word-break: break-word;
+  }
+
+  /* 2. Contact, Booking & Enquiry Entry Panels */
+  .contact-layout-container,
+  .contact-split-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    gap: 20px !important;
+    box-sizing: border-box !important;
+  }
+
+  .contact-main-column,
+  .contact-side-column {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .custom-form,
+  .contact-entry-panel,
+  .entry-panel-card,
+  .portal-entry-container {
+    padding: 20px 14px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+    border-radius: 8px !important;
+  }
+
+  .custom-form h3,
+  .contact-entry-panel h3,
+  .entry-panel-card h3 {
+    font-size: 20px !important;
+    line-height: 1.35 !important;
+    word-break: break-word;
+  }
+
+  /* 3. Internal Form Grid Stacking (No squished side-by-side fields on phone) */
+  .form-two-col,
+  .radio-grid-two-col,
+  .custom-form form > div[style*="gridTemplateColumns"],
+  .contact-entry-panel form > div[style*="gridTemplateColumns"],
+  .admin-section-panel form {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 4. Form Fields & Buttons: Full Width, Center Fit & No Auto-Zoom */
+  .custom-form input,
+  .custom-form select,
+  .custom-form textarea,
+  .contact-entry-panel input,
+  .contact-entry-panel select,
+  .contact-entry-panel textarea,
+  .admin-section-panel input,
+  .admin-section-panel select,
+  .admin-section-panel textarea,
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    font-size: 16px !important; /* Prevents auto-zoom in iOS Safari and Android Chrome */
+    padding: 12px 14px !important;
+  }
+
+  .custom-form button,
+  .contact-entry-panel button,
+  .entry-panel-card button,
+  button[type="submit"],
+  .button.button-primary,
+  .button.button-gold {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    text-align: center !important;
+  }
+
+  /* 5. Staff Portal Login & OTP Cards */
+  .login-panel-card {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 15px auto 25px auto !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  .login-panel-body {
+    padding: 20px 14px 24px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 6. Admin Tables: Smooth Horizontal Scroll inside Centered Container */
+  .admin-section-panel div[style*="overflowX"],
+  .admin-table-container {
+    overflow-x: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: block !important;
+    margin: 0 auto !important;
+  }
+
+  .admin-table {
+    min-width: 600px !important;
   }
 }
 

@@ -18,6 +18,7 @@ const C = async () => {
 const done = () => {
   try {
     revalidatePath('/', 'layout');
+    revalidatePath('/staff-portal', 'page');
   } catch (err) {
     console.warn('[revalidatePath Notice]:', err?.message);
   }
@@ -287,39 +288,54 @@ export async function saveSchool(fd) {
 }
 
 export async function addVideo(fd) {
-  await A();
-  const title = String(fd.get('title') || '').trim();
-  let youtubeUrl = String(fd.get('youtube_url') || '').trim();
-  const videoFile = fd.get('video_file');
-  if (videoFile && videoFile.size > 0) {
-    const savedVid = await saveVideo(videoFile);
-    if (savedVid) youtubeUrl = savedVid;
+  try {
+    await A();
+    const title = String(fd.get('title') || '').trim();
+    let youtubeUrl = String(fd.get('youtube_url') || '').trim();
+    const videoFile = fd.get('video_file');
+    if (videoFile && typeof videoFile === 'object' && videoFile.size > 0) {
+      const savedVid = await saveVideo(videoFile);
+      if (savedVid) youtubeUrl = savedVid;
+    }
+    const category = String(fd.get('category') || 'Campus Tour').trim();
+    const description = String(fd.get('description') || '').trim();
+    const uploadedThumb = await saveImg(fd.get('thumbnail_file'));
+    const thumbUrl = String(fd.get('thumbnail_url') || '').trim();
+    const thumbnail = uploadedThumb || thumbUrl || '/images/hero_science_lab.jpg';
+    const schoolId = Number(fd.get('school_id')) || 0;
+    const featured = fd.get('featured') === '0' ? 0 : 1;
+    const sort = Number(fd.get('sort')) || 0;
+
+    if (!title) {
+      console.warn('[addVideo Notice]: Title is required.');
+      return;
+    }
+    if (!youtubeUrl) {
+      console.warn('[addVideo Notice]: YouTube link or uploaded video is required.');
+      return;
+    }
+
+    await q(
+      'INSERT INTO videos(school_id, title, youtube_url, category, description, thumbnail, featured, sort) VALUES(?,?,?,?,?,?,?,?)',
+      [schoolId, title, youtubeUrl, category, description, thumbnail, featured, sort]
+    );
+    done();
+  } catch (err) {
+    console.error('[addVideo Action Error]:', err?.message);
   }
-  const category = String(fd.get('category') || 'Campus Tour').trim();
-  const description = String(fd.get('description') || '').trim();
-  const uploadedThumb = await saveImg(fd.get('thumbnail_file'));
-  const thumbUrl = String(fd.get('thumbnail_url') || '').trim();
-  const thumbnail = uploadedThumb || thumbUrl || '/images/hero_science_lab.jpg';
-  const schoolId = Number(fd.get('school_id')) || 0;
-  const featured = fd.get('featured') === '0' ? 0 : 1;
-  const sort = Number(fd.get('sort')) || 0;
-
-  if (!title || !youtubeUrl) return;
-
-  await q(
-    'INSERT INTO videos(school_id, title, youtube_url, category, description, thumbnail, featured, sort) VALUES(?,?,?,?,?,?,?,?)',
-    [schoolId, title, youtubeUrl, category, description, thumbnail, featured, sort]
-  );
-  done();
 }
 
 export async function delVideo(fd) {
-  await A();
-  const id = Number(fd.get('id'));
-  if (id) {
-    await q('DELETE FROM videos WHERE id=?', [id]);
+  try {
+    await A();
+    const id = Number(fd.get('id'));
+    if (id) {
+      await q('DELETE FROM videos WHERE id=?', [id]);
+    }
+    done();
+  } catch (err) {
+    console.error('[delVideo Action Error]:', err?.message);
   }
-  done();
 }
 
 export async function addJob(fd) {
@@ -411,34 +427,42 @@ export async function updateEnquiryStatus(fd) {
 }
 
 export async function addLeadershipMessage(fd) {
-  await A();
-  const role = String(fd.get('role') || 'Director').trim();
-  const name = String(fd.get('name') || '').trim();
-  const title = String(fd.get('title') || '').trim();
-  const quote = String(fd.get('quote') || '').trim();
-  const message = String(fd.get('message') || '').trim();
-  const uploadedImg = await saveImg(fd.get('image_file'));
-  const imgUrl = String(fd.get('image_url') || '').trim();
-  const image = uploadedImg || imgUrl || '/images/banner_3_a.webp';
-  const schoolId = Number(fd.get('school_id')) || 0;
-  const sort = Number(fd.get('sort')) || 0;
+  try {
+    await A();
+    const role = String(fd.get('role') || 'Director').trim();
+    const name = String(fd.get('name') || '').trim();
+    const title = String(fd.get('title') || '').trim();
+    const quote = String(fd.get('quote') || '').trim();
+    const message = String(fd.get('message') || '').trim();
+    const uploadedImg = await saveImg(fd.get('image_file'));
+    const imgUrl = String(fd.get('image_url') || '').trim();
+    const image = uploadedImg || imgUrl || '/images/banner_3_a.webp';
+    const schoolId = Number(fd.get('school_id')) || 0;
+    const sort = Number(fd.get('sort')) || 0;
 
-  if (!name || !message) return;
+    if (!name || !message) return;
 
-  await q(
-    'INSERT INTO leadership_messages(school_id, role, name, title, quote, message, image, sort, is_active) VALUES(?,?,?,?,?,?,?,?,1)',
-    [schoolId, role, name, title, quote, message, image, sort]
-  );
-  done();
+    await q(
+      'INSERT INTO leadership_messages(school_id, role, name, title, quote, message, image, sort, is_active) VALUES(?,?,?,?,?,?,?,?,1)',
+      [schoolId, role, name, title, quote, message, image, sort]
+    );
+    done();
+  } catch (err) {
+    console.error('[addLeadershipMessage Action Error]:', err?.message);
+  }
 }
 
 export async function delLeadershipMessage(fd) {
-  await A();
-  const id = Number(fd.get('id'));
-  if (id) {
-    await q('DELETE FROM leadership_messages WHERE id=?', [id]);
+  try {
+    await A();
+    const id = Number(fd.get('id'));
+    if (id) {
+      await q('DELETE FROM leadership_messages WHERE id=?', [id]);
+    }
+    done();
+  } catch (err) {
+    console.error('[delLeadershipMessage Action Error]:', err?.message);
   }
-  done();
 }
 
 export async function delEnquiry(fd) {
@@ -451,81 +475,97 @@ export async function delEnquiry(fd) {
 }
 
 export async function addPost(fd) {
-  const sc = await A(),
-    img = (await saveImg(fd.get('image'))) || '/images/banner_2_a.webp',
-    t = String(fd.get('title'));
-  const cat = fd.get('category') || 'School News';
-  await q(
-    'INSERT INTO posts(school_id,slug,title,body,image,category) VALUES(?,?,?,?,?,?)',
-    [sid(fd, sc), slugify(t) + '-' + Date.now().toString(36), t, fd.get('body'), img, cat]
-  );
-  done();
+  try {
+    const sc = await A(),
+      img = (await saveImg(fd.get('image'))) || '/images/banner_2_a.webp',
+      t = String(fd.get('title') || 'News Update').trim();
+    const cat = fd.get('category') || 'School News';
+    await q(
+      'INSERT INTO posts(school_id,slug,title,body,image,category) VALUES(?,?,?,?,?,?)',
+      [sid(fd, sc), slugify(t) + '-' + Date.now().toString(36), t, fd.get('body') || '', img, cat]
+    );
+    done();
+  } catch (err) {
+    console.error('[addPost Action Error]:', err?.message);
+  }
 }
 
 export async function addHero(fd) {
-  const sc = await A();
-  const uploaded = await saveImg(fd.get('image'));
-  const chosenUrl = String(fd.get('imageUrl') || '').trim();
-  const img = uploaded || chosenUrl || '/images/banner_1_a.webp';
+  try {
+    const sc = await A();
+    const uploaded = await saveImg(fd.get('image'));
+    const chosenUrl = String(fd.get('imageUrl') || '').trim();
+    const img = uploaded || chosenUrl || '/images/banner_1_a.webp';
 
-  const headline = String(fd.get('headline') || 'PLEASANT VIEW SCHOOLS').trim();
-  const sub = String(fd.get('sub') || 'Competent · Confident · Compassionate').trim();
-  const bText = String(fd.get('button_text') || 'Explore Our Schools').trim();
-  const bLink = String(fd.get('button_link') || '/#schools').trim();
-  const bAltText = String(fd.get('button_alt_text') || 'Book a Campus Tour').trim();
-  const bAltLink = String(fd.get('button_alt_link') || '/contact#visit').trim();
-  const sort = Number(fd.get('sort')) || 0;
+    const headline = String(fd.get('headline') || 'PLEASANT VIEW SCHOOLS').trim();
+    const sub = String(fd.get('sub') || 'Competent · Confident · Compassionate').trim();
+    const bText = String(fd.get('button_text') || 'Explore Our Schools').trim();
+    const bLink = String(fd.get('button_link') || '/#schools').trim();
+    const bAltText = String(fd.get('button_alt_text') || 'Book a Campus Tour').trim();
+    const bAltLink = String(fd.get('button_alt_link') || '/contact#visit').trim();
+    const sort = Number(fd.get('sort')) || 0;
 
-  await q(
-    'INSERT INTO hero(school_id, image, headline, sub, button_text, button_link, button_alt_text, button_alt_link, sort) VALUES(?,?,?,?,?,?,?,?,?)',
-    [sid(fd, sc), img, headline, sub, bText, bLink, bAltText, bAltLink, sort]
-  );
-  done();
+    await q(
+      'INSERT INTO hero(school_id, image, headline, sub, button_text, button_link, button_alt_text, button_alt_link, sort) VALUES(?,?,?,?,?,?,?,?,?)',
+      [sid(fd, sc), img, headline, sub, bText, bLink, bAltText, bAltLink, sort]
+    );
+    done();
+  } catch (err) {
+    console.error('[addHero Action Error]:', err?.message);
+  }
 }
 
 export async function updateHero(fd) {
-  const sc = await A();
-  const id = Number(fd.get('id'));
-  if (!id) return;
+  try {
+    const sc = await A();
+    const id = Number(fd.get('id'));
+    if (!id) return;
 
-  const uploaded = await saveImg(fd.get('image'));
-  const chosenUrl = String(fd.get('imageUrl') || '').trim();
-  const headline = String(fd.get('headline') || '').trim();
-  const sub = String(fd.get('sub') || '').trim();
-  const bText = String(fd.get('button_text') || 'Explore Our Schools').trim();
-  const bLink = String(fd.get('button_link') || '/#schools').trim();
-  const bAltText = String(fd.get('button_alt_text') || 'Book a Campus Tour').trim();
-  const bAltLink = String(fd.get('button_alt_link') || '/contact#visit').trim();
-  const sort = Number(fd.get('sort')) || 0;
+    const uploaded = await saveImg(fd.get('image'));
+    const chosenUrl = String(fd.get('imageUrl') || '').trim();
+    const headline = String(fd.get('headline') || '').trim();
+    const sub = String(fd.get('sub') || '').trim();
+    const bText = String(fd.get('button_text') || 'Explore Our Schools').trim();
+    const bLink = String(fd.get('button_link') || '/#schools').trim();
+    const bAltText = String(fd.get('button_alt_text') || 'Book a Campus Tour').trim();
+    const bAltLink = String(fd.get('button_alt_link') || '/contact#visit').trim();
+    const sort = Number(fd.get('sort')) || 0;
 
-  if (uploaded || chosenUrl) {
-    const img = uploaded || chosenUrl;
-    await q(
-      'UPDATE hero SET image=?, headline=?, sub=?, button_text=?, button_link=?, button_alt_text=?, button_alt_link=?, sort=? WHERE id=?' + (sc ? ' AND school_id=?' : ''),
-      sc ? [img, headline, sub, bText, bLink, bAltText, bAltLink, sort, id, sc] : [img, headline, sub, bText, bLink, bAltText, bAltLink, sort, id]
-    );
-  } else {
-    await q(
-      'UPDATE hero SET headline=?, sub=?, button_text=?, button_link=?, button_alt_text=?, button_alt_link=?, sort=? WHERE id=?' + (sc ? ' AND school_id=?' : ''),
-      sc ? [headline, sub, bText, bLink, bAltText, bAltLink, sort, id, sc] : [headline, sub, bText, bLink, bAltText, bAltLink, sort, id]
-    );
+    if (uploaded || chosenUrl) {
+      const img = uploaded || chosenUrl;
+      await q(
+        'UPDATE hero SET image=?, headline=?, sub=?, button_text=?, button_link=?, button_alt_text=?, button_alt_link=?, sort=? WHERE id=?' + (sc ? ' AND school_id=?' : ''),
+        sc ? [img, headline, sub, bText, bLink, bAltText, bAltLink, sort, id, sc] : [img, headline, sub, bText, bLink, bAltText, bAltLink, sort, id]
+      );
+    } else {
+      await q(
+        'UPDATE hero SET headline=?, sub=?, button_text=?, button_link=?, button_alt_text=?, button_alt_link=?, sort=? WHERE id=?' + (sc ? ' AND school_id=?' : ''),
+        sc ? [headline, sub, bText, bLink, bAltText, bAltLink, sort, id, sc] : [headline, sub, bText, bLink, bAltText, bAltLink, sort, id]
+      );
+    }
+    done();
+  } catch (err) {
+    console.error('[updateHero Action Error]:', err?.message);
   }
-  done();
 }
 
 export async function addPhotos(fd) {
-  const sc = await A(),
-    cat = CATS.includes(fd.get('category')) ? fd.get('category') : CATS[0];
-  for (const f of fd.getAll('image')) {
-    const img = await saveImg(f);
-    if (img) {
-      await q(
-        'INSERT INTO photos(school_id,category,image,caption) VALUES(?,?,?,?)',
-        [sid(fd, sc), cat, img, fd.get('caption') || '']
-      );
+  try {
+    const sc = await A(),
+      cat = CATS.includes(fd.get('category')) ? fd.get('category') : CATS[0];
+    for (const f of fd.getAll('image')) {
+      const img = await saveImg(f);
+      if (img) {
+        await q(
+          'INSERT INTO photos(school_id,category,image,caption) VALUES(?,?,?,?)',
+          [sid(fd, sc), cat, img, fd.get('caption') || '']
+        );
+      }
     }
+    done();
+  } catch (err) {
+    console.error('[addPhotos Action Error]:', err?.message);
   }
-  done();
 }
 
 export async function del(fd) {
@@ -815,32 +855,43 @@ export async function saveGlanceMetrics(fd) {
 }
 
 export async function addSchoolLifePhoto(fd) {
-  await A();
-  const sc = await A();
-  const category = String(fd.get('category') || 'Academic & STEM').trim();
-  const title = String(fd.get('title') || '').trim();
-  const caption = String(fd.get('caption') || '').trim();
-  const uploaded = await saveImg(fd.get('image_file'));
-  const chosenUrl = String(fd.get('image_url') || '').trim();
-  const image = uploaded || chosenUrl;
-  const schoolId = sid(fd, sc);
+  try {
+    await A();
+    const sc = await A();
+    const category = String(fd.get('category') || 'Academic & STEM').trim();
+    const title = String(fd.get('title') || '').trim();
+    const caption = String(fd.get('caption') || '').trim();
+    const uploaded = await saveImg(fd.get('image_file'));
+    const chosenUrl = String(fd.get('image_url') || '').trim();
+    const image = uploaded || chosenUrl || '/images/hero_science_lab.jpg';
+    const schoolId = sid(fd, sc);
 
-  if (!image) return;
+    if (!title && !caption && !uploaded && !chosenUrl) {
+      console.warn('[addSchoolLifePhoto Notice]: Missing title, caption, or image.');
+      return;
+    }
 
-  await q(
-    'INSERT INTO photos(school_id, category, image, title, caption) VALUES(?,?,?,?,?)',
-    [schoolId, category, image, title, caption]
-  );
-  done();
+    await q(
+      'INSERT INTO photos(school_id, category, image, title, caption) VALUES(?,?,?,?,?)',
+      [schoolId, category, image, title, caption]
+    );
+    done();
+  } catch (err) {
+    console.error('[addSchoolLifePhoto Action Error]:', err?.message);
+  }
 }
 
 export async function delPhoto(fd) {
-  await A();
-  const id = Number(fd.get('id'));
-  if (id) {
-    await q('DELETE FROM photos WHERE id=?', [id]);
+  try {
+    await A();
+    const id = Number(fd.get('id'));
+    if (id) {
+      await q('DELETE FROM photos WHERE id=?', [id]);
+    }
+    done();
+  } catch (err) {
+    console.error('[delPhoto Action Error]:', err?.message);
   }
-  done();
 }
 
 export async function saveAdminSmsSettings(fd) {
@@ -923,92 +974,108 @@ export async function deleteTestimonial(fd) {
 }
 
 export async function saveAlumniStory(fd) {
-  await A();
-  const id = Number(fd.get('id')) || 0;
-  const name = String(fd.get('name') || '').trim();
-  const gradYear = String(fd.get('grad_year') || '').trim();
-  const campusDivision = String(fd.get('campus_division') || 'Senior School').trim();
-  const currentRole = String(fd.get('current_role') || '').trim();
-  const universityOrCompany = String(fd.get('university_or_company') || '').trim();
-  const quote = String(fd.get('quote') || '').trim();
-  const story = String(fd.get('story') || '').trim();
-  const uploaded = await saveImg(fd.get('image_file'));
-  const chosenUrl = String(fd.get('image_url') || '').trim();
-  const imageUrl = uploaded || chosenUrl || '/images/girls_high_school3.webp';
-  let videoUrl = String(fd.get('video_url') || '').trim();
-  const videoFile = fd.get('video_file');
-  if (videoFile && videoFile.size > 0) {
-    const savedVid = await saveVideo(videoFile);
-    if (savedVid) videoUrl = savedVid;
-  }
-  const isFeatured = fd.get('is_featured') === '0' ? 0 : 1;
-  const sort = Number(fd.get('sort')) || 0;
+  try {
+    await A();
+    const id = Number(fd.get('id')) || 0;
+    const name = String(fd.get('name') || '').trim();
+    const gradYear = String(fd.get('grad_year') || '').trim();
+    const campusDivision = String(fd.get('campus_division') || 'Senior School').trim();
+    const currentRole = String(fd.get('current_role') || '').trim();
+    const universityOrCompany = String(fd.get('university_or_company') || '').trim();
+    const quote = String(fd.get('quote') || '').trim();
+    const story = String(fd.get('story') || '').trim();
+    const uploaded = await saveImg(fd.get('image_file'));
+    const chosenUrl = String(fd.get('image_url') || '').trim();
+    const imageUrl = uploaded || chosenUrl || '/images/girls_high_school3.webp';
+    let videoUrl = String(fd.get('video_url') || '').trim();
+    const videoFile = fd.get('video_file');
+    if (videoFile && typeof videoFile === 'object' && videoFile.size > 0) {
+      const savedVid = await saveVideo(videoFile);
+      if (savedVid) videoUrl = savedVid;
+    }
+    const isFeatured = fd.get('is_featured') === '0' ? 0 : 1;
+    const sort = Number(fd.get('sort')) || 0;
 
-  if (!name || !story) return;
+    if (!name || !story) return;
 
-  if (id > 0) {
-    await q(
-      'UPDATE alumni_stories SET name=?, grad_year=?, campus_division=?, current_role=?, university_or_company=?, quote=?, story=?, image_url=?, video_url=?, is_featured=?, sort=? WHERE id=?',
-      [name, gradYear, campusDivision, currentRole, universityOrCompany, quote, story, imageUrl, videoUrl, isFeatured, sort, id]
-    );
-  } else {
-    await q(
-      'INSERT INTO alumni_stories(name, grad_year, campus_division, current_role, university_or_company, quote, story, image_url, video_url, is_featured, sort) VALUES(?,?,?,?,?,?,?,?,?,?,?)',
-      [name, gradYear, campusDivision, currentRole, universityOrCompany, quote, story, imageUrl, videoUrl, isFeatured, sort]
-    );
+    if (id > 0) {
+      await q(
+        'UPDATE alumni_stories SET name=?, grad_year=?, campus_division=?, current_role=?, university_or_company=?, quote=?, story=?, image_url=?, video_url=?, is_featured=?, sort=? WHERE id=?',
+        [name, gradYear, campusDivision, currentRole, universityOrCompany, quote, story, imageUrl, videoUrl, isFeatured, sort, id]
+      );
+    } else {
+      await q(
+        'INSERT INTO alumni_stories(name, grad_year, campus_division, current_role, university_or_company, quote, story, image_url, video_url, is_featured, sort) VALUES(?,?,?,?,?,?,?,?,?,?,?)',
+        [name, gradYear, campusDivision, currentRole, universityOrCompany, quote, story, imageUrl, videoUrl, isFeatured, sort]
+      );
+    }
+    done();
+  } catch (err) {
+    console.error('[saveAlumniStory Action Error]:', err?.message);
   }
-  done();
 }
 
 export async function deleteAlumniStory(fd) {
-  await A();
-  const id = Number(fd.get('id'));
-  if (id) {
-    await q('DELETE FROM alumni_stories WHERE id=?', [id]);
+  try {
+    await A();
+    const id = Number(fd.get('id'));
+    if (id) {
+      await q('DELETE FROM alumni_stories WHERE id=?', [id]);
+    }
+    done();
+  } catch (err) {
+    console.error('[deleteAlumniStory Action Error]:', err?.message);
   }
-  done();
 }
 
 export async function saveLearnerTestimonial(fd) {
-  await A();
-  const sc = await A();
-  const id = Number(fd.get('id')) || 0;
-  const name = String(fd.get('name') || '').trim();
-  const gradeOrClass = String(fd.get('grade_or_class') || '').trim();
-  const schoolId = sid(fd, sc);
-  const schoolName = String(fd.get('school_name') || 'All Campuses').trim();
-  const comment = String(fd.get('comment') || '').trim();
-  const uploaded = await saveImg(fd.get('image_file'));
-  const chosenUrl = String(fd.get('image_url') || '').trim();
-  const photoUrl = uploaded || chosenUrl || '/images/girls_high_school3.webp';
-  const favoriteSubject = String(fd.get('favorite_subject') || '').trim();
-  const futureAspiration = String(fd.get('future_aspiration') || '').trim();
-  const sort = Number(fd.get('sort')) || 0;
-  const isPublished = fd.get('is_published') === '0' ? 0 : 1;
+  try {
+    await A();
+    const sc = await A();
+    const id = Number(fd.get('id')) || 0;
+    const name = String(fd.get('name') || '').trim();
+    const gradeOrClass = String(fd.get('grade_or_class') || '').trim();
+    const schoolId = sid(fd, sc);
+    const schoolName = String(fd.get('school_name') || 'All Campuses').trim();
+    const comment = String(fd.get('comment') || '').trim();
+    const uploaded = await saveImg(fd.get('image_file'));
+    const chosenUrl = String(fd.get('image_url') || '').trim();
+    const photoUrl = uploaded || chosenUrl || '/images/girls_high_school3.webp';
+    const favoriteSubject = String(fd.get('favorite_subject') || '').trim();
+    const futureAspiration = String(fd.get('future_aspiration') || '').trim();
+    const sort = Number(fd.get('sort')) || 0;
+    const isPublished = fd.get('is_published') === '0' ? 0 : 1;
 
-  if (!name || !comment) return;
+    if (!name || !comment) return;
 
-  if (id > 0) {
-    await q(
-      'UPDATE learner_testimonials SET name=?, grade_or_class=?, school_id=?, school_name=?, comment=?, photo_url=?, favorite_subject=?, future_aspiration=?, sort=?, is_published=? WHERE id=?',
-      [name, gradeOrClass, schoolId, schoolName, comment, photoUrl, favoriteSubject, futureAspiration, sort, isPublished, id]
-    );
-  } else {
-    await q(
-      'INSERT INTO learner_testimonials(name, grade_or_class, school_id, school_name, comment, photo_url, favorite_subject, future_aspiration, sort, is_published) VALUES(?,?,?,?,?,?,?,?,?,?)',
-      [name, gradeOrClass, schoolId, schoolName, comment, photoUrl, favoriteSubject, futureAspiration, sort, isPublished]
-    );
+    if (id > 0) {
+      await q(
+        'UPDATE learner_testimonials SET name=?, grade_or_class=?, school_id=?, school_name=?, comment=?, photo_url=?, favorite_subject=?, future_aspiration=?, sort=?, is_published=? WHERE id=?',
+        [name, gradeOrClass, schoolId, schoolName, comment, photoUrl, favoriteSubject, futureAspiration, sort, isPublished, id]
+      );
+    } else {
+      await q(
+        'INSERT INTO learner_testimonials(name, grade_or_class, school_id, school_name, comment, photo_url, favorite_subject, future_aspiration, sort, is_published) VALUES(?,?,?,?,?,?,?,?,?,?)',
+        [name, gradeOrClass, schoolId, schoolName, comment, photoUrl, favoriteSubject, futureAspiration, sort, isPublished]
+      );
+    }
+    done();
+  } catch (err) {
+    console.error('[saveLearnerTestimonial Action Error]:', err?.message);
   }
-  done();
 }
 
 export async function deleteLearnerTestimonial(fd) {
-  await A();
-  const id = Number(fd.get('id'));
-  if (id) {
-    await q('DELETE FROM learner_testimonials WHERE id=?', [id]);
+  try {
+    await A();
+    const id = Number(fd.get('id'));
+    if (id) {
+      await q('DELETE FROM learner_testimonials WHERE id=?', [id]);
+    }
+    done();
+  } catch (err) {
+    console.error('[deleteLearnerTestimonial Action Error]:', err?.message);
   }
-  done();
 }
 
 export async function saveEvent(fd) {

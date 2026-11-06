@@ -127,14 +127,16 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
       <div className="wrapper">
         <BackButton fallback="/" label="Back to Website" current="Staff & Admin Portal Login" />
 
-        <div style={{
+        <div className="login-panel-card" style={{
           maxWidth: '520px',
+          width: '100%',
           margin: '25px auto 40px',
           background: '#ffffff',
           borderRadius: '12px',
           boxShadow: '0 15px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04)',
           border: '1px solid #e2e8f0',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          boxSizing: 'border-box'
         }}>
           {/* LUXURY TOP HEADER: Synchronized Crest Emblem (No Artificial Background Box) */}
           <div style={{
@@ -238,7 +240,7 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
 
           {/* TAB 1: DIRECT CREDENTIALS SIGN-IN (USERNAME & PASSWORD) */}
           {activeTab === 'login' && (
-            <div style={{ padding: '26px 28px 30px' }}>
+            <div className="login-panel-body" style={{ padding: '26px 28px 30px' }}>
               {loginError && (
                 <div style={{
                   background: '#fef2f2',
@@ -420,7 +422,7 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
 
           {/* TAB 2: OTP PASSWORD CHANGE (RESTRICTED TO REGISTERED PORTAL CONTACTS) */}
           {activeTab === 'otp' && (
-            <div style={{ padding: '24px 28px 30px' }}>
+            <div className="login-panel-body" style={{ padding: '24px 28px 30px' }}>
               <div style={{
                 background: '#f8fafc',
                 border: '1px solid #e2e8f0',
@@ -487,7 +489,7 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
                     <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#1e293b', marginBottom: '6px' }}>
                       Choose OTP Delivery Channel *
                     </label>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                    <div className="radio-grid-two-col">
                       <label style={{
                         display: 'flex',
                         alignItems: 'center',

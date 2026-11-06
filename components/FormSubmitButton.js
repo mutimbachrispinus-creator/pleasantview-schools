@@ -16,15 +16,29 @@ export default function FormSubmitButton({
   const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
+    let timer;
+    const handleError = () => {
+      setShowSuccess(false);
+      setWasPending(false);
+    };
+
+    window.addEventListener('error', handleError);
+    window.addEventListener('unhandledrejection', handleError);
+
     if (pending) {
       setWasPending(true);
       setShowSuccess(false);
     } else if (wasPending) {
       setWasPending(false);
       setShowSuccess(true);
-      const timer = setTimeout(() => setShowSuccess(false), 5000);
-      return () => clearTimeout(timer);
+      timer = setTimeout(() => setShowSuccess(false), 3500);
     }
+
+    return () => {
+      window.removeEventListener('error', handleError);
+      window.removeEventListener('unhandledrejection', handleError);
+      if (timer) clearTimeout(timer);
+    };
   }, [pending, wasPending]);
 
   const isGold = variant === 'gold' || className.includes('button-gold');

@@ -5,6 +5,7 @@ import AdminPasswordChange from '@/components/AdminPasswordChange';
 import DeleteButton from '@/components/DeleteButton';
 import AdminSyncNotice from '@/components/AdminSyncNotice';
 import FormSubmitButton from '@/components/FormSubmitButton';
+import MediaFileInput from '@/components/MediaFileInput';
 import InlineActionButton from '@/components/InlineActionButton';
 import SignOutButton from '@/components/SignOutButton';
 import TelecomGatewayTester from '@/components/TelecomGatewayTester';
@@ -167,7 +168,7 @@ export default async function Panel({ scope, edit }) {
           <AdminSyncNotice />
           <BackButton fallback="/" label="Back to Website" current="Staff & Admin Console" />
           {/* HEADER BAR */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
+          <div className="admin-header-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
             <div>
               <div className="admin-badge"><i className="fa-solid fa-shield-halved" /> ACTIVE ADMIN SESSION</div>
               <h1 style={{ fontSize: '28px', color: 'var(--primary-navy)', margin: '4px 0 0' }}>
@@ -199,7 +200,7 @@ export default async function Panel({ scope, edit }) {
           </div>
 
           {/* QUICK NAV / JUMP BAR */}
-          <div style={{ background: '#ffffff', padding: '12px 18px', borderRadius: '6px', border: '1px solid #dde2ec', marginBottom: '30px', display: 'flex', gap: '10px', flexWrap: 'wrap', fontSize: '13px', fontWeight: 600 }}>
+          <div className="admin-jump-bar" style={{ background: '#ffffff', padding: '12px 18px', borderRadius: '6px', border: '1px solid #dde2ec', marginBottom: '30px', display: 'flex', gap: '10px', flexWrap: 'wrap', fontSize: '13px', fontWeight: 600 }}>
             <span style={{ color: '#888', alignSelf: 'center' }}>Jump To:</span>
             <a href="#webmail" style={{ color: 'var(--primary-red)', fontWeight: 800 }}>📬 Webmail Hub</a>
             <a href="#campuses" style={{ color: 'var(--primary-navy)' }}>🏫 Campuses</a>
@@ -226,7 +227,7 @@ export default async function Panel({ scope, edit }) {
 
           {/* 1. CAMPUSES & CATEGORIES DATA (POPULATION, RATIOS, LEVELS, LOCATION, BRANCH ADMIN) */}
           {!scope && (
-            <section id="campuses" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+            <section id="campuses" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
                 <div>
                   <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
@@ -381,7 +382,7 @@ export default async function Panel({ scope, edit }) {
 
           {/* 1B. STAFF & ADMINISTRATOR ACCOUNTS (CREATE & MANAGE ADMINS) */}
           {!scope && (
-            <section id="admins" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+            <section id="admins" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
                 <div>
                   <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
@@ -505,7 +506,7 @@ export default async function Panel({ scope, edit }) {
           )}
 
           {/* 1B-2. PASSWORD CHANGE WITH AUTO-GENERATED OTP */}
-          <section id="security" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+          <section id="security" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
             <h2 style={{ fontSize: '22px', margin: '0 0 10px', color: 'var(--primary-navy)' }}>
               <i className="fa-solid fa-key" style={{ color: 'var(--primary-red)', marginRight: '8px' }} />
               Administrator Security &amp; Password Management (OTP Verified)
@@ -520,7 +521,7 @@ export default async function Panel({ scope, edit }) {
           </section>
 
           {/* 1C-1. ACADEMIC EXAMINATION RESULTS (NATIONAL & IN-SCHOOL) */}
-          <section id="exams" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+          <section id="exams" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
               <div>
                 <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
@@ -676,7 +677,7 @@ export default async function Panel({ scope, edit }) {
           </section>
 
           {/* 1C-2. PARENT & GUARDIAN TESTIMONIALS (APPROVAL QUEUE) */}
-          <section id="parent-reviews" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+          <section id="parent-reviews" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
               <div>
                 <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
@@ -792,7 +793,7 @@ export default async function Panel({ scope, edit }) {
           </section>
 
           {/* 1C-3. EXISTING LEARNERS / STUDENT BODY VOICES & PHOTOS */}
-          <section id="learner-voices" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+          <section id="learner-voices" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
               <div>
                 <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
@@ -862,10 +863,14 @@ export default async function Panel({ scope, edit }) {
                     ))}
                   </select>
                 </div>
-                <div className="form-group">
-                  <label>Upload Scholar Photo</label>
-                  <input name="image_file" type="file" accept="image/*" />
-                </div>
+                <MediaFileInput
+                  name="image_file"
+                  accept="image/*"
+                  type="image"
+                  maxSizeMB={15}
+                  label="Upload Scholar Photo (Max 15MB)"
+                  helpText="Supports JPG, PNG, WEBP, AVIF with instant preview"
+                />
                 <div className="form-group">
                   <label>Or Image URL Path</label>
                   <input name="image_url" placeholder="/images/girls_high_school3.webp" />
@@ -895,7 +900,7 @@ export default async function Panel({ scope, edit }) {
           </section>
 
           {/* 1C-4. ALUMNI SUCCESS STORIES (PHOTOS & VIDEOS <= 10MB) */}
-          <section id="alumni" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+          <section id="alumni" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
               <div>
                 <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
@@ -974,21 +979,22 @@ export default async function Panel({ scope, edit }) {
                   <label>University / Company</label>
                   <input name="university_or_company" placeholder="e.g. University of Nairobi / Safaricom" />
                 </div>
-                <div className="form-group">
-                  <label>Photo File Upload</label>
-                  <input name="image_file" type="file" accept="image/*" />
-                </div>
-                <div className="form-group">
-                  <label>Video File Upload (Strict Max 10MB)</label>
-                  <input
-                    name="video_file"
-                    type="file"
-                    accept="video/mp4,video/webm,video/ogg"
-                  />
-                  <small style={{ color: '#777', fontSize: '11px', display: 'block', marginTop: '3px' }}>
-                    ⚡ Max file size: 10MB. For larger videos, paste a YouTube embed link below.
-                  </small>
-                </div>
+                <MediaFileInput
+                  name="image_file"
+                  accept="image/*"
+                  type="image"
+                  maxSizeMB={15}
+                  label="Upload Alumni Photo (Max 15MB)"
+                  helpText="Supports JPG, PNG, WEBP, AVIF with instant preview"
+                />
+                <MediaFileInput
+                  name="video_file"
+                  accept="video/mp4,video/webm,video/ogg,video/quicktime"
+                  type="video"
+                  maxSizeMB={15}
+                  label="Or Direct Alumni Video Upload (Max 15MB)"
+                  helpText="⚡ Max 15MB (MP4/WebM/OGG/MOV). For larger videos, paste a YouTube link below."
+                />
                 <div className="form-group">
                   <label>Or Video / YouTube URL</label>
                   <input name="video_url" placeholder="https://www.youtube.com/watch?v=..." />
@@ -1014,7 +1020,7 @@ export default async function Panel({ scope, edit }) {
           </section>
 
           {/* 1C-5. CALENDAR EVENTS & ANNOUNCEMENTS SET BY ADMIN */}
-          <section id="events" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+          <section id="events" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
               <div>
                 <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
@@ -1163,7 +1169,7 @@ export default async function Panel({ scope, edit }) {
 
           {/* 1C. EDITABLE "AT A GLANCE" DISTINCTION NUMBERS (HOMEPAGE METRICS) */}
           {!scope && (
-            <section id="metrics" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+            <section id="metrics" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
                 <div>
                   <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
@@ -1213,7 +1219,7 @@ export default async function Panel({ scope, edit }) {
 
           {/* 1D. SCHOOL LIFE PHOTO GALLERY MANAGER */}
           {!scope && (
-            <section id="gallery" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+            <section id="gallery" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
                 <div>
                   <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
@@ -1288,10 +1294,14 @@ export default async function Panel({ scope, edit }) {
                       ))}
                     </select>
                   </div>
-                  <div className="form-group">
-                    <label>Upload Image File</label>
-                    <input type="file" name="image_file" accept="image/*" />
-                  </div>
+                  <MediaFileInput
+                    name="image_file"
+                    accept="image/*"
+                    type="image"
+                    maxSizeMB={15}
+                    label="Upload Image File (Max 15MB)"
+                    helpText="Supports JPG, PNG, WEBP, GIF, AVIF up to 15MB with live preview"
+                  />
                   <div className="form-group">
                     <label>Or Paste Image URL</label>
                     <input name="image_url" placeholder="e.g. /images/hero_science_lab.jpg" />
@@ -1309,7 +1319,7 @@ export default async function Panel({ scope, edit }) {
           )}
 
           {/* 2. EDIT DETAILS (GROUP OR SPECIFIC SCHOOL) */}
-          <section id="editor" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+          <section id="editor" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
               <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
                 <i className="fa-solid fa-pen-to-square" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
@@ -1347,7 +1357,7 @@ export default async function Panel({ scope, edit }) {
           </section>
 
           {/* 3. LEADERSHIP & EXECUTIVE MESSAGES (DIRECTOR, HOI, COORDINATOR) */}
-          <section id="leadership" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+          <section id="leadership" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
               <div>
                 <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
@@ -1433,10 +1443,14 @@ export default async function Panel({ scope, edit }) {
                   <label>Full Message Body *</label>
                   <textarea name="message" rows={4} placeholder="Write the leadership message, welcome statement, or academic address..." required />
                 </div>
-                <div className="form-group">
-                  <label>Leader Photo Upload</label>
-                  <input type="file" name="image_file" accept="image/*" />
-                </div>
+                <MediaFileInput
+                  name="image_file"
+                  accept="image/*"
+                  type="image"
+                  maxSizeMB={15}
+                  label="Leader Photo Upload (Max 15MB)"
+                  helpText="Supports JPG, PNG, WEBP with live preview"
+                />
                 <div className="form-group">
                   <label>Or Preset / Photo URL</label>
                   <input name="image_url" placeholder="/images/banner_3_a.webp" defaultValue="/images/banner_3_a.webp" />
@@ -1457,7 +1471,7 @@ export default async function Panel({ scope, edit }) {
           </section>
 
           {/* 4. QUICK LINKS MANAGER */}
-          <section id="quicklinks" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+          <section id="quicklinks" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
               <div>
                 <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
@@ -1560,7 +1574,7 @@ export default async function Panel({ scope, edit }) {
           </section>
 
           {/* 5. VIDEOS & MEDIA SHOWCASE */}
-          <section id="videos" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+          <section id="videos" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
               <div>
                 <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
@@ -1615,17 +1629,14 @@ export default async function Panel({ scope, edit }) {
                   <label>YouTube Link or URL</label>
                   <input name="youtube_url" placeholder="https://www.youtube.com/watch?v=... (or upload file below)" />
                 </div>
-                <div className="form-group">
-                  <label>Or Direct Video Upload (Strict Max 10MB)</label>
-                  <input
-                    type="file"
-                    name="video_file"
-                    accept="video/mp4,video/webm,video/ogg"
-                  />
-                  <small style={{ color: '#777', fontSize: '11px', display: 'block', marginTop: '2px' }}>
-                    ⚡ Strict max size: 10MB. YouTube / Vimeo links recommended for longer HD videos.
-                  </small>
-                </div>
+                <MediaFileInput
+                  name="video_file"
+                  accept="video/mp4,video/webm,video/ogg,video/quicktime"
+                  type="video"
+                  maxSizeMB={15}
+                  label="Or Direct Video Upload (Max 15MB)"
+                  helpText="⚡ Supports MP4, WebM, OGG, QuickTime up to 15MB. For longer HD videos, paste a YouTube link above."
+                />
                 <div className="form-group">
                   <label>Category</label>
                   <select name="category">
@@ -1636,10 +1647,14 @@ export default async function Panel({ scope, edit }) {
                     <option value="Arts & Choir">Arts &amp; Choir</option>
                   </select>
                 </div>
-                <div className="form-group">
-                  <label>Video Thumbnail Upload</label>
-                  <input type="file" name="thumbnail_file" accept="image/*" />
-                </div>
+                <MediaFileInput
+                  name="thumbnail_file"
+                  accept="image/*"
+                  type="image"
+                  maxSizeMB={15}
+                  label="Video Thumbnail Upload (Max 15MB)"
+                  helpText="Custom cover image for the video player"
+                />
                 <div className="form-group">
                   <label>Or Thumbnail URL</label>
                   <input name="thumbnail_url" placeholder="/images/hero_science_lab.jpg" defaultValue="/images/hero_science_lab.jpg" />
@@ -1660,7 +1675,7 @@ export default async function Panel({ scope, edit }) {
           </section>
 
           {/* 6. CAREERS & JOB POSTINGS (APPLICATIONS REVIEW) */}
-          <section id="careers" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+          <section id="careers" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
               <div>
                 <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
@@ -1846,7 +1861,7 @@ export default async function Panel({ scope, edit }) {
           </section>
 
           {/* 7. HERO DYNAMIC PICTURES & SLIDERS */}
-          <section id="hero" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+          <section id="hero" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
               <div>
                 <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
@@ -1893,10 +1908,14 @@ export default async function Panel({ scope, edit }) {
                   <label>Slide Subtext *</label>
                   <input name="sub" placeholder="e.g. Outstanding KPSEA (EE) and KJSEA (ME1) distinction, with maiden KCSE B+ university transition" required />
                 </div>
-                <div className="form-group">
-                  <label>Slide Photo Upload</label>
-                  <input type="file" name="image" accept="image/*" />
-                </div>
+                <MediaFileInput
+                  name="image"
+                  accept="image/*"
+                  type="image"
+                  maxSizeMB={15}
+                  label="Slide Photo Upload (Max 15MB)"
+                  helpText="High-resolution banner photo"
+                />
                 <div className="form-group">
                   <label>Or Pick Campus Preset Photo</label>
                   <select name="imageUrl" defaultValue="/images/banner_1_a.webp">
@@ -1941,7 +1960,7 @@ export default async function Panel({ scope, edit }) {
           </section>
 
           {/* 8. CAMPUS VISITS & PARENT ENQUIRIES */}
-          <section id="visits" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+          <section id="visits" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
             <h2 style={{ fontSize: '22px', margin: '0 0 15px', color: 'var(--primary-navy)' }}>
               <i className="fa-regular fa-calendar-check" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
               Campus Visit Bookings ({vis.length})
@@ -2051,7 +2070,7 @@ export default async function Panel({ scope, edit }) {
           </section>
 
           {/* 9. NOTIFICATION GATEWAYS & INBOUND COMMUNICATIONS HUB */}
-          <section id="webmail" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '25px' }}>
+          <section id="webmail" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
             <h2 style={{ fontSize: '22px', margin: '0 0 10px', color: 'var(--primary-navy)' }}>
               <i className="fa-solid fa-envelope-open-text" style={{ color: 'var(--primary-red)', marginRight: '8px' }} />
               Pleasant View Webmail Hub (Resend Inbound &amp; Outbound Console)

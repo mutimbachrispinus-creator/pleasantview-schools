@@ -864,14 +864,15 @@ export default async function Home({ searchParams }) {
           </div>
 
           {/* PARENT COMMENT SUBMISSION FORM */}
-          <div className="reveal-on-scroll" style={{
+          <div className="reveal-on-scroll entry-panel-card" style={{
             marginTop: '50px',
             background: '#ffffff',
             borderRadius: '8px',
-            padding: '35px',
             boxShadow: '0 6px 25px rgba(0,0,0,0.06)',
             borderTop: '4px solid var(--gold-accent)',
             maxWidth: '850px',
+            width: '100%',
+            boxSizing: 'border-box',
             margin: '50px auto 0'
           }}>
             <div style={{ textAlign: 'center', marginBottom: '24px' }}>

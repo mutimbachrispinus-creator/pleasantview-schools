@@ -2,9 +2,29 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
+function getEnv() {
+  const env = { ...process.env, OPENNEXT_CLOUDFLARE_RUNNING: '1' };
+  const [major] = process.versions.node.split('.').map(Number);
+  if (major < 22) {
+    const nvmDir = path.join(process.env.HOME || '', '.nvm/versions/node');
+    if (fs.existsSync(nvmDir)) {
+      const versions = fs.readdirSync(nvmDir)
+        .filter(v => parseInt(v.replace(/^v/, ''), 10) >= 22)
+        .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
+      if (versions.length > 0) {
+        const binDir = path.join(nvmDir, versions[0], 'bin');
+        if (fs.existsSync(binDir)) {
+          env.PATH = `${binDir}:${env.PATH || ''}`;
+        }
+      }
+    }
+  }
+  return env;
+}
+
 function run(cmd) {
   console.log(`\n▶ ${cmd}`);
-  execSync(cmd, { stdio: 'inherit', env: { ...process.env, OPENNEXT_CLOUDFLARE_RUNNING: '1' } });
+  execSync(cmd, { stdio: 'inherit', env: getEnv() });
 }
 
 console.log('🚀 [Cloudflare Pages] Preparing OpenNext deployment bundle...');

@@ -219,12 +219,15 @@ export default async function CareersPage({ searchParams }) {
         </div>
 
         {/* GENERAL SPECULATIVE INQUIRY CARD */}
-        <div style={{
+        <div className="entry-panel-card" style={{
           background: '#ffffff',
           border: '1px solid #dde2ec',
           borderRadius: '6px',
-          padding: '35px',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.04)'
+          boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+          width: '100%',
+          maxWidth: '100%',
+          boxSizing: 'border-box',
+          margin: '0 auto'
         }}>
           <h4 style={{ fontSize: '20px', marginBottom: '8px', color: 'var(--primary-navy)' }}>
             Can&apos;t Find Your Role? Submit a Speculative Application

@@ -396,7 +396,7 @@ export default function AdminPasswordChange({
                 <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#1e293b', marginBottom: '6px' }}>
                   Choose OTP Delivery Channel
                 </label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div className="radio-grid-two-col">
                   <label style={{
                     display: 'flex',
                     alignItems: 'center',

@@ -83,14 +83,15 @@ export default async function ContactPage({ searchParams }) {
           {/* COLUMN 1: INTERACTIVE BOOK CAMPUS TOUR & ENQUIRY FORMS */}
           <div className="contact-main-column">
             {/* BOOK A CAMPUS TOUR CARD */}
-            <div id="visit" className="custom-form" style={{
+            <div id="visit" className="custom-form contact-entry-panel" style={{
               background: '#ffffff',
-              padding: '35px',
-              borderRadius: '6px',
+              borderRadius: '8px',
               boxShadow: '0 8px 30px rgba(0,0,0,0.06)',
               borderTop: '4px solid var(--gold-accent)',
               marginBottom: '40px',
-              maxWidth: '100%'
+              width: '100%',
+              maxWidth: '100%',
+              margin: '0 auto 40px auto'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                 <i className="fa-solid fa-calendar-check" style={{ color: 'var(--gold-accent)', fontSize: '22px' }} />
@@ -116,7 +117,7 @@ export default async function ContactPage({ searchParams }) {
                   </select>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                <div className="form-two-col">
                   <div className="form-group">
                     <label>Preferred Date *</label>
                     <input name="visit_date" type="date" required style={{ padding: '12px', fontSize: '14px', width: '100%' }} />
@@ -132,7 +133,7 @@ export default async function ContactPage({ searchParams }) {
                   <input name="name" placeholder="e.g. John Kamau" required style={{ padding: '12px', fontSize: '14px' }} />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                <div className="form-two-col">
                   <div className="form-group">
                     <label>Phone Number (+254...) *</label>
                     <input name="phone" placeholder="+254 711 000 000" required style={{ padding: '12px', fontSize: '14px' }} />
@@ -157,12 +158,14 @@ export default async function ContactPage({ searchParams }) {
             </div>
 
             {/* GENERAL ADMISSIONS & ENQUIRIES CARD */}
-            <div id="enquire" className="custom-form" style={{
+            <div id="enquire" className="custom-form contact-entry-panel" style={{
               background: '#ffffff',
-              padding: '35px',
-              borderRadius: '6px',
+              borderRadius: '8px',
               boxShadow: '0 8px 30px rgba(0,0,0,0.06)',
-              borderTop: '4px solid var(--primary-navy)'
+              borderTop: '4px solid var(--primary-navy)',
+              width: '100%',
+              maxWidth: '100%',
+              margin: '0 auto 40px auto'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                 <i className="fa-solid fa-envelope" style={{ color: 'var(--primary-navy)', fontSize: '22px' }} />
@@ -181,7 +184,7 @@ export default async function ContactPage({ searchParams }) {
                   <input name="name" placeholder="Parent / Guardian Name" required style={{ padding: '12px', fontSize: '14px' }} />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                <div className="form-two-col">
                   <div className="form-group">
                     <label>Phone Number (+254...) *</label>
                     <input name="phone" placeholder="+254 711 000 000" required style={{ padding: '12px', fontSize: '14px' }} />
@@ -212,13 +215,14 @@ export default async function ContactPage({ searchParams }) {
             </div>
 
             {/* DIRECT SMS TO ADMIN DESK (NO AUTO-REPLY) */}
-            <div id="admin-sms" className="custom-form" style={{
+            <div id="admin-sms" className="custom-form contact-entry-panel" style={{
               background: '#ffffff',
-              padding: '35px',
-              borderRadius: '6px',
+              borderRadius: '8px',
               boxShadow: '0 8px 30px rgba(0,0,0,0.06)',
               borderTop: '4px solid #28a745',
-              marginTop: '40px'
+              width: '100%',
+              maxWidth: '100%',
+              margin: '40px auto 0 auto'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                 <i className="fa-solid fa-comment-sms" style={{ color: '#28a745', fontSize: '22px' }} />

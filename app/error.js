@@ -38,13 +38,14 @@ export default function ErrorBoundary({ error, reset }) {
           const regs = await navigator.serviceWorker.getRegistrations();
           await Promise.all(regs.map(r => r.unregister()));
         }
-        // Keep session intact - do not wipe authentication cookies
       } catch {}
       window.location.href = window.location.pathname.split('?')[0] + '?_nocache=' + Date.now();
     } else {
       reset();
     }
   };
+
+  const isUnexpectedServerResponse = error?.message?.includes('unexpected response was received');
 
   return (
     <div style={{
@@ -56,15 +57,17 @@ export default function ErrorBoundary({ error, reset }) {
       background: 'var(--soft-bg, #f4f5f7)',
       fontFamily: 'sans-serif'
     }}>
-      <div style={{
-        maxWidth: '520px',
+      <div className="entry-panel-card" style={{
+        maxWidth: '540px',
         width: '100%',
         background: '#ffffff',
         borderRadius: '10px',
         padding: '35px',
         textAlign: 'center',
         boxShadow: '0 12px 35px rgba(0,0,0,0.08)',
-        borderTop: '5px solid #8B1E2D'
+        borderTop: '5px solid #8B1E2D',
+        boxSizing: 'border-box',
+        margin: '0 auto'
       }}>
         <div style={{
           width: '64px',
@@ -81,17 +84,19 @@ export default function ErrorBoundary({ error, reset }) {
           ⚠️
         </div>
         <h2 style={{ fontSize: '22px', color: '#1E232A', marginBottom: '8px' }}>
-          Notice &bull; Updating Page
+          {isUnexpectedServerResponse ? 'Portal Operation Notice' : 'Notice • Updating Page'}
         </h2>
         <p style={{ fontSize: '14.5px', color: '#666', lineHeight: 1.6, marginBottom: '15px' }}>
-          We detected an interface update. Please tap below to refresh the page or return to the main portal.
+          {isUnexpectedServerResponse
+            ? 'The server was unable to complete this request (the uploaded media may have exceeded network limits or the server timed out). Please verify the file size or try again.'
+            : 'We detected an interface update. Please tap below to refresh the page or return to the main portal.'}
         </p>
         {error?.message && (
           <div style={{
             background: '#fef2f2',
             color: '#991b1b',
             border: '1px solid #fecaca',
-            padding: '8px 12px',
+            padding: '10px 14px',
             borderRadius: '6px',
             fontSize: '12px',
             fontFamily: 'monospace',
@@ -136,7 +141,7 @@ export default function ErrorBoundary({ error, reset }) {
             Try Again
           </button>
           <Link
-            href="/"
+            href="/staff-portal"
             style={{
               background: '#1E232A',
               color: '#ffffff',
@@ -148,7 +153,7 @@ export default function ErrorBoundary({ error, reset }) {
               display: 'inline-block'
             }}
           >
-            Home
+            Staff Portal
           </Link>
         </div>
       </div>

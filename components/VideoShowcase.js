@@ -6,16 +6,25 @@ export default function VideoShowcase({ videos = [] }) {
 
   if (!videos || videos.length === 0) return null;
 
-  // Convert standard YouTube watch/share URLs to embed URLs
+  // Convert standard YouTube watch/share/shorts URLs to embed URLs
   const getEmbedUrl = (url) => {
     if (!url) return '';
     if (url.includes('embed/')) return url;
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const regExp = /^.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
     const match = url.match(regExp);
-    if (match && match[2].length === 11) {
-      return `https://www.youtube.com/embed/${match[2]}?autoplay=1&rel=0`;
+    if (match && match[1] && match[1].length === 11) {
+      return `https://www.youtube.com/embed/${match[1]}?autoplay=1&rel=0`;
+    }
+    const vimeoMatch = url.match(/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/[^\/]*\/videos\/|album\/\d+\/video\/|)(\d+)(?:$|\/|\?)/);
+    if (vimeoMatch && vimeoMatch[1]) {
+      return `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1`;
     }
     return url;
+  };
+
+  const isDirectVideo = (url) => {
+    if (!url) return false;
+    return url.startsWith('/img/') || /\.(mp4|webm|ogg|mov)($|\?)/i.test(url);
   };
 
   return (
@@ -191,13 +200,23 @@ export default function VideoShowcase({ videos = [] }) {
               </div>
 
               <div style={{ position: 'relative', aspectRatio: '16 / 9', background: '#000' }}>
-                <iframe
-                  src={getEmbedUrl(activeVideo.youtube_url)}
-                  title={activeVideo.title}
-                  style={{ width: '100%', height: '100%', border: 0 }}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+                {isDirectVideo(activeVideo.youtube_url) ? (
+                  <video
+                    src={activeVideo.youtube_url}
+                    controls
+                    autoPlay
+                    playsInline
+                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                  />
+                ) : (
+                  <iframe
+                    src={getEmbedUrl(activeVideo.youtube_url)}
+                    title={activeVideo.title}
+                    style={{ width: '100%', height: '100%', border: 0 }}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                )}
               </div>
 
               <div style={{ padding: '20px 24px' }}>

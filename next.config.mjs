@@ -2,7 +2,7 @@
 const nextConfig = {
   serverExternalPackages: ['africastalking'],
   experimental: {
-    serverActions: { bodySizeLimit: '12mb' }
+    serverActions: { bodySizeLimit: '30mb' }
   },
   webpack: (config, { dev }) => {
     if (!dev) {

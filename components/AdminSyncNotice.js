@@ -1,41 +1,54 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function AdminSyncNotice() {
   const [notice, setNotice] = useState(null);
+  const activeSubmissionRef = useRef(false);
 
   useEffect(() => {
-    // Listen to all form submit events within the admin panel
+    let hideTimer;
+
     const handleFormSubmit = (e) => {
       const form = e.target;
-      if (!form || form.tagName.toLowerCase() !== 'form') return;
+      if (!form || form.tagName?.toLowerCase() !== 'form') return;
 
-      // When form is submitted, show saving notice
+      activeSubmissionRef.current = true;
+      if (hideTimer) clearTimeout(hideTimer);
+
       setNotice({
         type: 'saving',
-        text: 'Saving changes and synchronizing with public website...'
+        text: 'Saving changes and synchronizing live with public website...'
       });
+    };
 
-      // After action finishes (or page settles), confirm live sync
-      const timer = setTimeout(() => {
+    const handleError = () => {
+      if (activeSubmissionRef.current) {
+        activeSubmissionRef.current = false;
         setNotice({
-          type: 'success',
-          text: 'Changes saved successfully and synchronized live across the website!'
+          type: 'error',
+          text: 'Upload or operation could not be completed. Please ensure media is under 15MB and try again.'
         });
-        const hideTimer = setTimeout(() => setNotice(null), 5000);
-        return () => clearTimeout(hideTimer);
-      }, 1200);
-
-      return () => clearTimeout(timer);
+        hideTimer = setTimeout(() => setNotice(null), 7000);
+      }
     };
 
     window.addEventListener('submit', handleFormSubmit);
-    return () => window.removeEventListener('submit', handleFormSubmit);
+    window.addEventListener('error', handleError);
+    window.addEventListener('unhandledrejection', handleError);
+
+    return () => {
+      window.removeEventListener('submit', handleFormSubmit);
+      window.removeEventListener('error', handleError);
+      window.removeEventListener('unhandledrejection', handleError);
+      if (hideTimer) clearTimeout(hideTimer);
+    };
   }, []);
 
   if (!notice) return null;
 
   const isSuccess = notice.type === 'success';
+  const isSaving = notice.type === 'saving';
+  const isError = notice.type === 'error';
 
   return (
     <div style={{
@@ -43,7 +56,7 @@ export default function AdminSyncNotice() {
       top: '20px',
       right: '20px',
       zIndex: 99999,
-      background: isSuccess ? '#166534' : '#1E232A',
+      background: isSuccess ? '#166534' : isError ? '#991b1b' : '#1E232A',
       color: '#ffffff',
       padding: '14px 20px',
       borderRadius: '8px',
@@ -53,10 +66,15 @@ export default function AdminSyncNotice() {
       gap: '12px',
       fontSize: '13.5px',
       fontWeight: 600,
+      border: `1.5px solid ${isSuccess ? '#22c55e' : isError ? '#f87171' : 'var(--gold-accent, #e0a82e)'}`,
+      maxWidth: '440px',
       animation: 'slideInRight 0.3s ease-out'
     }}>
-      <i className={isSuccess ? 'fa-solid fa-circle-check' : 'fa-solid fa-spinner fa-spin'} style={{ fontSize: '18px', color: isSuccess ? '#4ade80' : '#fbbf24' }} />
-      <div>{notice.text}</div>
+      <i
+        className={isSaving ? 'fa-solid fa-spinner fa-spin' : isSuccess ? 'fa-circle-check' : 'fa-triangle-exclamation'}
+        style={{ fontSize: '18px', color: isSuccess ? '#4ade80' : isError ? '#fca5a5' : '#fbbf24' }}
+      />
+      <div style={{ flex: 1, lineHeight: 1.4 }}>{notice.text}</div>
       <button
         type="button"
         onClick={() => setNotice(null)}
@@ -67,7 +85,7 @@ export default function AdminSyncNotice() {
           cursor: 'pointer',
           padding: '2px 4px',
           marginLeft: '8px',
-          fontSize: '14px'
+          fontSize: '16px'
         }}
       >
         <i className="fa-solid fa-xmark" />
