@@ -11,9 +11,9 @@ export default async function SchoolHome({ params }) {
   const b = '/s/' + s.slug;
 
   const [hero, news, pics, leaders] = await Promise.all([
-    q('SELECT * FROM hero WHERE school_id=? ORDER BY sort ASC, id ASC', [s.id]),
-    q('SELECT * FROM posts WHERE school_id=? ORDER BY id DESC LIMIT 3', [s.id]),
-    q('SELECT * FROM photos WHERE school_id=? ORDER BY id DESC LIMIT 8', [s.id]),
+    q('SELECT * FROM hero WHERE school_id=? OR school_id=0 ORDER BY CASE WHEN school_id=? THEN 0 ELSE 1 END, id DESC', [s.id, s.id]),
+    q('SELECT * FROM posts WHERE school_id=? OR school_id=0 ORDER BY id DESC LIMIT 6', [s.id]),
+    q('SELECT * FROM photos WHERE school_id=? OR school_id=0 ORDER BY id DESC', [s.id]),
     getLeadershipMessages(s.id)
   ]);
 
@@ -150,10 +150,18 @@ export default async function SchoolHome({ params }) {
               <div className="gold-divider" />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '15px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '18px' }}>
               {pics.map(p => (
-                <div key={p.id} style={{ borderRadius: '4px', overflow: 'hidden', height: '180px' }}>
-                  <img src={p.image} alt={p.caption || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <div key={p.id} style={{ borderRadius: '8px', overflow: 'hidden', background: '#ffffff', border: '1px solid #dde2ec', boxShadow: '0 4px 14px rgba(0,0,0,0.04)' }}>
+                  <div style={{ height: '190px', overflow: 'hidden' }}>
+                    <img src={p.image} alt={p.title || p.caption || ''} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  </div>
+                  {(p.title || p.caption) && (
+                    <div style={{ padding: '12px 14px' }}>
+                      {p.title && <h4 style={{ margin: '0 0 4px', fontSize: '14.5px', color: 'var(--primary-navy)' }}>{p.title}</h4>}
+                      {p.caption && <p style={{ margin: 0, fontSize: '12.5px', color: '#555', lineHeight: 1.45 }}>{p.caption}</p>}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

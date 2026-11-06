@@ -14,7 +14,8 @@ import {
   getParentTestimonials,
   getLearnerTestimonials,
   getAlumniStories,
-  getEvents
+  getEvents,
+  getPhotos
 } from '@/lib/db';
 import { submitParentReview } from '@/app/actions';
 
@@ -37,6 +38,7 @@ export default async function Home({ searchParams }) {
   let learnerVoices = [];
   let alumniStories = [];
   let events = [];
+  let schoolLifePhotos = [];
 
   try {
     const [
@@ -51,10 +53,11 @@ export default async function Home({ searchParams }) {
       approvedTestimonialsRes,
       learnerVoicesRes,
       alumniStoriesRes,
-      eventsRes
+      eventsRes,
+      photosRes
     ] = await Promise.all([
-      q('SELECT * FROM hero WHERE school_id=0 ORDER BY sort ASC, id ASC').catch(() => []),
-      q('SELECT p.*, s.name sname FROM posts p LEFT JOIN schools s ON s.id=p.school_id ORDER BY p.id DESC LIMIT 3').catch(() => []),
+      q('SELECT * FROM hero ORDER BY id DESC').catch(() => []),
+      q('SELECT p.*, s.name sname FROM posts p LEFT JOIN schools s ON s.id=p.school_id ORDER BY p.id DESC LIMIT 12').catch(() => []),
       schools().catch(() => []),
       S().catch(() => ({})),
       getVideos(0).catch(() => []),
@@ -63,8 +66,9 @@ export default async function Home({ searchParams }) {
       getGlanceMetrics().catch(() => []),
       getParentTestimonials('approved').catch(() => []),
       getLearnerTestimonials().catch(() => []),
-      getAlumniStories(true).catch(() => []),
-      getEvents(0).catch(() => [])
+      getAlumniStories(false).catch(() => []),
+      getEvents(0).catch(() => []),
+      getPhotos().catch(() => [])
     ]);
 
     hero = Array.isArray(heroRes) ? heroRes : [];
@@ -79,6 +83,7 @@ export default async function Home({ searchParams }) {
     learnerVoices = Array.isArray(learnerVoicesRes) ? learnerVoicesRes : [];
     alumniStories = Array.isArray(alumniStoriesRes) ? alumniStoriesRes : [];
     events = Array.isArray(eventsRes) ? eventsRes : [];
+    schoolLifePhotos = Array.isArray(photosRes) ? photosRes : [];
   } catch (err) {
     console.warn('[Home Data Fetch Fallback]:', err?.message);
   }
@@ -562,6 +567,82 @@ export default async function Home({ searchParams }) {
       {/* VIDEO SHOWCASE SECTION (Admins upload / update video links) */}
       <VideoShowcase videos={vids} />
 
+      {/* SCHOOL LIFE & CAMPUS PHOTO GALLERY (Uploaded by Admin) */}
+      {schoolLifePhotos.length > 0 && (
+        <section id="gallery" style={{ background: '#ffffff', padding: '75px 0', borderTop: '1px solid #e2e8f0' }}>
+          <div className="wrapper">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '35px', flexWrap: 'wrap', gap: '15px' }} className="reveal-on-scroll">
+              <div>
+                <span className="lead-badge" style={{ color: 'var(--primary-red)' }}>CAMPUS MOMENTS &amp; GALLERY</span>
+                <h2 style={{ margin: '6px 0 0', color: 'var(--primary-navy)' }}>School Life Across Pleasant View</h2>
+                <div className="gold-divider" style={{ marginLeft: 0 }} />
+              </div>
+              <Link href="/about#life" className="button button-tertiary" style={{ padding: '8px 18px', fontSize: '13px' }}>
+                Explore Campus Life &rarr;
+              </Link>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '22px' }}>
+              {schoolLifePhotos.map((p) => (
+                <div
+                  key={p.id}
+                  style={{
+                    background: 'var(--soft-bg)',
+                    borderRadius: '10px',
+                    overflow: 'hidden',
+                    border: '1px solid #dde2ec',
+                    boxShadow: '0 6px 20px rgba(0,0,0,0.05)',
+                    display: 'flex',
+                    flexDirection: 'column'
+                  }}
+                >
+                  <div style={{ position: 'relative', height: '240px', overflow: 'hidden', background: '#0f1d3a' }}>
+                    <img
+                      src={p.image}
+                      alt={p.title || p.caption || p.category || 'Pleasant View Campus Life'}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    />
+                    {p.category && (
+                      <span
+                        style={{
+                          position: 'absolute',
+                          top: '12px',
+                          left: '12px',
+                          background: 'rgba(139,30,45,0.92)',
+                          color: '#ffffff',
+                          fontSize: '11px',
+                          fontWeight: 800,
+                          padding: '4px 10px',
+                          borderRadius: '4px',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.6px'
+                        }}
+                      >
+                        {p.category}
+                      </span>
+                    )}
+                  </div>
+                  {(p.title || p.caption) && (
+                    <div style={{ padding: '16px 18px' }}>
+                      {p.title && (
+                        <h4 style={{ margin: '0 0 6px', fontSize: '16px', color: 'var(--primary-navy)' }}>
+                          {p.title}
+                        </h4>
+                      )}
+                      {p.caption && (
+                        <p style={{ margin: 0, fontSize: '13.5px', color: '#555', lineHeight: 1.55 }}>
+                          {p.caption}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* EXECUTIVE & LEADERSHIP MESSAGE (DIRECTOR / HOI) */}
       <section className="director-welcome-section" id="leadership">
         <div className="wrapper">
@@ -596,6 +677,48 @@ export default async function Home({ searchParams }) {
               <span className="director-title">{primaryLeader.title}</span>
             </div>
           </div>
+
+          {leadMessages.length > 1 && (
+            <div style={{ marginTop: '45px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+              {leadMessages.slice(1).map((lm) => (
+                <div
+                  key={lm.id}
+                  style={{
+                    background: 'rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(255,255,255,0.14)',
+                    borderRadius: '10px',
+                    padding: '24px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '14px'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <img
+                      src={lm.image || '/images/banner_3_a.webp'}
+                      alt={lm.name}
+                      style={{ width: '68px', height: '68px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--gold-accent)', flexShrink: 0 }}
+                    />
+                    <div>
+                      <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--gold-accent)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                        {lm.role || 'Leadership'}
+                      </span>
+                      <h4 style={{ margin: '2px 0', color: '#ffffff', fontSize: '17px' }}>{lm.name}</h4>
+                      <small style={{ color: 'rgba(255,255,255,0.75)', fontSize: '12.5px' }}>{lm.title}</small>
+                    </div>
+                  </div>
+                  {lm.quote && (
+                    <blockquote style={{ margin: 0, fontStyle: 'italic', color: 'var(--gold-accent)', fontSize: '14px', lineHeight: 1.5 }}>
+                      &ldquo;{lm.quote}&rdquo;
+                    </blockquote>
+                  )}
+                  <p style={{ margin: 0, color: 'rgba(255,255,255,0.88)', fontSize: '14px', lineHeight: 1.65, whiteSpace: 'pre-line' }}>
+                    {lm.message}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -613,7 +736,7 @@ export default async function Home({ searchParams }) {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
-            {quickLinks.slice(0, 6).map(l => (
+            {quickLinks.map(l => (
               <Link
                 key={l.id}
                 href={l.url}
@@ -710,7 +833,7 @@ export default async function Home({ searchParams }) {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '22px' }}>
-            {events.slice(0, 4).map((ev, idx) => {
+            {events.map((ev, idx) => {
               const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
               let day = '15';
               let month = 'NOV';

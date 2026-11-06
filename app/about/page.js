@@ -1,14 +1,15 @@
 import Page from '@/components/Page';
 import Link from 'next/link';
-import { S, getExamResults } from '@/lib/db';
+import { S, getExamResults, getPhotos } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'About Our Heritage, Mission & Academic Eminence' };
 
 export default async function About() {
-  const [s, examResults] = await Promise.all([
+  const [s, examResults, photos] = await Promise.all([
     S(),
-    getExamResults()
+    getExamResults(),
+    getPhotos().catch(() => [])
   ]);
 
   const nationalExams = examResults.filter(e => e.exam_category === 'national');
@@ -87,6 +88,63 @@ export default async function About() {
         <p style={{ lineHeight: 1.85, fontSize: '16px', marginBottom: '20px', color: '#444' }}>
           Spread across scenic, serene acreage in Githunguri, Pleasant View offers modern boarding dormitories from Grade 4 upwards. Resident houseparents, dedicated matrons, 24/7 security, hot water showers, and nutritious dining ensure every child feels secure, comfortable, and cherished in a home-away-from-home setting.
         </p>
+      </div>
+
+      {/* SCHOOL LIFE & CAMPUS GALLERY */}
+      <div id="life" style={{ marginTop: '45px', marginBottom: '35px' }}>
+        <span className="lead-badge" id="sports">CAMPUS LIFE &amp; CO-CURRICULAR</span>
+        <h3 style={{ marginTop: '8px', marginBottom: '15px' }}>School Life &amp; Campus Photo Gallery</h3>
+        <p style={{ lineHeight: 1.8, fontSize: '15.5px', color: '#555', marginBottom: '24px' }}>
+          Explore daily moments of academic discovery, sports, clubs, pastoral care, and vibrant community life across Pleasant View Schools.
+        </p>
+        {Array.isArray(photos) && photos.length > 0 && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
+            {photos.map((p) => (
+              <div
+                key={p.id}
+                style={{
+                  background: '#ffffff',
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  border: '1px solid #dde2ec',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.05)'
+                }}
+              >
+                <div style={{ position: 'relative', height: '210px', overflow: 'hidden', background: '#0f1d3a' }}>
+                  <img
+                    src={p.image}
+                    alt={p.title || p.caption || p.category || 'Pleasant View School Life'}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                  {p.category && (
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '10px',
+                        left: '10px',
+                        background: 'rgba(139,30,45,0.92)',
+                        color: '#ffffff',
+                        fontSize: '10.5px',
+                        fontWeight: 800,
+                        padding: '3px 9px',
+                        borderRadius: '4px',
+                        textTransform: 'uppercase'
+                      }}
+                    >
+                      {p.category}
+                    </span>
+                  )}
+                </div>
+                {(p.title || p.caption) && (
+                  <div style={{ padding: '14px 16px' }}>
+                    {p.title && <h4 style={{ margin: '0 0 6px', fontSize: '15.5px', color: 'var(--primary-navy)' }}>{p.title}</h4>}
+                    {p.caption && <p style={{ margin: 0, fontSize: '13.5px', color: '#555', lineHeight: 1.5 }}>{p.caption}</p>}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* POLICIES & INSPECTION REPORTS */}

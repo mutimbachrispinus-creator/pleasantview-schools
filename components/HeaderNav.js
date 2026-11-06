@@ -194,7 +194,7 @@ export default function HeaderNav({
                 <li className="has-dropdown">
                   <Link href="/quick-links">Quick Links <i className="fa-solid fa-angle-down nav-arrow" /></Link>
                   <ul className="sub-menu">
-                    {quickLinks.slice(0, 5).map(l => (
+                    {quickLinks.map(l => (
                       <li key={l.id}><Link href={l.url}>{l.title}</Link></li>
                     ))}
                     <li><Link href="/careers">Careers &amp; Vacancies</Link></li>

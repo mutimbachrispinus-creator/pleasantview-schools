@@ -71,6 +71,7 @@ import {
   saveAdminSmsSettings,
   saveExamResult,
   deleteExamResult,
+  addParentTestimonial,
   approveTestimonial,
   rejectTestimonial,
   deleteTestimonial,
@@ -220,7 +221,8 @@ export default async function Panel({ scope, edit }) {
             <a href="#quicklinks" style={{ color: 'var(--primary-navy)' }}>⚡ Quick Links</a>
             <a href="#videos" style={{ color: 'var(--primary-navy)' }}>🎥 Videos</a>
             <a href="#careers" style={{ color: 'var(--primary-navy)' }}>💼 Careers ({appsList.length})</a>
-            <a href="#hero" style={{ color: 'var(--primary-navy)' }}>🖼️ Hero Sliders</a>
+            <a href="#hero" style={{ color: 'var(--primary-navy)' }}>🖼️ Hero Sliders ({hero.length})</a>
+            <a href="#news" style={{ color: 'var(--primary-navy)', fontWeight: 700 }}>📰 News &amp; Stories ({posts.length})</a>
             <a href="#visits" style={{ color: 'var(--primary-navy)' }}>📅 Tours ({vis.length})</a>
             <a href="#inbound" style={{ color: 'var(--primary-navy)' }}>✉️ SMS Hub</a>
           </div>
@@ -661,7 +663,6 @@ export default async function Panel({ scope, edit }) {
                     <input type="checkbox" name="is_published" value="1" defaultChecked />
                     <strong>Publish immediately to public website (/about#academics)</strong>
                   </label>
-                  <input type="hidden" name="sort" value="1" />
                 </div>
 
                 <FormSubmitButton
@@ -789,6 +790,43 @@ export default async function Panel({ scope, edit }) {
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* ADD PARENT TESTIMONIAL FORM */}
+            <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px', marginTop: '20px' }}>
+              <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Publish Parent / Guardian Testimonial Directly</h4>
+              <form action={addParentTestimonial} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
+                <div className="form-group">
+                  <label>Parent / Guardian Name *</label>
+                  <input name="parent_name" placeholder="e.g. Eng. David Mwangi" required />
+                </div>
+                <div className="form-group">
+                  <label>Learner Name</label>
+                  <input name="learner_name" placeholder="e.g. Grace Mwangi" />
+                </div>
+                <div className="form-group">
+                  <label>Grade / Division *</label>
+                  <input name="grade_or_division" placeholder="e.g. Grade 8 JSS / Form 2 Senior School" required />
+                </div>
+                <div className="form-group">
+                  <label>Star Rating</label>
+                  <select name="rating" defaultValue="5">
+                    <option value="5">★★★★★ (5 Stars)</option>
+                    <option value="4">★★★★☆ (4 Stars)</option>
+                  </select>
+                </div>
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label>Parent Review / Comment *</label>
+                  <textarea name="comment" rows={3} placeholder="Share the parent or guardian's testimonial..." required />
+                </div>
+                <FormSubmitButton
+                  label="+ Publish Approved Parent Review"
+                  pendingLabel="Publishing & Syncing Live..."
+                  successLabel="✓ Parent Review Published & Synced Live!"
+                  variant="gold"
+                  style={{ gridColumn: '1 / -1', marginTop: '6px' }}
+                />
+              </form>
             </div>
           </section>
 
@@ -1218,105 +1256,103 @@ export default async function Panel({ scope, edit }) {
           )}
 
           {/* 1D. SCHOOL LIFE PHOTO GALLERY MANAGER */}
-          {!scope && (
-            <section id="gallery" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
-                <div>
-                  <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
-                    <i className="fa-solid fa-images" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
-                    School Life Photo Gallery Manager
-                  </h2>
-                  <p style={{ color: '#666', fontSize: '14px', margin: '4px 0 0' }}>
-                    Upload and manage pictures across various categories of school life (Academic &amp; STEM, Sports &amp; Athletics, Boarding Life, Creative Arts, Spiritual Life, Campus Environment).
-                  </p>
+          <section id="gallery" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
+              <div>
+                <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
+                  <i className="fa-solid fa-images" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
+                  School Life Photo Gallery Manager ({schoolLifePhotos.length})
+                </h2>
+                <p style={{ color: '#666', fontSize: '14px', margin: '4px 0 0' }}>
+                  Upload and manage pictures across various categories of school life (Academic &amp; STEM, Sports &amp; Athletics, Boarding Life, Creative Arts, Spiritual Life, Campus Environment).
+                </p>
+              </div>
+            </div>
+
+            {/* CURRENT PHOTOS GRID */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '18px', marginBottom: '30px' }}>
+              {schoolLifePhotos.map(p => (
+                <div key={p.id} style={{ border: '1px solid #e1e6ef', borderRadius: '6px', overflow: 'hidden', background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                  <div style={{ height: '160px', backgroundImage: `url('${p.image}')`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative' }}>
+                    <span style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(5,40,107,0.85)', color: '#fff', padding: '2px 8px', borderRadius: '3px', fontSize: '11px', fontWeight: 700 }}>
+                      {p.category}
+                    </span>
+                  </div>
+                  <div style={{ padding: '12px' }}>
+                    <strong style={{ fontSize: '14px', display: 'block', color: 'var(--primary-navy)', marginBottom: '4px' }}>
+                      {p.title || p.category}
+                    </strong>
+                    <p style={{ fontSize: '12.5px', color: '#666', margin: '0 0 10px', lineHeight: 1.4 }}>
+                      {p.caption || 'No caption'}
+                    </p>
+                    <form action={delPhoto} style={{ textAlign: 'right' }}>
+                      <input type="hidden" name="id" value={p.id} />
+                      <DeleteButton
+                        confirmMessage="Are you sure you want to delete this photo?"
+                        style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
+                      >
+                        Delete Photo
+                      </DeleteButton>
+                    </form>
+                  </div>
                 </div>
-              </div>
+              ))}
+            </div>
 
-              {/* CURRENT PHOTOS GRID */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '18px', marginBottom: '30px' }}>
-                {schoolLifePhotos.map(p => (
-                  <div key={p.id} style={{ border: '1px solid #e1e6ef', borderRadius: '6px', overflow: 'hidden', background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                    <div style={{ height: '160px', backgroundImage: `url('${p.image}')`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative' }}>
-                      <span style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(5,40,107,0.85)', color: '#fff', padding: '2px 8px', borderRadius: '3px', fontSize: '11px', fontWeight: 700 }}>
-                        {p.category}
-                      </span>
-                    </div>
-                    <div style={{ padding: '12px' }}>
-                      <strong style={{ fontSize: '14px', display: 'block', color: 'var(--primary-navy)', marginBottom: '4px' }}>
-                        {p.title || p.category}
-                      </strong>
-                      <p style={{ fontSize: '12.5px', color: '#666', margin: '0 0 10px', lineHeight: 1.4 }}>
-                        {p.caption || 'No caption'}
-                      </p>
-                      <form action={delPhoto} style={{ textAlign: 'right' }}>
-                        <input type="hidden" name="id" value={p.id} />
-                        <DeleteButton
-                          confirmMessage="Are you sure you want to delete this photo?"
-                          style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
-                        >
-                          Delete Photo
-                        </DeleteButton>
-                      </form>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* ADD NEW PHOTO FORM */}
-              <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
-                <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Upload / Add New School Life Picture</h4>
-                <form action={addSchoolLifePhoto} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
-                  <div className="form-group">
-                    <label>Category *</label>
-                    <select name="category" required>
-                      <option value="Academic & STEM">Academic &amp; STEM</option>
-                      <option value="Sports & Athletics">Sports &amp; Athletics</option>
-                      <option value="Boarding Life">Boarding Life</option>
-                      <option value="Creative Arts">Creative Arts &amp; Music</option>
-                      <option value="Spiritual Life">Spiritual Life &amp; Chapel</option>
-                      <option value="Campus Environment">Campus Environment &amp; Facilities</option>
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label>Photo Title *</label>
-                    <input name="title" placeholder="e.g. Modern Integrated Science & Robotics Lab" required />
-                  </div>
-                  <div className="form-group">
-                    <label>Caption / Short Description</label>
-                    <input name="caption" placeholder="e.g. Scholars conducting physics and chemistry investigations" />
-                  </div>
-                  <div className="form-group">
-                    <label>Target School Branch</label>
-                    <select name="school_id">
-                      <option value="0">All Campuses</option>
-                      {list.map(s => (
-                        <option key={s.id} value={s.id}>{s.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <MediaFileInput
-                    name="image_file"
-                    accept="image/*"
-                    type="image"
-                    maxSizeMB={15}
-                    label="Upload Image File (Max 15MB)"
-                    helpText="Supports JPG, PNG, WEBP, GIF, AVIF up to 15MB with live preview"
-                  />
-                  <div className="form-group">
-                    <label>Or Paste Image URL</label>
-                    <input name="image_url" placeholder="e.g. /images/hero_science_lab.jpg" />
-                  </div>
-                  <FormSubmitButton
-                    label="+ Publish Picture to School Life Gallery"
-                    pendingLabel="Publishing & Syncing Live..."
-                    successLabel="✓ Picture Published & Synced Live!"
-                    variant="gold"
-                    style={{ gridColumn: '1 / -1', marginTop: '5px' }}
-                  />
-                </form>
-              </div>
-            </section>
-          )}
+            {/* ADD NEW PHOTO FORM */}
+            <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
+              <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Upload / Add New School Life Picture</h4>
+              <form action={addSchoolLifePhoto} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
+                <div className="form-group">
+                  <label>Category *</label>
+                  <select name="category" required>
+                    <option value="Academics">Academic &amp; STEM</option>
+                    <option value="Sports">Sports &amp; Athletics</option>
+                    <option value="Boarding">Boarding Life</option>
+                    <option value="Clubs & Talents">Creative Arts, Clubs &amp; Talents</option>
+                    <option value="Events">Spiritual Life &amp; Events</option>
+                    <option value="Facilities">Campus Environment &amp; Facilities</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Photo Title *</label>
+                  <input name="title" placeholder="e.g. Modern Integrated Science & Robotics Lab" required />
+                </div>
+                <div className="form-group">
+                  <label>Caption / Short Description</label>
+                  <input name="caption" placeholder="e.g. Scholars conducting physics and chemistry investigations" />
+                </div>
+                <div className="form-group">
+                  <label>Target School Branch</label>
+                  <select name="school_id">
+                    <option value="0">All Campuses</option>
+                    {list.map(s => (
+                      <option key={s.id} value={s.id}>{s.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <MediaFileInput
+                  name="image_file"
+                  accept="image/*"
+                  type="image"
+                  maxSizeMB={25}
+                  label="Upload Image File (Max 25MB)"
+                  helpText="Supports JPG, PNG, WEBP, GIF, AVIF up to 25MB with live preview"
+                />
+                <div className="form-group">
+                  <label>Or Paste Image URL</label>
+                  <input name="image_url" placeholder="e.g. /images/hero_science_lab.jpg" />
+                </div>
+                <FormSubmitButton
+                  label="+ Publish Picture to School Life Gallery"
+                  pendingLabel="Publishing & Syncing Live..."
+                  successLabel="✓ Picture Published & Synced Live!"
+                  variant="gold"
+                  style={{ gridColumn: '1 / -1', marginTop: '5px' }}
+                />
+              </form>
+            </div>
+          </section>
 
           {/* 2. EDIT DETAILS (GROUP OR SPECIFIC SCHOOL) */}
           <section id="editor" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
@@ -1334,6 +1370,16 @@ export default async function Panel({ scope, edit }) {
 
             <form action={saveSchool} key={es?.id || 0} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '18px' }}>
               <input type="hidden" name="school_id" value={es ? es.id : 0} />
+              {es && (
+                <MediaFileInput
+                  name="image_file"
+                  accept="image/*"
+                  type="image"
+                  maxSizeMB={25}
+                  label="Upload New Division Cover Photo (Max 25MB)"
+                  helpText="Upload a photo to update this school division's cover image"
+                />
+              )}
               {keys.map(k => (
                 <div key={k} className="form-group" style={{ gridColumn: LONG.includes(k) ? '1 / -1' : 'auto' }}>
                   <label>{k.replace(/_/g, ' ').toUpperCase()}</label>
@@ -1447,17 +1493,13 @@ export default async function Panel({ scope, edit }) {
                   name="image_file"
                   accept="image/*"
                   type="image"
-                  maxSizeMB={15}
-                  label="Leader Photo Upload (Max 15MB)"
+                  maxSizeMB={25}
+                  label="Leader Photo Upload (Max 25MB)"
                   helpText="Supports JPG, PNG, WEBP with live preview"
                 />
                 <div className="form-group">
                   <label>Or Preset / Photo URL</label>
                   <input name="image_url" placeholder="/images/banner_3_a.webp" defaultValue="/images/banner_3_a.webp" />
-                </div>
-                <div className="form-group">
-                  <label>Display Sort Order</label>
-                  <input name="sort" type="number" defaultValue="1" style={{ width: '100px' }} />
                 </div>
                 <FormSubmitButton
                   label="+ Publish Leadership Message"
@@ -1492,7 +1534,6 @@ export default async function Panel({ scope, edit }) {
                     <th>Destination URL</th>
                     <th>Category</th>
                     <th>Description</th>
-                    <th>Sort</th>
                     <th>Status</th>
                     <th>Actions</th>
                   </tr>
@@ -1508,7 +1549,6 @@ export default async function Panel({ scope, edit }) {
                         </span>
                       </td>
                       <td style={{ fontSize: '12px', color: '#666' }}>{l.description}</td>
-                      <td>{l.sort}</td>
                       <td>
                         <span style={{
                           background: l.is_active ? '#d4edda' : '#f8d7da',
@@ -1557,10 +1597,6 @@ export default async function Panel({ scope, edit }) {
                 <div className="form-group">
                   <label>Short Description</label>
                   <input name="description" placeholder="Brief summary of what this link opens" />
-                </div>
-                <div className="form-group">
-                  <label>Sort Order Index</label>
-                  <input name="sort" type="number" defaultValue="1" style={{ width: '100px' }} />
                 </div>
                 <FormSubmitButton
                   label="+ Add Quick Link"
@@ -1879,9 +1915,6 @@ export default async function Panel({ scope, edit }) {
                 <div key={h.id} style={{ border: '1px solid #dde2ec', borderRadius: '6px', overflow: 'hidden', background: '#fff' }}>
                   <div style={{ height: '140px', position: 'relative' }}>
                     <img src={h.image} alt={h.headline} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <span style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(0,0,0,0.6)', color: '#fff', padding: '2px 6px', borderRadius: '3px', fontSize: '11px' }}>
-                      Slide #{h.sort || 1}
-                    </span>
                   </div>
                   <div style={{ padding: '14px' }}>
                     <h4 style={{ margin: '0 0 6px', fontSize: '14px', color: 'var(--primary-navy)' }}>{h.headline}</h4>
@@ -1912,8 +1945,8 @@ export default async function Panel({ scope, edit }) {
                   name="image"
                   accept="image/*"
                   type="image"
-                  maxSizeMB={15}
-                  label="Slide Photo Upload (Max 15MB)"
+                  maxSizeMB={25}
+                  label="Slide Photo Upload (Max 25MB)"
                   helpText="High-resolution banner photo"
                 />
                 <div className="form-group">
@@ -1944,14 +1977,94 @@ export default async function Panel({ scope, edit }) {
                   <label>Secondary Button Link</label>
                   <input name="button_alt_link" defaultValue="/contact#visit" />
                 </div>
-                <div className="form-group">
-                  <label>Sort Order</label>
-                  <input name="sort" type="number" defaultValue="1" style={{ width: '100px' }} />
-                </div>
                 <FormSubmitButton
                   label="+ Publish Hero Banner"
                   pendingLabel="Publishing & Syncing Live..."
                   successLabel="✓ Hero Slide Published & Synced Live!"
+                  variant="gold"
+                  style={{ gridColumn: '1 / -1', marginTop: '6px' }}
+                />
+              </form>
+            </div>
+          </section>
+
+          {/* 7B. NEWS & CAMPUS STORIES MANAGER */}
+          <section id="news" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
+              <div>
+                <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
+                  <i className="fa-solid fa-newspaper" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
+                  News &amp; Campus Stories ({posts.length})
+                </h2>
+                <p style={{ color: '#666', fontSize: '14px', margin: '4px 0 0' }}>
+                  Publish official news updates, academic announcements, and campus stories displayed on the homepage and <code>/news</code>.
+                </p>
+              </div>
+            </div>
+
+            {posts.length > 0 && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '25px' }}>
+                {posts.map(p => (
+                  <div key={p.id} style={{ border: '1px solid #dde2ec', borderRadius: '6px', overflow: 'hidden', background: '#fff' }}>
+                    {p.image && (
+                      <div style={{ height: '140px', position: 'relative' }}>
+                        <img src={p.image} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <span style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(139,30,45,0.9)', color: '#fff', padding: '2px 8px', borderRadius: '3px', fontSize: '11px', fontWeight: 700 }}>
+                          {p.category || 'School News'}
+                        </span>
+                      </div>
+                    )}
+                    <div style={{ padding: '14px' }}>
+                      <h4 style={{ margin: '0 0 6px', fontSize: '15px', color: 'var(--primary-navy)' }}>{p.title}</h4>
+                      {p.body && <p style={{ fontSize: '12px', color: '#666', margin: '0 0 10px' }}>{p.body.slice(0, 120)}{p.body.length > 120 ? '...' : ''}</p>}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <small style={{ color: '#888' }}>{p.sname || 'All Campuses'}</small>
+                        <Del t="posts" id={p.id} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
+              <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Publish New News Story / Announcement</h4>
+              <form action={addPost} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
+                <Pick />
+                <div className="form-group">
+                  <label>Story Headline *</label>
+                  <input name="title" placeholder="e.g. 2026 Science & Robotics Distinction Awards" required />
+                </div>
+                <div className="form-group">
+                  <label>Category</label>
+                  <select name="category" defaultValue="Academic Distinction">
+                    <option value="Academic Distinction">Academic Distinction</option>
+                    <option value="Admissions Notice">Admissions Notice</option>
+                    <option value="Innovation & STEM">Innovation &amp; STEM</option>
+                    <option value="Sports & Athletics">Sports &amp; Athletics</option>
+                    <option value="School News">School News</option>
+                  </select>
+                </div>
+                <MediaFileInput
+                  name="image_file"
+                  accept="image/*"
+                  type="image"
+                  maxSizeMB={25}
+                  label="Story Photo Upload (Max 25MB)"
+                  helpText="Upload a cover image for this news story"
+                />
+                <div className="form-group">
+                  <label>Or Preset / Photo URL</label>
+                  <input name="image_url" placeholder="/images/banner_2_a.webp" defaultValue="/images/banner_2_a.webp" />
+                </div>
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label>Article Content / Story Body *</label>
+                  <textarea name="body" rows={4} placeholder="Write the full news article or announcement..." required />
+                </div>
+                <FormSubmitButton
+                  label="+ Publish News Story"
+                  pendingLabel="Publishing & Syncing Live..."
+                  successLabel="✓ News Story Published & Synced Live!"
                   variant="gold"
                   style={{ gridColumn: '1 / -1', marginTop: '6px' }}
                 />
