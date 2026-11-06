@@ -2,7 +2,7 @@
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import BackButton from '@/components/BackButton';
-import { login, requestPasswordChangeOTP, verifyPasswordChangeOTP } from '@/app/hidden-admin/actions';
+import { callAdminAction } from '@/lib/adminClient';
 
 export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
   const [activeTab, setActiveTab] = useState('login'); // 'login' | 'otp'
@@ -34,7 +34,7 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
 
     startLoginTransition(async () => {
       try {
-        const res = await login(fd);
+        const res = await callAdminAction('login', fd);
         if (res && res.error) {
           setLoginError(res.error);
         } else if (res && res.ok) {
@@ -60,7 +60,7 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
 
     startOtpTransition(async () => {
       try {
-        const res = await requestPasswordChangeOTP(fd);
+        const res = await callAdminAction('requestPasswordChangeOTP', fd);
         if (res?.ok) {
           setTargetKey(res.targetKey || idVal);
           setOtpStep(2);
@@ -94,7 +94,7 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
 
     startOtpTransition(async () => {
       try {
-        const res = await verifyPasswordChangeOTP(fd);
+        const res = await callAdminAction('verifyPasswordChangeOTP', fd);
         if (res?.ok) {
           setOtpStatus({
             type: 'success',
@@ -105,7 +105,6 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
           setNewPassword('');
           setTimeout(() => {
             setActiveTab('login');
-            setLoginStep(1);
           }, 2000);
         } else {
           setOtpStatus({
@@ -194,7 +193,7 @@ export default function LoginForm({ k = '', title = 'Staff & Admin Console' }) {
           }}>
             <button
               type="button"
-              onClick={() => { setActiveTab('login'); setLoginError(''); setLoginStep(1); }}
+              onClick={() => { setActiveTab('login'); setLoginError(''); }}
               style={{
                 flex: 1,
                 padding: '13px',

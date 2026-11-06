@@ -1,6 +1,6 @@
 'use client';
 import { useFormStatus } from 'react-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function InlineActionButton({
   label = 'Save',
@@ -11,24 +11,49 @@ export default function InlineActionButton({
   style = {},
   disabled = false
 }) {
-  const { pending } = useFormStatus();
-  const [wasPending, setWasPending] = useState(false);
+  const { pending: nativePending } = useFormStatus();
+  const [apiPending, setApiPending] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const rootRef = useRef(null);
 
   useEffect(() => {
-    if (pending) {
-      setWasPending(true);
+    const el = rootRef.current;
+    const form = el?.closest('form');
+    if (!form) return;
+
+    let timer;
+    const onStart = () => {
+      if (timer) clearTimeout(timer);
+      setApiPending(true);
       setShowSuccess(false);
-    } else if (wasPending) {
-      setWasPending(false);
+    };
+    const onSuccess = () => {
+      setApiPending(false);
       setShowSuccess(true);
-      const timer = setTimeout(() => setShowSuccess(false), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [pending, wasPending]);
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => setShowSuccess(false), 3000);
+    };
+    const onError = () => {
+      setApiPending(false);
+      setShowSuccess(false);
+    };
+
+    form.addEventListener('pvs:form-start', onStart);
+    form.addEventListener('pvs:form-success', onSuccess);
+    form.addEventListener('pvs:form-error', onError);
+
+    return () => {
+      form.removeEventListener('pvs:form-start', onStart);
+      form.removeEventListener('pvs:form-success', onSuccess);
+      form.removeEventListener('pvs:form-error', onError);
+      if (timer) clearTimeout(timer);
+    };
+  }, []);
+
+  const pending = nativePending || apiPending;
 
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+    <span ref={rootRef} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
       <button
         type="submit"
         disabled={disabled || pending}

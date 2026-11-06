@@ -1247,15 +1247,26 @@ export default async function Home({ searchParams }) {
 
                     {a.video_url && (
                       <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid #edf1f7' }}>
-                        <a
-                          href={a.video_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="button button-gold"
-                          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', fontSize: '12.5px' }}
-                        >
-                          <i className="fa-solid fa-play" /> Watch Video Story &rarr;
-                        </a>
+                        {a.video_url.startsWith('/img/') || /\.(mp4|webm|ogg|mov|m4v)(\?|$)/i.test(a.video_url) ? (
+                          <video
+                            src={a.video_url}
+                            poster={a.image_url || undefined}
+                            controls
+                            playsInline
+                            preload="metadata"
+                            style={{ width: '100%', maxHeight: '220px', borderRadius: '6px', background: '#000', display: 'block' }}
+                          />
+                        ) : (
+                          <a
+                            href={a.video_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="button button-gold"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', fontSize: '12.5px' }}
+                          >
+                            <i className="fa-solid fa-play" /> Watch Video Story &rarr;
+                          </a>
+                        )}
                       </div>
                     )}
                   </div>

@@ -2,7 +2,16 @@
 const nextConfig = {
   serverExternalPackages: ['africastalking'],
   experimental: {
-    serverActions: { bodySizeLimit: '30mb' }
+    serverActions: { bodySizeLimit: '50mb' }
+  },
+  async redirects() {
+    return [
+      {
+        source: '/admin',
+        destination: '/staff-portal',
+        permanent: false
+      }
+    ];
   },
   webpack: (config, { dev }) => {
     if (!dev) {

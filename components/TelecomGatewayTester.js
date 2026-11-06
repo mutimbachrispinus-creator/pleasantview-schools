@@ -1,6 +1,6 @@
 'use client';
 import { useState, useTransition } from 'react';
-import { testAfricasTalking, saveApiIntegrations } from '@/app/hidden-admin/actions';
+import { callAdminAction } from '@/lib/adminClient';
 
 export default function TelecomGatewayTester({
   initialSettings = {},
@@ -27,7 +27,7 @@ export default function TelecomGatewayTester({
 
     startTestTransition(async () => {
       try {
-        const res = await testAfricasTalking(fd);
+        const res = await callAdminAction('testAfricasTalking', fd);
         if (res?.ok) {
           setTestStatus({
             type: 'success',
@@ -55,7 +55,7 @@ export default function TelecomGatewayTester({
 
     startSaveTransition(async () => {
       try {
-        const res = await saveApiIntegrations(fd);
+        const res = await callAdminAction('saveApiIntegrations', fd);
         if (res?.ok) {
           setSaveStatus({
             type: 'success',

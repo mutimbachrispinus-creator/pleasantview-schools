@@ -1,6 +1,6 @@
 'use client';
 import { useState, useTransition } from 'react';
-import { saveAdminRecoveryProfile, requestPasswordChangeOTP, verifyPasswordChangeOTP } from '@/app/hidden-admin/actions';
+import { callAdminAction } from '@/lib/adminClient';
 
 export default function AdminPasswordChange({
   defaultEmail = 'admin@pleasantviewschools.co.ke',
@@ -32,7 +32,7 @@ export default function AdminPasswordChange({
 
     startProfileTransition(async () => {
       try {
-        const res = await saveAdminRecoveryProfile(fd);
+        const res = await callAdminAction('saveAdminRecoveryProfile', fd);
         if (res?.ok) {
           setProfileStatus({
             type: 'success',
@@ -63,7 +63,7 @@ export default function AdminPasswordChange({
 
     startOtpTransition(async () => {
       try {
-        const res = await requestPasswordChangeOTP(fd);
+        const res = await callAdminAction('requestPasswordChangeOTP', fd);
         if (res?.ok) {
           setOtpStep(2);
           if (res?.targetKey) setTargetKey(res.targetKey);
@@ -97,7 +97,7 @@ export default function AdminPasswordChange({
 
     startOtpTransition(async () => {
       try {
-        const res = await verifyPasswordChangeOTP(fd);
+        const res = await callAdminAction('verifyPasswordChangeOTP', fd);
         if (res?.ok) {
           setOtpStatus({
             type: 'success',

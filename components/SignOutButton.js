@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { logout } from '@/app/hidden-admin/actions';
+import { callAdminAction } from '@/lib/adminClient';
 
 export default function SignOutButton({ label = 'Lock & Sign Out', className = 'button button-tertiary', style = {} }) {
   const [signingOut, setSigningOut] = useState(false);
@@ -9,16 +9,13 @@ export default function SignOutButton({ label = 'Lock & Sign Out', className = '
     e.preventDefault();
     setSigningOut(true);
     try {
-      // Clear cookie immediately across all paths in the browser
       document.cookie = 'pv=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; Max-Age=0; SameSite=Lax';
       document.cookie = 'pv=; Path=/staff-portal; Expires=Thu, 01 Jan 1970 00:00:01 GMT; Max-Age=0; SameSite=Lax';
       if (typeof window !== 'undefined') {
         window.sessionStorage.clear();
       }
-      // Server-side session end
-      await logout();
+      await callAdminAction('logout', {});
     } catch {}
-    // Force browser to replace location at staff-portal with logout query to guarantee fresh manual login form
     window.location.replace('/staff-portal?logout=1');
   };
 

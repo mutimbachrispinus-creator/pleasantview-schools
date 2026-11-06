@@ -1,6 +1,6 @@
 'use client';
 import { useFormStatus } from 'react-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function FormSubmitButton({
   label = 'Save Changes',
@@ -11,35 +11,46 @@ export default function FormSubmitButton({
   className = '',
   style = {}
 }) {
-  const { pending } = useFormStatus();
-  const [wasPending, setWasPending] = useState(false);
+  const { pending: nativePending } = useFormStatus();
+  const [apiPending, setApiPending] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const rootRef = useRef(null);
 
   useEffect(() => {
+    const el = rootRef.current;
+    const form = el?.closest('form');
+    if (!form) return;
+
     let timer;
-    const handleError = () => {
+    const onStart = () => {
+      if (timer) clearTimeout(timer);
+      setApiPending(true);
       setShowSuccess(false);
-      setWasPending(false);
+    };
+    const onSuccess = () => {
+      setApiPending(false);
+      setShowSuccess(true);
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => setShowSuccess(false), 4000);
+    };
+    const onError = () => {
+      setApiPending(false);
+      setShowSuccess(false);
     };
 
-    window.addEventListener('error', handleError);
-    window.addEventListener('unhandledrejection', handleError);
-
-    if (pending) {
-      setWasPending(true);
-      setShowSuccess(false);
-    } else if (wasPending) {
-      setWasPending(false);
-      setShowSuccess(true);
-      timer = setTimeout(() => setShowSuccess(false), 3500);
-    }
+    form.addEventListener('pvs:form-start', onStart);
+    form.addEventListener('pvs:form-success', onSuccess);
+    form.addEventListener('pvs:form-error', onError);
 
     return () => {
-      window.removeEventListener('error', handleError);
-      window.removeEventListener('unhandledrejection', handleError);
+      form.removeEventListener('pvs:form-start', onStart);
+      form.removeEventListener('pvs:form-success', onSuccess);
+      form.removeEventListener('pvs:form-error', onError);
       if (timer) clearTimeout(timer);
     };
-  }, [pending, wasPending]);
+  }, []);
+
+  const pending = nativePending || apiPending;
 
   const isGold = variant === 'gold' || className.includes('button-gold');
   const isPrimary = variant === 'primary' || className.includes('button-primary');
@@ -54,7 +65,7 @@ export default function FormSubmitButton({
     : '#1E232A';
 
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', ...style }}>
+    <div ref={rootRef} style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', ...style }}>
       <button
         type="submit"
         disabled={pending}

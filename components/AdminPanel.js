@@ -26,68 +26,11 @@ import {
   getAllLearnerTestimonials,
   getAllEvents
 } from '@/lib/db';
-import {
-  login,
-  logout,
-  addSchool,
-  setSchoolAdmin,
-  saveSchool,
-  addPost,
-  addHero,
-  updateHero,
-  addPhotos,
-  del,
-  testResend,
-  testAfricasTalking,
-  replySMS,
-  replyEmail,
-  simulateInboundSMS,
-  simulateInboundEmail,
-  delInbound,
-  addEmailAccount,
-  updateEmailAccount,
-  delEmailAccount,
-  addVideo,
-  delVideo,
-  addJob,
-  toggleJobStatus,
-  delJob,
-  updateApplicationStatus,
-  delApplication,
-  addLeadershipMessage,
-  delLeadershipMessage,
-  addQuickLink,
-  delQuickLink,
-  toggleQuickLink,
-  updateVisitStatus,
-  delVisit,
-  updateEnquiryStatus,
-  delEnquiry,
-  createAdminAccount,
-  deleteAdminAccount,
-  saveGlanceMetrics,
-  addSchoolLifePhoto,
-  delPhoto,
-  saveAdminSmsSettings,
-  saveExamResult,
-  deleteExamResult,
-  addParentTestimonial,
-  approveTestimonial,
-  rejectTestimonial,
-  deleteTestimonial,
-  saveAlumniStory,
-  deleteAlumniStory,
-  saveLearnerTestimonial,
-  deleteLearnerTestimonial,
-  saveEvent,
-  deleteEvent,
-  toggleEvent
-} from '@/app/hidden-admin/actions';
 
 const LONG = ['welcome', 'about', 'mission', 'vision'];
 
 const Del = ({ t, id }) => (
-  <form action={del} style={{ display: 'inline', marginLeft: '6px' }}>
+  <form action="/api/admin/action?action=del" method="POST" data-admin-action="del" style={{ display: 'inline', marginLeft: '6px' }}>
     <input type="hidden" name="t" value={t} />
     <input type="hidden" name="id" value={String(id)} />
     <DeleteButton
@@ -278,7 +221,7 @@ export default async function Panel({ scope, edit }) {
                         <td>{s.boarders || '200 Boarders'}</td>
                         <td>{s.ratio || '1:20'}</td>
                         <td>
-                          <form action={setSchoolAdmin} style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                          <form action="/api/admin/action?action=setSchoolAdmin" method="POST" data-admin-action="setSchoolAdmin" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                             <input type="hidden" name="school_id" value={s.id} />
                             <input
                               name="admin_email"
@@ -315,7 +258,7 @@ export default async function Panel({ scope, edit }) {
               {/* ADD NEW SCHOOL DIVISION */}
               <div style={{ marginTop: '25px', background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
                 <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Add New School Branch / Division</h4>
-                <form action={addSchool} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
+                <form action="/api/admin/action?action=addSchool" method="POST" data-admin-action="addSchool" data-reset-on-save="true" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
                   <div className="form-group">
                     <label>School Name *</label>
                     <input name="name" placeholder="e.g. Pleasant View Senior School" required />
@@ -366,10 +309,14 @@ export default async function Panel({ scope, edit }) {
                     <label>Division Color Theme</label>
                     <input name="color" type="color" defaultValue="#8B1E2D" style={{ height: '44px', width: '100%' }} />
                   </div>
-                  <div className="form-group">
-                    <label>Division Cover Photo</label>
-                    <input type="file" name="image" accept="image/*" />
-                  </div>
+                  <MediaFileInput
+                    name="image"
+                    accept="image/*"
+                    type="image"
+                    maxSizeMB={50}
+                    label="Division Cover Photo"
+                    helpText="Supports JPG, PNG, WEBP with automatic cloud optimization"
+                  />
                   <FormSubmitButton
                     label="+ Publish New School Branch"
                     pendingLabel="Publishing & Syncing..."
@@ -432,7 +379,7 @@ export default async function Panel({ scope, edit }) {
                         <td>{a.school_name || 'All Campuses'}</td>
                         <td>{a.phone || '+254 711 689 913'}</td>
                         <td>
-                          <form action={deleteAdminAccount} style={{ display: 'inline' }}>
+                          <form action="/api/admin/action?action=deleteAdminAccount" method="POST" data-admin-action="deleteAdminAccount" style={{ display: 'inline' }}>
                             <input type="hidden" name="id" value={a.id} />
                             <DeleteButton
                               confirmMessage="Permanently remove this administrator account?"
@@ -460,7 +407,7 @@ export default async function Panel({ scope, edit }) {
               {/* CREATE ANOTHER ADMIN FORM */}
               <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
                 <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Create Another Administrator</h4>
-                <form action={createAdminAccount} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
+                <form action="/api/admin/action?action=createAdminAccount" method="POST" data-admin-action="createAdminAccount" data-reset-on-save="true" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
                   <div className="form-group">
                     <label>Administrator Full Name *</label>
                     <input name="name" placeholder="e.g. John Mwangi" required />
@@ -585,7 +532,7 @@ export default async function Panel({ scope, edit }) {
                         </span>
                       </td>
                       <td>
-                        <form action={deleteExamResult} style={{ display: 'inline' }}>
+                        <form action="/api/admin/action?action=deleteExamResult" method="POST" data-admin-action="deleteExamResult" style={{ display: 'inline' }}>
                           <input type="hidden" name="id" value={e.id} />
                           <DeleteButton
                             style={{ background: '#d9534f', color: '#fff', border: 0, padding: '4px 10px', borderRadius: '4px', fontSize: '12px', cursor: 'pointer' }}
@@ -604,7 +551,7 @@ export default async function Panel({ scope, edit }) {
             {/* ADD / UPDATE EXAM RESULT FORM */}
             <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
               <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Publish New Academic Assessment Result</h4>
-              <form action={saveExamResult} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
+              <form action="/api/admin/action?action=saveExamResult" method="POST" data-admin-action="saveExamResult" data-reset-on-save="true" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
                 <div className="form-group">
                   <label>Assessment Category *</label>
                   <select name="exam_category" required>
@@ -754,7 +701,7 @@ export default async function Panel({ scope, edit }) {
                       <td>
                         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                           {t.status !== 'approved' && (
-                            <form action={approveTestimonial} style={{ display: 'inline' }}>
+                            <form action="/api/admin/action?action=approveTestimonial" method="POST" data-admin-action="approveTestimonial" style={{ display: 'inline' }}>
                               <input type="hidden" name="id" value={t.id} />
                               <InlineActionButton
                                 label="✓ Approve"
@@ -765,7 +712,7 @@ export default async function Panel({ scope, edit }) {
                             </form>
                           )}
                           {t.status !== 'rejected' && (
-                            <form action={rejectTestimonial} style={{ display: 'inline' }}>
+                            <form action="/api/admin/action?action=rejectTestimonial" method="POST" data-admin-action="rejectTestimonial" style={{ display: 'inline' }}>
                               <input type="hidden" name="id" value={t.id} />
                               <InlineActionButton
                                 label="Reject"
@@ -775,7 +722,7 @@ export default async function Panel({ scope, edit }) {
                               />
                             </form>
                           )}
-                          <form action={deleteTestimonial} style={{ display: 'inline' }}>
+                          <form action="/api/admin/action?action=deleteTestimonial" method="POST" data-admin-action="deleteTestimonial" style={{ display: 'inline' }}>
                             <input type="hidden" name="id" value={t.id} />
                             <DeleteButton
                               style={{ background: '#d9534f', color: '#fff', border: 0, padding: '4px 10px', borderRadius: '3px', fontSize: '12px', cursor: 'pointer' }}
@@ -795,7 +742,7 @@ export default async function Panel({ scope, edit }) {
             {/* ADD PARENT TESTIMONIAL FORM */}
             <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px', marginTop: '20px' }}>
               <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Publish Parent / Guardian Testimonial Directly</h4>
-              <form action={addParentTestimonial} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
+              <form action="/api/admin/action?action=addParentTestimonial" method="POST" data-admin-action="addParentTestimonial" data-reset-on-save="true" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
                 <div className="form-group">
                   <label>Parent / Guardian Name *</label>
                   <input name="parent_name" placeholder="e.g. Eng. David Mwangi" required />
@@ -866,7 +813,7 @@ export default async function Panel({ scope, edit }) {
                     </div>
                   )}
                   <div style={{ marginTop: '12px', textAlign: 'right' }}>
-                    <form action={deleteLearnerTestimonial} style={{ display: 'inline' }}>
+                    <form action="/api/admin/action?action=deleteLearnerTestimonial" method="POST" data-admin-action="deleteLearnerTestimonial" style={{ display: 'inline' }}>
                       <input type="hidden" name="id" value={l.id} />
                       <DeleteButton
                         style={{ background: '#d9534f', color: '#fff', border: 0, padding: '4px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
@@ -883,7 +830,7 @@ export default async function Panel({ scope, edit }) {
             {/* ADD LEARNER VOICE FORM */}
             <div style={{ background: '#ffffff', border: '1px solid #e1e7f0', padding: '20px', borderRadius: '6px' }}>
               <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Add New Student Body Comment &amp; Photo</h4>
-              <form action={saveLearnerTestimonial} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
+              <form action="/api/admin/action?action=saveLearnerTestimonial" method="POST" data-admin-action="saveLearnerTestimonial" data-reset-on-save="true" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
                 <div className="form-group">
                   <label>Learner Full Name *</label>
                   <input name="name" placeholder="e.g. Brenda Cherono" required />
@@ -905,9 +852,9 @@ export default async function Panel({ scope, edit }) {
                   name="image_file"
                   accept="image/*"
                   type="image"
-                  maxSizeMB={15}
-                  label="Upload Scholar Photo (Max 15MB)"
-                  helpText="Supports JPG, PNG, WEBP, AVIF with instant preview"
+                  maxSizeMB={50}
+                  label="Upload Scholar Photo"
+                  helpText="Supports JPG, PNG, WEBP, AVIF with instant cloud upload"
                 />
                 <div className="form-group">
                   <label>Or Image URL Path</label>
@@ -937,16 +884,16 @@ export default async function Panel({ scope, edit }) {
             </div>
           </section>
 
-          {/* 1C-4. ALUMNI SUCCESS STORIES (PHOTOS & VIDEOS <= 10MB) */}
+          {/* 1C-4. ALUMNI SUCCESS STORIES (PHOTOS & VIDEOS) */}
           <section id="alumni" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
               <div>
                 <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
                   <i className="fa-solid fa-trophy" style={{ color: 'var(--gold-dark)', marginRight: '8px' }} />
-                  Alumni Success Stories &amp; Videos (Max 10MB)
+                  Alumni Success Stories &amp; Videos
                 </h2>
                 <p style={{ color: '#666', fontSize: '14px', margin: '4px 0 0' }}>
-                  Highlight alumni who have graduated from Pleasant View, their university/career milestones, photos, and video testimonials (video uploads strictly &le; 10MB).
+                  Highlight alumni who have graduated from Pleasant View, their university/career milestones, photos, and direct video testimonials.
                 </p>
               </div>
             </div>
@@ -978,7 +925,7 @@ export default async function Panel({ scope, edit }) {
                       {a.story}
                     </p>
                     <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid #eee', textAlign: 'right' }}>
-                      <form action={deleteAlumniStory} style={{ display: 'inline' }}>
+                      <form action="/api/admin/action?action=deleteAlumniStory" method="POST" data-admin-action="deleteAlumniStory" style={{ display: 'inline' }}>
                         <input type="hidden" name="id" value={a.id} />
                         <DeleteButton
                           style={{ background: '#d9534f', color: '#fff', border: 0, padding: '4px 10px', borderRadius: '3px', fontSize: '12px', cursor: 'pointer' }}
@@ -996,7 +943,7 @@ export default async function Panel({ scope, edit }) {
             {/* ADD ALUMNI STORY FORM */}
             <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
               <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Publish Alumni Success Story</h4>
-              <form action={saveAlumniStory} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
+              <form action="/api/admin/action?action=saveAlumniStory" method="POST" data-admin-action="saveAlumniStory" data-reset-on-save="true" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
                 <div className="form-group">
                   <label>Alumnus Full Name *</label>
                   <input name="name" placeholder="e.g. Dr. Kevin Njoroge" required />
@@ -1021,17 +968,17 @@ export default async function Panel({ scope, edit }) {
                   name="image_file"
                   accept="image/*"
                   type="image"
-                  maxSizeMB={15}
-                  label="Upload Alumni Photo (Max 15MB)"
-                  helpText="Supports JPG, PNG, WEBP, AVIF with instant preview"
+                  maxSizeMB={50}
+                  label="Upload Alumni Photo"
+                  helpText="Supports JPG, PNG, WEBP, AVIF with instant cloud upload"
                 />
                 <MediaFileInput
                   name="video_file"
-                  accept="video/mp4,video/webm,video/ogg,video/quicktime"
+                  accept="video/*,.mp4,.webm,.ogg,.mov,.m4v"
                   type="video"
-                  maxSizeMB={15}
-                  label="Or Direct Alumni Video Upload (Max 15MB)"
-                  helpText="⚡ Max 15MB (MP4/WebM/OGG/MOV). For larger videos, paste a YouTube link below."
+                  maxSizeMB={100}
+                  label="Or Direct Alumni Video Upload (Up to 100MB)"
+                  helpText="Supports MP4, WebM, MOV, OGG with chunked cloud upload & instant streaming"
                 />
                 <div className="form-group">
                   <label>Or Video / YouTube URL</label>
@@ -1105,7 +1052,7 @@ export default async function Panel({ scope, edit }) {
                       <td style={{ fontSize: '12.5px' }}>{ev.school_name || 'All Campuses'}</td>
                       <td style={{ fontSize: '12px', color: '#666' }}>{ev.location}</td>
                       <td>
-                        <form action={toggleEvent} style={{ display: 'inline' }}>
+                        <form action="/api/admin/action?action=toggleEvent" method="POST" data-admin-action="toggleEvent" style={{ display: 'inline' }}>
                           <input type="hidden" name="id" value={ev.id} />
                           <input type="hidden" name="is_active" value={ev.is_active} />
                           <InlineActionButton
@@ -1126,7 +1073,7 @@ export default async function Panel({ scope, edit }) {
                         </form>
                       </td>
                       <td>
-                        <form action={deleteEvent} style={{ display: 'inline' }}>
+                        <form action="/api/admin/action?action=deleteEvent" method="POST" data-admin-action="deleteEvent" style={{ display: 'inline' }}>
                           <input type="hidden" name="id" value={ev.id} />
                           <DeleteButton
                             style={{ background: '#d9534f', color: '#fff', border: 0, padding: '4px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
@@ -1145,7 +1092,7 @@ export default async function Panel({ scope, edit }) {
             {/* ADD EVENT FORM */}
             <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
               <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Publish New Calendar Event / Announcement</h4>
-              <form action={saveEvent} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
+              <form action="/api/admin/action?action=saveEvent" method="POST" data-admin-action="saveEvent" data-reset-on-save="true" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
                 <div className="form-group">
                   <label>Event Date *</label>
                   <input name="event_date" type="date" required />
@@ -1220,7 +1167,7 @@ export default async function Panel({ scope, edit }) {
                 </div>
               </div>
 
-              <form action={saveGlanceMetrics}>
+              <form action="/api/admin/action?action=saveGlanceMetrics" method="POST" data-admin-action="saveGlanceMetrics">
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginBottom: '20px' }}>
                   {glanceMetrics.map((m, idx) => (
                     <div key={m.id || idx} style={{ background: 'var(--soft-bg)', padding: '18px', borderRadius: '6px', borderLeft: '4px solid var(--gold-accent)' }}>
@@ -1285,7 +1232,7 @@ export default async function Panel({ scope, edit }) {
                     <p style={{ fontSize: '12.5px', color: '#666', margin: '0 0 10px', lineHeight: 1.4 }}>
                       {p.caption || 'No caption'}
                     </p>
-                    <form action={delPhoto} style={{ textAlign: 'right' }}>
+                    <form action="/api/admin/action?action=delPhoto" method="POST" data-admin-action="delPhoto" style={{ textAlign: 'right' }}>
                       <input type="hidden" name="id" value={p.id} />
                       <DeleteButton
                         confirmMessage="Are you sure you want to delete this photo?"
@@ -1302,7 +1249,7 @@ export default async function Panel({ scope, edit }) {
             {/* ADD NEW PHOTO FORM */}
             <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
               <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Upload / Add New School Life Picture</h4>
-              <form action={addSchoolLifePhoto} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
+              <form action="/api/admin/action?action=addSchoolLifePhoto" method="POST" data-admin-action="addSchoolLifePhoto" data-reset-on-save="true" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
                 <div className="form-group">
                   <label>Category *</label>
                   <select name="category" required>
@@ -1335,9 +1282,9 @@ export default async function Panel({ scope, edit }) {
                   name="image_file"
                   accept="image/*"
                   type="image"
-                  maxSizeMB={25}
-                  label="Upload Image File (Max 25MB)"
-                  helpText="Supports JPG, PNG, WEBP, GIF, AVIF up to 25MB with live preview"
+                  maxSizeMB={50}
+                  label="Upload Image File"
+                  helpText="Supports JPG, PNG, WEBP, GIF, AVIF up to 50MB with instant cloud upload"
                 />
                 <div className="form-group">
                   <label>Or Paste Image URL</label>
@@ -1368,16 +1315,16 @@ export default async function Panel({ scope, edit }) {
               )}
             </div>
 
-            <form action={saveSchool} key={es?.id || 0} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '18px' }}>
+            <form action="/api/admin/action?action=saveSchool" method="POST" data-admin-action="saveSchool" key={es?.id || 0} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '18px' }}>
               <input type="hidden" name="school_id" value={es ? es.id : 0} />
               {es && (
                 <MediaFileInput
                   name="image_file"
                   accept="image/*"
                   type="image"
-                  maxSizeMB={25}
-                  label="Upload New Division Cover Photo (Max 25MB)"
-                  helpText="Upload a photo to update this school division's cover image"
+                  maxSizeMB={50}
+                  label="Upload New Division Cover Photo"
+                  helpText="Upload a photo up to 50MB to update this school division's cover image"
                 />
               )}
               {keys.map(k => (
@@ -1443,7 +1390,7 @@ export default async function Panel({ scope, edit }) {
                     {m.message ? m.message.slice(0, 160) + '...' : ''}
                   </p>
                   <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
-                    <form action={delLeadershipMessage}>
+                    <form action="/api/admin/action?action=delLeadershipMessage" method="POST" data-admin-action="delLeadershipMessage">
                       <input type="hidden" name="id" value={m.id} />
                       <DeleteButton
                         confirmMessage="Remove this leadership message?"
@@ -1460,7 +1407,7 @@ export default async function Panel({ scope, edit }) {
             {/* ADD LEADERSHIP MESSAGE FORM */}
             <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
               <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Publish New Leadership Message</h4>
-              <form action={addLeadershipMessage} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
+              <form action="/api/admin/action?action=addLeadershipMessage" method="POST" data-admin-action="addLeadershipMessage" data-reset-on-save="true" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
                 <Pick />
                 <div className="form-group">
                   <label>Executive Role / Position *</label>
@@ -1493,9 +1440,9 @@ export default async function Panel({ scope, edit }) {
                   name="image_file"
                   accept="image/*"
                   type="image"
-                  maxSizeMB={25}
-                  label="Leader Photo Upload (Max 25MB)"
-                  helpText="Supports JPG, PNG, WEBP with live preview"
+                  maxSizeMB={50}
+                  label="Leader Photo Upload"
+                  helpText="Supports JPG, PNG, WEBP, AVIF up to 50MB with instant cloud upload"
                 />
                 <div className="form-group">
                   <label>Or Preset / Photo URL</label>
@@ -1562,7 +1509,7 @@ export default async function Panel({ scope, edit }) {
                         </span>
                       </td>
                       <td>
-                        <form action={delQuickLink} style={{ display: 'inline' }}>
+                        <form action="/api/admin/action?action=delQuickLink" method="POST" data-admin-action="delQuickLink" style={{ display: 'inline' }}>
                           <input type="hidden" name="id" value={l.id} />
                           <DeleteButton
                             confirmMessage="Delete this quick link?"
@@ -1581,7 +1528,7 @@ export default async function Panel({ scope, edit }) {
             {/* ADD QUICK LINK FORM */}
             <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
               <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Add New Quick Link</h4>
-              <form action={addQuickLink} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
+              <form action="/api/admin/action?action=addQuickLink" method="POST" data-admin-action="addQuickLink" data-reset-on-save="true" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
                 <div className="form-group">
                   <label>Link Title *</label>
                   <input name="title" placeholder="e.g. Term Dates & VISOs / Tenders and Bids" required />
@@ -1627,8 +1574,19 @@ export default async function Panel({ scope, edit }) {
               {vids.map(v => (
                 <div key={v.id} style={{ border: '1px solid #dde2ec', borderRadius: '6px', overflow: 'hidden', background: '#fff' }}>
                   <div style={{ position: 'relative', height: '160px', background: '#000' }}>
-                    <img src={v.thumbnail || '/images/hero_science_lab.jpg'} alt={v.title} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }} />
-                    <span style={{ position: 'absolute', top: '10px', left: '10px', background: 'var(--gold-accent)', color: '#000', padding: '2px 8px', borderRadius: '3px', fontSize: '11px', fontWeight: 800 }}>
+                    {v.youtube_url && (v.youtube_url.startsWith('/img/') || /\.(mp4|webm|ogg|mov|m4v)(\?|$)/i.test(v.youtube_url)) ? (
+                      <video
+                        src={v.youtube_url}
+                        poster={v.thumbnail || '/images/hero_science_lab.jpg'}
+                        controls
+                        playsInline
+                        preload="metadata"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <img src={v.thumbnail || '/images/hero_science_lab.jpg'} alt={v.title} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }} />
+                    )}
+                    <span style={{ position: 'absolute', top: '10px', left: '10px', background: 'var(--gold-accent)', color: '#000', padding: '2px 8px', borderRadius: '3px', fontSize: '11px', fontWeight: 800, pointerEvents: 'none' }}>
                       {v.category || 'Video'}
                     </span>
                   </div>
@@ -1637,7 +1595,7 @@ export default async function Panel({ scope, edit }) {
                     <p style={{ fontSize: '12px', color: '#666', margin: '0 0 8px' }}><code>{v.youtube_url}</code></p>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <small style={{ color: '#888' }}>{v.sname || 'All Campuses'}</small>
-                      <form action={delVideo}>
+                      <form action="/api/admin/action?action=delVideo" method="POST" data-admin-action="delVideo">
                         <input type="hidden" name="id" value={v.id} />
                         <DeleteButton
                           confirmMessage="Delete this video?"
@@ -1654,8 +1612,8 @@ export default async function Panel({ scope, edit }) {
 
             {/* ADD VIDEO FORM */}
             <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
-              <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Add New Video Link</h4>
-              <form action={addVideo} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
+              <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Add New Video Link or Upload</h4>
+              <form action="/api/admin/action?action=addVideo" method="POST" data-admin-action="addVideo" data-reset-on-save="true" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
                 <Pick />
                 <div className="form-group">
                   <label>Video Title *</label>
@@ -1667,11 +1625,11 @@ export default async function Panel({ scope, edit }) {
                 </div>
                 <MediaFileInput
                   name="video_file"
-                  accept="video/mp4,video/webm,video/ogg,video/quicktime"
+                  accept="video/*,.mp4,.webm,.ogg,.mov,.m4v"
                   type="video"
-                  maxSizeMB={15}
-                  label="Or Direct Video Upload (Max 15MB)"
-                  helpText="⚡ Supports MP4, WebM, OGG, QuickTime up to 15MB. For longer HD videos, paste a YouTube link above."
+                  maxSizeMB={100}
+                  label="Or Direct Video Upload (Up to 100MB)"
+                  helpText="⚡ Supports MP4, WebM, MOV, OGG up to 100MB via chunked cloud upload & instant range streaming."
                 />
                 <div className="form-group">
                   <label>Category</label>
@@ -1687,9 +1645,9 @@ export default async function Panel({ scope, edit }) {
                   name="thumbnail_file"
                   accept="image/*"
                   type="image"
-                  maxSizeMB={15}
-                  label="Video Thumbnail Upload (Max 15MB)"
-                  helpText="Custom cover image for the video player"
+                  maxSizeMB={50}
+                  label="Video Thumbnail Upload"
+                  helpText="Custom cover image up to 50MB for the video player"
                 />
                 <div className="form-group">
                   <label>Or Thumbnail URL</label>
@@ -1762,7 +1720,7 @@ export default async function Panel({ scope, edit }) {
                         </span>
                       </td>
                       <td>
-                        <form action={delJob} style={{ display: 'inline' }}>
+                        <form action="/api/admin/action?action=delJob" method="POST" data-admin-action="delJob" style={{ display: 'inline' }}>
                           <input type="hidden" name="id" value={j.id} />
                           <DeleteButton
                             confirmMessage="Delete this job vacancy?"
@@ -1781,7 +1739,7 @@ export default async function Panel({ scope, edit }) {
             {/* POST NEW JOB VACANCY FORM */}
             <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px', marginBottom: '35px' }}>
               <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Post New Career Opportunity</h4>
-              <form action={addJob} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
+              <form action="/api/admin/action?action=addJob" method="POST" data-admin-action="addJob" data-reset-on-save="true" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
                 <Pick />
                 <div className="form-group">
                   <label>Job Title *</label>
@@ -1878,7 +1836,7 @@ export default async function Panel({ scope, edit }) {
                           </span>
                         </td>
                         <td>
-                          <form action={delApplication} style={{ display: 'inline' }}>
+                          <form action="/api/admin/action?action=delApplication" method="POST" data-admin-action="delApplication" style={{ display: 'inline' }}>
                             <input type="hidden" name="id" value={a.id} />
                             <DeleteButton
                               confirmMessage="Delete this job application?"
@@ -1931,7 +1889,7 @@ export default async function Panel({ scope, edit }) {
             {/* ADD HERO SLIDE */}
             <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
               <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Add New Hero Slide</h4>
-              <form action={addHero} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
+              <form action="/api/admin/action?action=addHero" method="POST" data-admin-action="addHero" data-reset-on-save="true" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
                 <Pick />
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                   <label>Slide Headline *</label>
@@ -1945,9 +1903,9 @@ export default async function Panel({ scope, edit }) {
                   name="image"
                   accept="image/*"
                   type="image"
-                  maxSizeMB={25}
-                  label="Slide Photo Upload (Max 25MB)"
-                  helpText="High-resolution banner photo"
+                  maxSizeMB={50}
+                  label="Slide Photo Upload"
+                  helpText="High-resolution banner photo up to 50MB with instant cloud upload"
                 />
                 <div className="form-group">
                   <label>Or Pick Campus Preset Photo</label>
@@ -2029,7 +1987,7 @@ export default async function Panel({ scope, edit }) {
 
             <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
               <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Publish New News Story / Announcement</h4>
-              <form action={addPost} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
+              <form action="/api/admin/action?action=addPost" method="POST" data-admin-action="addPost" data-reset-on-save="true" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
                 <Pick />
                 <div className="form-group">
                   <label>Story Headline *</label>
@@ -2049,9 +2007,9 @@ export default async function Panel({ scope, edit }) {
                   name="image_file"
                   accept="image/*"
                   type="image"
-                  maxSizeMB={25}
-                  label="Story Photo Upload (Max 25MB)"
-                  helpText="Upload a cover image for this news story"
+                  maxSizeMB={50}
+                  label="Story Photo Upload"
+                  helpText="Upload a cover image up to 50MB for this news story"
                 />
                 <div className="form-group">
                   <label>Or Preset / Photo URL</label>
@@ -2117,7 +2075,7 @@ export default async function Panel({ scope, edit }) {
                           </span>
                         </td>
                         <td>
-                          <form action={delVisit} style={{ display: 'inline' }}>
+                          <form action="/api/admin/action?action=delVisit" method="POST" data-admin-action="delVisit" style={{ display: 'inline' }}>
                             <input type="hidden" name="id" value={v.id} />
                             <DeleteButton
                               confirmMessage="Delete this campus visit booking?"
@@ -2164,7 +2122,7 @@ export default async function Panel({ scope, edit }) {
                         <td style={{ maxWidth: '320px', fontSize: '12.5px' }}>{e.message}</td>
                         <td style={{ fontSize: '12px', color: '#666' }}>{e.created ? e.created.slice(0, 10) : '—'}</td>
                         <td>
-                          <form action={delEnquiry} style={{ display: 'inline' }}>
+                          <form action="/api/admin/action?action=delEnquiry" method="POST" data-admin-action="delEnquiry" style={{ display: 'inline' }}>
                             <input type="hidden" name="id" value={e.id} />
                             <DeleteButton
                               confirmMessage="Delete this parent enquiry?"
@@ -2235,7 +2193,7 @@ export default async function Panel({ scope, edit }) {
               <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px', borderLeft: '4px solid var(--primary-navy)' }}>
                 <h4 style={{ marginBottom: '8px' }}>Resend Email Gateway</h4>
                 <p style={{ fontSize: '13px', color: '#666', marginBottom: '10px' }}>Verify outbound transactional email delivery.</p>
-                <form action={testResend} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <form action="/api/admin/action?action=testResend" method="POST" data-admin-action="testResend" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   <input name="email" type="email" defaultValue="info@pleasantviewschools.co.ke" style={{ padding: '8px', fontSize: '13px', flex: 1 }} required />
                   <InlineActionButton
                     label="Send Test"
@@ -2301,7 +2259,7 @@ export default async function Panel({ scope, edit }) {
                             <summary style={{ cursor: 'pointer', color: 'var(--medium-blue)', fontWeight: 600, fontSize: '12px' }}>
                               Reply
                             </summary>
-                            <form action={replySMS} style={{ marginTop: '6px', display: 'grid', gap: '6px', background: 'var(--soft-bg)', padding: '10px', borderRadius: '4px' }}>
+                            <form action="/api/admin/action?action=replySMS" method="POST" data-admin-action="replySMS" data-reset-on-save="true" style={{ marginTop: '6px', display: 'grid', gap: '6px', background: 'var(--soft-bg)', padding: '10px', borderRadius: '4px' }}>
                               <input type="hidden" name="to" value={m.sender} />
                               <input type="hidden" name="sms_id" value={m.id} />
                               <input name="message" placeholder="Type SMS reply..." required style={{ padding: '6px', fontSize: '12px' }} />

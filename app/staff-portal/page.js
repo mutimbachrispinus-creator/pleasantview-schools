@@ -1,7 +1,6 @@
 import Panel from '@/components/AdminPanel';
 import LoginForm from '@/components/LoginForm';
 import { getAdmin, endSession } from '@/lib/auth';
-import { logout } from '@/app/hidden-admin/actions';
 
 export const dynamic = 'force-dynamic';
 export const metadata = {

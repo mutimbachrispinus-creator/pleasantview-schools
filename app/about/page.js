@@ -1,15 +1,16 @@
 import Page from '@/components/Page';
 import Link from 'next/link';
-import { S, getExamResults, getPhotos } from '@/lib/db';
+import { S, getExamResults, getPhotos, getLeadershipMessages } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'About Our Heritage, Mission & Academic Eminence' };
 
 export default async function About() {
-  const [s, examResults, photos] = await Promise.all([
+  const [s, examResults, photos, leadMessages] = await Promise.all([
     S(),
     getExamResults(),
-    getPhotos().catch(() => [])
+    getPhotos().catch(() => []),
+    getLeadershipMessages(0).catch(() => [])
   ]);
 
   const nationalExams = examResults.filter(e => e.exam_category === 'national');
@@ -63,6 +64,52 @@ export default async function About() {
           </p>
         </div>
       </div>
+
+      {/* EXECUTIVE & LEADERSHIP MESSAGES */}
+      {Array.isArray(leadMessages) && leadMessages.length > 0 && (
+        <div id="leadership" style={{ marginTop: '45px', marginBottom: '35px' }}>
+          <span className="lead-badge">GOVERNANCE &amp; STEWARDSHIP</span>
+          <h3 style={{ marginTop: '8px', marginBottom: '18px' }}>Executive &amp; Leadership Messages</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '22px' }}>
+            {leadMessages.map((lm) => (
+              <div
+                key={lm.id}
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid #dde2ec',
+                  borderLeft: '4px solid var(--primary-navy)',
+                  borderRadius: '8px',
+                  padding: '24px',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.04)'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '14px' }}>
+                  <img
+                    src={lm.image || '/images/banner_3_a.webp'}
+                    alt={lm.name}
+                    style={{ width: '68px', height: '68px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--gold-accent)', flexShrink: 0 }}
+                  />
+                  <div>
+                    <span style={{ fontSize: '11px', fontWeight: 800, background: 'var(--primary-navy)', color: '#fff', padding: '2px 8px', borderRadius: '3px', textTransform: 'uppercase' }}>
+                      {lm.role || 'Leadership'}
+                    </span>
+                    <h4 style={{ margin: '6px 0 2px', color: 'var(--primary-navy)', fontSize: '17px' }}>{lm.name}</h4>
+                    <small style={{ color: '#666', fontSize: '12.5px' }}>{lm.title}</small>
+                  </div>
+                </div>
+                {lm.quote && (
+                  <blockquote style={{ margin: '0 0 12px', padding: '10px 12px', background: 'var(--soft-bg)', borderLeft: '3px solid var(--gold-accent)', fontStyle: 'italic', fontSize: '13.5px', color: '#333' }}>
+                    &ldquo;{lm.quote}&rdquo;
+                  </blockquote>
+                )}
+                <p style={{ fontSize: '14.5px', color: '#444', lineHeight: 1.7, margin: 0, whiteSpace: 'pre-line' }}>
+                  {lm.message}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* 24 YEARS OF ACADEMIC EMINENCE */}
       <h3 id="legacy" style={{ marginTop: '45px', marginBottom: '15px' }}>24 Years of Academic Eminence</h3>

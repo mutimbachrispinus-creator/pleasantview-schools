@@ -1,6 +1,7 @@
 'use client';
 import { useState, useTransition } from 'react';
-import { sendWebmail, simulateInboundEmail, delInbound, replyEmail } from '@/app/hidden-admin/actions';
+import { useRouter } from 'next/navigation';
+import { callAdminAction } from '@/lib/adminClient';
 
 export default function WebmailClient({
   inboundEmails = [],
@@ -18,6 +19,7 @@ export default function WebmailClient({
   const [showResendInfo, setShowResendInfo] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   // Pre-seed core accounts if empty
   const coreAccounts = [
@@ -112,9 +114,14 @@ export default function WebmailClient({
     const fd = new FormData(e.currentTarget);
     startTransition(async () => {
       try {
-        await sendWebmail(fd);
+        const res = await callAdminAction('sendWebmail', fd);
+        if (res?.ok === false) {
+          showToast('Dispatch notice: ' + (res.error || 'Could not send email.'));
+          return;
+        }
         setShowCompose(false);
         showToast('Email dispatched via Resend and recorded to outbound log!');
+        router.refresh();
       } catch (err) {
         showToast('Dispatched with status note: ' + err.message);
       }
@@ -126,9 +133,14 @@ export default function WebmailClient({
     const fd = new FormData(e.currentTarget);
     startTransition(async () => {
       try {
-        await simulateInboundEmail(fd);
+        const res = await callAdminAction('simulateInboundEmail', fd);
+        if (res?.ok === false) {
+          showToast('Simulation error: ' + (res.error || 'Failed.'));
+          return;
+        }
         setShowSimulate(false);
         showToast('Inbound email simulated! Appears in inbox immediately.');
+        router.refresh();
       } catch (err) {
         showToast('Simulation error: ' + err.message);
       }
@@ -140,9 +152,14 @@ export default function WebmailClient({
     const fd = new FormData(e.currentTarget);
     startTransition(async () => {
       try {
-        await replyEmail(fd);
+        const res = await callAdminAction('replyEmail', fd);
+        if (res?.ok === false) {
+          showToast('Reply notice: ' + (res.error || 'Failed.'));
+          return;
+        }
         showToast('Reply dispatched via Resend!');
         setSelectedMessage(prev => prev ? { ...prev, status: 'replied' } : null);
+        router.refresh();
       } catch (err) {
         showToast('Reply notice: ' + err.message);
       }
@@ -155,9 +172,10 @@ export default function WebmailClient({
     fd.append('t', msg.type === 'inbound' ? 'inbound_emails' : 'comm_logs');
     fd.append('id', String(msg.id));
     startTransition(async () => {
-      await delInbound(fd);
+      await callAdminAction('delInbound', fd);
       if (selectedMessage?.id === msg.id) setSelectedMessage(null);
       showToast('Message deleted.');
+      router.refresh();
     });
   };
 
