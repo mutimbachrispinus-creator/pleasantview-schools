@@ -48,7 +48,7 @@ export default async function SchoolHome({ params }) {
     <>
       <Slider slides={slides} base={b} />
 
-      {/* STATS BAR FOR THIS DIVISION */}
+      {/* STATS BAR FOR THIS SCHOOL */}
       <section className="stats-bar-section" style={{ backgroundColor: 'var(--dark-navy)' }}>
         <div className="wrapper">
           <div className="stats-grid">
@@ -72,12 +72,12 @@ export default async function SchoolHome({ params }) {
         </div>
       </section>
 
-      {/* WELCOME / ABOUT DIVISION */}
+      {/* WELCOME / ABOUT SCHOOL */}
       <section className="subpage-body">
         <div className="wrapper">
           <BackButton fallback="/#schools" label="All Schools" current={s.name.replace(/Pleasantview/gi, 'Pleasant View')} />
           <div style={{ maxWidth: '960px', margin: '0 auto' }}>
-            <span className="lead-badge reveal-on-scroll">WELCOME TO {s.category || 'OUR DIVISION'}</span>
+            <span className="lead-badge reveal-on-scroll">WELCOME TO {s.category || 'OUR SCHOOL'}</span>
             <h2 className="reveal-on-scroll">Nurturing Distinction at {s.name.replace(/Pleasantview/gi, 'Pleasant View')}</h2>
             <div className="gold-divider reveal-on-scroll" style={{ marginLeft: 0 }} />
 
@@ -87,11 +87,11 @@ export default async function SchoolHome({ params }) {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '25px', margin: '35px 0' }}>
               <div style={{ background: 'var(--soft-bg)', padding: '25px', borderRadius: '4px', borderLeft: `4px solid ${s.color || '#8B1E2D'}` }}>
-                <h4 style={{ marginBottom: '10px' }}>Division Vision</h4>
+                <h4 style={{ marginBottom: '10px' }}>School Vision</h4>
                 <p style={{ fontSize: '14.5px', color: '#555', lineHeight: 1.6 }}>{s.vision || 'Cultivating intellectual curiosity and moral character.'}</p>
               </div>
               <div style={{ background: 'var(--soft-bg)', padding: '25px', borderRadius: '4px', borderLeft: '4px solid var(--gold-accent)' }}>
-                <h4 style={{ marginBottom: '10px' }}>Division Mission</h4>
+                <h4 style={{ marginBottom: '10px' }}>School Mission</h4>
                 <p style={{ fontSize: '14.5px', color: '#555', lineHeight: 1.6 }}>{s.mission || 'To prepare learners for future challenges with sound competencies and faith.'}</p>
               </div>
             </div>

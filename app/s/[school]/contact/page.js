@@ -1,6 +1,6 @@
 import Form from '@/components/Form';
 
-export const metadata = { title: 'Contact Division Desk' };
+export const metadata = { title: 'Contact School Desk' };
 
 export default async function P({ params, searchParams }) {
   const { school } = await params;

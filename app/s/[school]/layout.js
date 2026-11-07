@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 export async function generateMetadata({ params }) {
   const s = await getSchool((await params).school);
   return {
-    title: s ? `${s.name} (${s.category || 'School'})` : 'School Division'
+    title: s ? `${s.name} (${s.category || 'School'})` : 'School'
   };
 }
 
@@ -22,14 +22,14 @@ export default async function SchoolLayout({ children, params }) {
         <div className="wrapper">
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <span style={{ background: 'rgba(255,255,255,0.22)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 800, letterSpacing: '1px', color: '#fff' }}>
-              {s.category || 'DIVISION'}
+              {s.category || 'SCHOOL'}
             </span>
             <h4 style={{ margin: 0, color: '#ffffff', fontSize: '17px', fontWeight: 700 }}>{s.name}</h4>
           </div>
           <ul className="school-subbar-links">
             {[
               ['', 'Overview'],
-              ['/about', 'About Division'],
+              ['/about', 'About School'],
               ['/academics', 'Academics (CBE)'],
               ['/news', 'Campus News'],
               ['/gallery', 'Pictorial & Gallery'],

@@ -10,7 +10,7 @@ const SOURCE_LABELS = {
   leadership: 'Leadership',
   alumni: 'Alumni',
   learner: 'Student Voice',
-  school: 'Campus Division',
+  school: 'School',
   video: 'Video Highlight'
 };
 

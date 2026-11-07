@@ -518,14 +518,15 @@ export default async function Home({ searchParams }) {
       </section>
 
       {/* THE WALKER SCHOOL INSPIRED PROGRAM FINDER */}
-      <section className="program-finder-section" id="programs">
+      <section className="program-finder-section" id="schools">
+        <span id="programs" style={{ display: 'block', height: 0, overflow: 'hidden' }} aria-hidden="true" />
         <div className="wrapper">
           <div style={{ textAlign: 'center', maxWidth: '780px', margin: '0 auto' }}>
             <span style={{ color: 'var(--gold-dark)', fontSize: '12px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase' }}>
               CHOOSE YOUR CHILD&apos;S PATHWAY
             </span>
             <h2 style={{ fontSize: 'clamp(26px, 2.6vw, 36px)', fontFamily: 'Cinzel, serif', color: 'var(--primary-navy)', margin: '6px 0' }}>
-              Explore Programs by Academic Division
+              Explore Our Schools
             </h2>
             <div className="gold-divider" style={{ margin: '12px auto' }} />
             <p style={{ color: '#666', fontSize: '15px' }}>
@@ -540,7 +541,7 @@ export default async function Home({ searchParams }) {
                   className="program-card-img"
                   style={{ backgroundImage: `url('${s.image || '/images/banner_1_a.webp'}')` }}
                 >
-                  <span className="program-card-badge">{s.category || 'Division'}</span>
+                  <span className="program-card-badge">{s.category || 'School'}</span>
                 </div>
                 <div className="program-card-body">
                   <h4>{String(s.name || '').replace(/pleasantview/gi, 'Pleasant View')}</h4>
@@ -558,7 +559,7 @@ export default async function Home({ searchParams }) {
                   </div>
                   <div className="program-card-actions">
                     <Link href={`/s/${s.slug}`} className="program-action-explore">
-                      <span>Explore Campus</span>
+                      <span>Explore School</span>
                       <i className="fa-solid fa-arrow-right" />
                     </Link>
                     <Link href={`/contact?school=${s.slug}#visit`} className="program-action-apply">
@@ -917,7 +918,7 @@ export default async function Home({ searchParams }) {
             <h3>What Parents Say About Pleasant View</h3>
             <div className="gold-divider" />
             <p style={{ maxWidth: '680px', margin: '10px auto 0', color: '#666', fontSize: '15px' }}>
-              Real perspectives from our parent community across our Early Learning, Primary, Junior Secondary (JSS), and Senior High School divisions.
+              Real perspectives from our parent community across our Early Learning, Primary, Junior Secondary (JSS), and Senior High Schools.
             </p>
           </div>
 
@@ -985,7 +986,7 @@ export default async function Home({ searchParams }) {
               </div>
 
               <div className="form-group">
-                <label>Division &amp; Grade / Class *</label>
+                <label>School &amp; Grade / Class *</label>
                 <input name="grade_or_division" placeholder="e.g. Grade 7 JSS or Form 2 Senior" required />
               </div>
 

@@ -125,12 +125,12 @@ export default async function ContactPage({ searchParams }) {
               <form action="/api/public/submit?action=book" method="POST" data-public-action="book">
                 <input type="hidden" name="return_to" value="/contact" />
                 <div className="form-group">
-                  <label>Select School Division / Campus *</label>
+                  <label>Select School / Campus *</label>
                   <select name="school" defaultValue={selectedBranch} style={{ padding: '12px', fontSize: '14px', width: '100%', borderRadius: '4px', border: '1px solid #ccc', fontWeight: 600 }}>
-                    <option value="all">Pleasant View Schools Main Campus (All Divisions)</option>
+                    <option value="all">Pleasant View Schools Main Campus (All Schools)</option>
                     {schList.map(s => (
                       <option key={s.id} value={s.slug}>
-                        {s.name} ({s.category || 'Division'}) &bull; {s.level}
+                        {s.name} ({s.category || 'School'}) &bull; {s.level}
                       </option>
                     ))}
                   </select>
@@ -201,9 +201,9 @@ export default async function ContactPage({ searchParams }) {
                 <input type="hidden" name="return_to" value="/contact" />
                 <div className="form-two-col">
                   <div className="form-group">
-                    <label>Campus Division</label>
+                    <label>School</label>
                     <select name="school" defaultValue={selectedBranch} style={{ padding: '12px', fontSize: '14px', width: '100%', borderRadius: '4px', border: '1px solid #ccc', fontWeight: 600 }}>
-                      <option value="all">All Campuses (General Admissions)</option>
+                      <option value="all">All Schools (General Admissions)</option>
                       {schList.map(s => (
                         <option key={s.id} value={s.slug}>
                           {s.name} &bull; {s.level}
@@ -441,7 +441,7 @@ export default async function ContactPage({ searchParams }) {
             {/* CAMPUS SPECIFIC CONTACTS */}
             <div style={{ background: '#ffffff', padding: '22px 18px', borderRadius: '8px', border: '1px solid #dde2ec', boxShadow: '0 4px 16px rgba(0,0,0,0.03)' }}>
               <h4 style={{ fontSize: '16px', marginBottom: '14px', color: 'var(--primary-navy)', fontWeight: 800 }}>
-                Academic Division Desks
+                Schools Contact Desks
               </h4>
               <div style={{ display: 'grid', gap: '10px' }}>
                 {schList.map(s => {
@@ -460,7 +460,7 @@ export default async function ContactPage({ searchParams }) {
                       </div>
                       <div style={{ marginTop: '6px' }}>
                         <Link href={`/s/${s.slug}/visit`} style={{ fontSize: '11.5px', fontWeight: 700, color: 'var(--primary-red)', textDecoration: 'none' }}>
-                          Book Division Tour &rarr;
+                          Book School Tour &rarr;
                         </Link>
                       </div>
                     </div>

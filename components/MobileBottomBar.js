@@ -150,7 +150,7 @@ export default function MobileBottomBar({
       <div className={`mobile-bottom-drawer ${openDrawer === 'schools' ? 'open' : ''}`}>
         <div className="drawer-handle" />
         <div className="drawer-header">
-          <h4><i className="fa-solid fa-graduation-cap" style={{ color: 'var(--gold-accent)' }} /> Academic Divisions</h4>
+          <h4><i className="fa-solid fa-graduation-cap" style={{ color: 'var(--gold-accent)' }} /> Schools</h4>
           <button type="button" onClick={closeDrawer} className="drawer-close-btn">&times;</button>
         </div>
         <div className="drawer-grid">
@@ -225,7 +225,7 @@ export default function MobileBottomBar({
           type="button"
           onClick={() => toggleDrawer('schools')}
           className={`m-bar-btn ${openDrawer === 'schools' ? 'active' : ''}`}
-          title="Browse School Divisions"
+          title="Browse Schools"
         >
           <i className="fa-solid fa-graduation-cap" />
           <span>Schools</span>

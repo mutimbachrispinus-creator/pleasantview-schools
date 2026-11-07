@@ -40,7 +40,7 @@ export default function WebmailClient({
       allAccountsMap.set(s.email, {
         email: s.email,
         display_name: `${s.name} Admin`,
-        department: s.category || 'Division'
+        department: s.category || 'School'
       });
     }
   });

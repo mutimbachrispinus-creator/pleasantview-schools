@@ -95,7 +95,7 @@ export default async function Panel({ scope, edit }) {
       <input type="hidden" name="school_id" value={scope} />
     ) : (
       <div className="form-group">
-        <label>Select Target School Division</label>
+        <label>Select Target School</label>
         <select name="school_id">
           <option value="0">All Schools (Group Main)</option>
           {list.map(s => (
@@ -180,7 +180,7 @@ export default async function Panel({ scope, edit }) {
                 <div>
                   <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
                     <i className="fa-solid fa-school" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
-                    School Divisions, Campuses &amp; Branches
+                    Schools, Campuses &amp; Branches
                   </h2>
                   <p style={{ color: '#666', fontSize: '14px', margin: '4px 0 0' }}>
                     Configure campus names, categories, education levels, physical locations, and assigned branch administrators.
@@ -258,9 +258,9 @@ export default async function Panel({ scope, edit }) {
                 </table>
               </div>
 
-              {/* ADD NEW SCHOOL DIVISION */}
+              {/* ADD NEW SCHOOL */}
               <div style={{ marginTop: '25px', background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
-                <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Add New School Branch / Division</h4>
+                <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Add New School / Branch</h4>
                 <form action="/api/admin/action?action=addSchool" method="POST" data-admin-action="addSchool" data-reset-on-save="true" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
                   <div className="form-group">
                     <label>School Name *</label>
@@ -309,7 +309,7 @@ export default async function Panel({ scope, edit }) {
                     <input name="ratio" placeholder="e.g. 1:20" defaultValue="1:20" />
                   </div>
                   <div className="form-group">
-                    <label>Division Color Theme</label>
+                    <label>School Color Theme</label>
                     <input name="color" type="color" defaultValue="#8B1E2D" style={{ height: '44px', width: '100%' }} />
                   </div>
                   <MediaFileInput
@@ -317,7 +317,7 @@ export default async function Panel({ scope, edit }) {
                     accept="image/*"
                     type="image"
                     maxSizeMB={50}
-                    label="Division Cover Photo"
+                    label="School Cover Photo"
                     helpText="Supports JPG, PNG, WEBP with automatic cloud optimization"
                   />
                   <FormSubmitButton
@@ -436,7 +436,7 @@ export default async function Panel({ scope, edit }) {
                       <option value="All Campuses">All Campuses (Central Executive)</option>
                       {list.map(s => (
                         <option key={s.id} value={s.name}>
-                          {s.name} ({s.category || 'Division'})
+                          {s.name} ({s.category || 'School'})
                         </option>
                       ))}
                     </select>
@@ -493,7 +493,7 @@ export default async function Panel({ scope, edit }) {
                   <tr>
                     <th>Category</th>
                     <th>Exam / Assessment Name</th>
-                    <th>School / Division</th>
+                    <th>School</th>
                     <th>Year</th>
                     <th>Mean Score / Band</th>
                     <th>Cohort</th>
@@ -564,7 +564,7 @@ export default async function Panel({ scope, edit }) {
                 </div>
 
                 <div className="form-group">
-                  <label>Target School Division *</label>
+                  <label>Target School *</label>
                   <select name="school_name">
                     <option value="All Campuses">All Campuses (Group Aggregate)</option>
                     {list.map(s => (
@@ -755,7 +755,7 @@ export default async function Panel({ scope, edit }) {
                   <input name="learner_name" placeholder="e.g. Grace Mwangi" />
                 </div>
                 <div className="form-group">
-                  <label>Grade / Division *</label>
+                  <label>Grade / School *</label>
                   <input name="grade_or_division" placeholder="e.g. Grade 8 JSS / Form 2 Senior School" required />
                 </div>
                 <div className="form-group">
@@ -843,7 +843,7 @@ export default async function Panel({ scope, edit }) {
                   <input name="grade_or_class" placeholder="e.g. Form 3 Senior Girls or Grade 8 JSS" required />
                 </div>
                 <div className="form-group">
-                  <label>Campus Division *</label>
+                  <label>School *</label>
                   <select name="school_name">
                     <option value="All Campuses">All Campuses</option>
                     {list.map(s => (
@@ -956,7 +956,7 @@ export default async function Panel({ scope, edit }) {
                   <input name="grad_year" placeholder="e.g. Class of 2017" required />
                 </div>
                 <div className="form-group">
-                  <label>Division Attended</label>
+                  <label>School Attended</label>
                   <input name="campus_division" defaultValue="Pleasant View Senior School" />
                 </div>
                 <div className="form-group">
@@ -1030,7 +1030,7 @@ export default async function Panel({ scope, edit }) {
                     <th>Time</th>
                     <th>Event Title</th>
                     <th>Category</th>
-                    <th>Division / Branch</th>
+                    <th>School / Branch</th>
                     <th>Location</th>
                     <th>Visibility</th>
                     <th>Actions</th>
@@ -1116,7 +1116,7 @@ export default async function Panel({ scope, edit }) {
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>Target School Division *</label>
+                  <label>Target School *</label>
                   <select name="school_name">
                     <option value="All Campuses">All Campuses (Entire School Group)</option>
                     {list.map(s => (
@@ -1388,7 +1388,7 @@ export default async function Panel({ scope, edit }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
               <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
                 <i className="fa-solid fa-pen-to-square" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
-                Editing Details: {es ? `${es.name} (${es.category || 'Division'})` : 'Main Group Institution (PLEASANT VIEW SCHOOLS)'}
+                Editing Details: {es ? `${es.name} (${es.category || 'School'})` : 'Main Group Institution (PLEASANT VIEW SCHOOLS)'}
               </h2>
               {!scope && es && (
                 <Link href="?" style={{ color: 'var(--medium-blue)', fontWeight: 700 }}>
@@ -1405,8 +1405,8 @@ export default async function Panel({ scope, edit }) {
                   accept="image/*"
                   type="image"
                   maxSizeMB={50}
-                  label="Upload New Division Cover Photo"
-                  helpText="Upload a photo up to 50MB to update this school division's cover image"
+                  label="Upload New School Cover Photo"
+                  helpText="Upload a photo up to 50MB to update this school's cover image"
                 />
               )}
               {keys.map(k => (

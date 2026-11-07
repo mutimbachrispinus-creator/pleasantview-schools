@@ -134,9 +134,9 @@ export default function HeaderNav({
                   </ul>
                 </li>
 
-                {/* 2. ACADEMIC DIVISIONS */}
+                {/* 2. SCHOOLS */}
                 <li className="has-dropdown">
-                  <Link href="/#schools">Divisions <i className="fa-solid fa-angle-down nav-arrow" /></Link>
+                  <Link href="/#schools">Schools <i className="fa-solid fa-angle-down nav-arrow" /></Link>
                   <ul className="sub-menu">
                     {schools.length > 0 ? (
                       schools.map(s => {
@@ -289,14 +289,14 @@ export default function HeaderNav({
             </Link>
           </div>
 
-          {/* ACCORDION: ACADEMIC DIVISIONS */}
+          {/* ACCORDION: SCHOOLS */}
           <div className="drawer-accordion">
             <button
               type="button"
               className={`accordion-trigger ${openAccordion === 'divisions' ? 'active' : ''}`}
               onClick={() => toggleAccordion('divisions')}
             >
-              <span><i className="fa-solid fa-graduation-cap" style={{ color: '#fda4af', marginRight: '10px' }} /> Academic Divisions</span>
+              <span><i className="fa-solid fa-graduation-cap" style={{ color: '#fda4af', marginRight: '10px' }} /> Schools</span>
               <i className={`fa-solid fa-chevron-down acc-icon ${openAccordion === 'divisions' ? 'rotated' : ''}`} />
             </button>
             <div className={`accordion-panel ${openAccordion === 'divisions' ? 'expanded' : ''}`}>

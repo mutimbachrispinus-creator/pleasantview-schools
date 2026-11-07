@@ -194,7 +194,7 @@ export default async function RootLayout({ children }) {
             </div>
 
             <div className="footer-col links">
-              <h5 className="column-title">Our Campuses</h5>
+              <h5 className="column-title">Our Schools</h5>
               <ul>
                 {schList.map(s => {
                   const cleanName = String(s.name || '').replace(/pleasantview/gi, 'Pleasant View');
