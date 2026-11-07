@@ -1,5 +1,6 @@
 import Page from '@/components/Page';
 import Link from 'next/link';
+import PictorialGallery from '@/components/PictorialGallery';
 import { S, getExamResults, getPhotos, getLeadershipMessages } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
@@ -139,58 +140,26 @@ export default async function About() {
 
       {/* SCHOOL LIFE & CAMPUS GALLERY */}
       <div id="life" style={{ marginTop: '45px', marginBottom: '35px' }}>
-        <span className="lead-badge" id="sports">CAMPUS LIFE &amp; CO-CURRICULAR</span>
-        <h3 style={{ marginTop: '8px', marginBottom: '15px' }}>School Life &amp; Campus Photo Gallery</h3>
-        <p style={{ lineHeight: 1.8, fontSize: '15.5px', color: '#555', marginBottom: '24px' }}>
-          Explore daily moments of academic discovery, sports, clubs, pastoral care, and vibrant community life across Pleasant View Schools.
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '12px', marginBottom: '12px' }}>
+          <div>
+            <span className="lead-badge" id="sports">CAMPUS LIFE &amp; CO-CURRICULAR</span>
+            <h3 style={{ marginTop: '8px', marginBottom: 0 }}>School Pictorial &amp; Campus Photo Gallery</h3>
+          </div>
+          <Link href="/pictorial" className="button button-tertiary" style={{ padding: '7px 16px', fontSize: '12.5px' }}>
+            Full Pictorial Archive &rarr;
+          </Link>
+        </div>
+        <p style={{ lineHeight: 1.8, fontSize: '15.5px', color: '#555', marginBottom: '22px' }}>
+          Explore daily moments of science laboratory discovery, sports, classroom excellence, pastoral boarding care, and vibrant community life across Pleasant View Schools.
         </p>
         {Array.isArray(photos) && photos.length > 0 && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
-            {photos.map((p) => (
-              <div
-                key={p.id}
-                style={{
-                  background: '#ffffff',
-                  borderRadius: '8px',
-                  overflow: 'hidden',
-                  border: '1px solid #dde2ec',
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.05)'
-                }}
-              >
-                <div style={{ position: 'relative', height: '210px', overflow: 'hidden', background: '#0f1d3a' }}>
-                  <img
-                    src={p.image}
-                    alt={p.title || p.caption || p.category || 'Pleasant View School Life'}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                  />
-                  {p.category && (
-                    <span
-                      style={{
-                        position: 'absolute',
-                        top: '10px',
-                        left: '10px',
-                        background: 'rgba(139,30,45,0.92)',
-                        color: '#ffffff',
-                        fontSize: '10.5px',
-                        fontWeight: 800,
-                        padding: '3px 9px',
-                        borderRadius: '4px',
-                        textTransform: 'uppercase'
-                      }}
-                    >
-                      {p.category}
-                    </span>
-                  )}
-                </div>
-                {(p.title || p.caption) && (
-                  <div style={{ padding: '14px 16px' }}>
-                    {p.title && <h4 style={{ margin: '0 0 6px', fontSize: '15.5px', color: 'var(--primary-navy)' }}>{p.title}</h4>}
-                    {p.caption && <p style={{ margin: 0, fontSize: '13.5px', color: '#555', lineHeight: 1.5 }}>{p.caption}</p>}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+          <PictorialGallery
+            photos={photos}
+            compact={true}
+            maxCompactItems={9}
+            fullPictorialHref="/pictorial"
+            fullPictorialLabel="Open Full School Pictorial"
+          />
         )}
       </div>
 

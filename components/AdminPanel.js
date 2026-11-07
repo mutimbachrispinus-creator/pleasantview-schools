@@ -14,6 +14,8 @@ import {
   S,
   schools,
   CATS,
+  PICTORIAL_CATEGORIES,
+  PICTORIAL_CATEGORY_META,
   D,
   SF,
   getAdminPanelData,
@@ -158,7 +160,7 @@ export default async function Panel({ scope, edit }) {
             <a href="#alumni" style={{ color: 'var(--primary-red)', fontWeight: 700 }}>🏆 Alumni ({alumniList.length})</a>
             <a href="#events" style={{ color: 'var(--primary-red)', fontWeight: 700 }}>📅 Events ({eventsList.length})</a>
             <a href="#metrics" style={{ color: 'var(--primary-navy)' }}>📊 Distinction Metrics</a>
-            <a href="#gallery" style={{ color: 'var(--primary-navy)' }}>📸 Gallery ({schoolLifePhotos.length})</a>
+            <a href="#gallery" style={{ color: 'var(--primary-red)', fontWeight: 700 }}>📸 Pictorial ({schoolLifePhotos.length})</a>
             <a href="#editor" style={{ color: 'var(--primary-navy)' }}>📝 Profile</a>
             <a href="#leadership" style={{ color: 'var(--primary-navy)' }}>🎙️ Leadership</a>
             <a href="#quicklinks" style={{ color: 'var(--primary-navy)' }}>⚡ Quick Links</a>
@@ -1202,98 +1204,177 @@ export default async function Panel({ scope, edit }) {
             </section>
           )}
 
-          {/* 1D. SCHOOL LIFE PHOTO GALLERY MANAGER */}
+          {/* 1D. SCHOOL PICTORIAL & PHOTO GALLERY MANAGER */}
           <section id="gallery" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
-              <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px', flexWrap: 'wrap', gap: '12px' }}>
+              <div style={{ maxWidth: '780px' }}>
                 <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
                   <i className="fa-solid fa-images" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
-                  School Life Photo Gallery Manager ({schoolLifePhotos.length})
+                  School Pictorial &amp; Photo Gallery Manager ({schoolLifePhotos.length})
                 </h2>
-                <p style={{ color: '#666', fontSize: '14px', margin: '4px 0 0' }}>
-                  Upload and manage pictures across various categories of school life (Academic &amp; STEM, Sports &amp; Athletics, Boarding Life, Creative Arts, Spiritual Life, Campus Environment).
+                <p style={{ color: '#666', fontSize: '13.5px', margin: '6px 0 0', lineHeight: 1.55 }}>
+                  Every photo uploaded anywhere in the Staff Portal (News, Hero Banners, Student Voices, Alumni, Leadership, Campuses, or directly below) is <strong>automatically included in the School Pictorial</strong> and smart-categorized into <em>Science &amp; Labs</em>, <em>Sports &amp; Athletics</em>, <em>Academics &amp; Classroom</em>, <em>Boarding &amp; Pastoral</em>, <em>Clubs, Music &amp; Arts</em>, <em>Events &amp; Chapel</em>, <em>Campus &amp; Facilities</em>, or <em>Community &amp; Leadership</em>. You can also adjust any photo&apos;s category below.
                 </p>
               </div>
+              <Link
+                href="/pictorial"
+                target="_blank"
+                className="button button-tertiary"
+                style={{ padding: '7px 14px', fontSize: '12.5px', whiteSpace: 'nowrap' }}
+              >
+                <i className="fa-solid fa-arrow-up-right-from-square" style={{ marginRight: '6px' }} />
+                Open Live Pictorial
+              </Link>
+            </div>
+
+            {/* CATEGORY BREAKDOWN PILLS */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '20px' }}>
+              {PICTORIAL_CATEGORIES.map(cat => {
+                const count = schoolLifePhotos.filter(p => p.category === cat).length;
+                return (
+                  <span
+                    key={cat}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      fontSize: '11.5px',
+                      fontWeight: 700,
+                      padding: '4px 10px',
+                      borderRadius: '999px',
+                      background: count > 0 ? '#f1f5f9' : '#f8fafc',
+                      color: count > 0 ? 'var(--primary-navy)' : '#94a3b8',
+                      border: '1px solid #e2e8f0'
+                    }}
+                  >
+                    <i className={PICTORIAL_CATEGORY_META[cat]?.icon || 'fa-solid fa-tag'} style={{ color: 'var(--primary-red)' }} />
+                    {cat}: <strong>{count}</strong>
+                  </span>
+                );
+              })}
             </div>
 
             {/* CURRENT PHOTOS GRID */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '18px', marginBottom: '30px' }}>
-              {schoolLifePhotos.map(p => (
-                <div key={p.id} style={{ border: '1px solid #e1e6ef', borderRadius: '6px', overflow: 'hidden', background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                  <div style={{ height: '160px', backgroundImage: `url('${p.image}')`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative' }}>
-                    <span style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(5,40,107,0.85)', color: '#fff', padding: '2px 8px', borderRadius: '3px', fontSize: '11px', fontWeight: 700 }}>
-                      {p.category}
-                    </span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))', gap: '18px', marginBottom: '30px' }}>
+              {schoolLifePhotos.map(p => {
+                const catMeta = PICTORIAL_CATEGORY_META[p.category];
+                return (
+                  <div key={p.id} style={{ border: '1px solid #e1e6ef', borderRadius: '8px', overflow: 'hidden', background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ height: '165px', backgroundImage: `url('${p.image}')`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative', backgroundColor: '#0f1d3a' }}>
+                      <span style={{ position: 'absolute', top: '8px', left: '8px', background: catMeta?.badgeBg || 'rgba(5,40,107,0.88)', color: '#fff', padding: '3px 9px', borderRadius: '4px', fontSize: '10.5px', fontWeight: 800 }}>
+                        {p.category || 'Campus & Facilities'}
+                      </span>
+                      {p.source_section && p.source_section !== 'gallery' && (
+                        <span style={{ position: 'absolute', bottom: '8px', right: '8px', background: 'rgba(15,23,42,0.8)', color: '#e2e8f0', padding: '2px 7px', borderRadius: '3px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase' }}>
+                          from {p.source_section}
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ padding: '12px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '10px' }}>
+                      <div>
+                        <strong style={{ fontSize: '13.5px', display: 'block', color: 'var(--primary-navy)', marginBottom: '4px' }}>
+                          {p.title || p.category}
+                        </strong>
+                        <p style={{ fontSize: '12px', color: '#666', margin: 0, lineHeight: 1.45 }}>
+                          {p.caption || (p.school_name ? `Campus: ${p.school_name}` : 'Auto-synced pictorial photo')}
+                        </p>
+                      </div>
+
+                      <div style={{ borderTop: '1px solid #eef2f7', paddingTop: '9px', display: 'flex', flexDirection: 'column', gap: '7px' }}>
+                        <form
+                          action="/api/admin/action?action=updatePhotoCategory"
+                          method="POST"
+                          data-admin-action="updatePhotoCategory"
+                          style={{ display: 'flex', gap: '6px', alignItems: 'center' }}
+                        >
+                          <input type="hidden" name="id" value={p.id} />
+                          <select
+                            name="category"
+                            defaultValue={PICTORIAL_CATEGORIES.includes(p.category) ? p.category : PICTORIAL_CATEGORIES[0]}
+                            aria-label="Photo category"
+                            style={{ flex: 1, padding: '5px 7px', fontSize: '11.5px', borderRadius: '4px', border: '1px solid #cbd5e1' }}
+                          >
+                            {PICTORIAL_CATEGORIES.map(c => (
+                              <option key={c} value={c}>{c}</option>
+                            ))}
+                            <option value="auto">✨ Auto-Detect Again</option>
+                          </select>
+                          <InlineActionButton
+                            label="Set"
+                            pendingLabel="..."
+                            successLabel="✓"
+                            className="button button-primary"
+                            style={{ padding: '5px 10px', fontSize: '11px' }}
+                          />
+                        </form>
+
+                        <form action="/api/admin/action?action=delPhoto" method="POST" data-admin-action="delPhoto" style={{ textAlign: 'right' }}>
+                          <input type="hidden" name="id" value={p.id} />
+                          <DeleteButton
+                            confirmMessage="Are you sure you want to remove this photo from the School Pictorial?"
+                            style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
+                          >
+                            Remove from Pictorial
+                          </DeleteButton>
+                        </form>
+                      </div>
+                    </div>
                   </div>
-                  <div style={{ padding: '12px' }}>
-                    <strong style={{ fontSize: '14px', display: 'block', color: 'var(--primary-navy)', marginBottom: '4px' }}>
-                      {p.title || p.category}
-                    </strong>
-                    <p style={{ fontSize: '12.5px', color: '#666', margin: '0 0 10px', lineHeight: 1.4 }}>
-                      {p.caption || 'No caption'}
-                    </p>
-                    <form action="/api/admin/action?action=delPhoto" method="POST" data-admin-action="delPhoto" style={{ textAlign: 'right' }}>
-                      <input type="hidden" name="id" value={p.id} />
-                      <DeleteButton
-                        confirmMessage="Are you sure you want to delete this photo?"
-                        style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
-                      >
-                        Delete Photo
-                      </DeleteButton>
-                    </form>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* ADD NEW PHOTO FORM */}
             <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px' }}>
-              <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Upload / Add New School Life Picture</h4>
-              <form action="/api/admin/action?action=addSchoolLifePhoto" method="POST" data-admin-action="addSchoolLifePhoto" data-reset-on-save="true" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
+              <h4 style={{ marginBottom: '12px', color: 'var(--primary-navy)' }}>+ Upload / Add New Picture to School Pictorial</h4>
+              <form action="/api/admin/action?action=addSchoolLifePhoto" method="POST" data-admin-action="addSchoolLifePhoto" data-reset-on-save="true" data-pictorial-section="gallery" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' }}>
                 <div className="form-group">
-                  <label>Category *</label>
-                  <select name="category" required>
-                    <option value="Academics">Academic &amp; STEM</option>
-                    <option value="Sports">Sports &amp; Athletics</option>
-                    <option value="Boarding">Boarding Life</option>
-                    <option value="Clubs & Talents">Creative Arts, Clubs &amp; Talents</option>
-                    <option value="Events">Spiritual Life &amp; Events</option>
-                    <option value="Facilities">Campus Environment &amp; Facilities</option>
+                  <label>Category (Auto or Manual)</label>
+                  <select name="category" defaultValue="auto">
+                    <option value="auto">✨ Auto-Categorize (Smart Detect: Labs, Sports, Boarding, etc.)</option>
+                    {PICTORIAL_CATEGORIES.map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>Photo Title *</label>
-                  <input name="title" placeholder="e.g. Modern Integrated Science & Robotics Lab" required />
+                  <label>Photo Title (Optional)</label>
+                  <input name="title" placeholder="e.g. Chemistry Lab Titration Practical (auto-filled if blank)" />
                 </div>
                 <div className="form-group">
                   <label>Caption / Short Description</label>
                   <input name="caption" placeholder="e.g. Scholars conducting physics and chemistry investigations" />
                 </div>
-                <div className="form-group">
-                  <label>Target School Branch</label>
-                  <select name="school_id">
-                    <option value="0">All Campuses</option>
-                    {list.map(s => (
-                      <option key={s.id} value={s.id}>{s.name}</option>
-                    ))}
-                  </select>
-                </div>
+                {scope ? (
+                  <input type="hidden" name="school_id" value={scope} />
+                ) : (
+                  <div className="form-group">
+                    <label>Target School Branch</label>
+                    <select name="school_id">
+                      <option value="0">All Campuses</option>
+                      {list.map(s => (
+                        <option key={s.id} value={s.id}>{s.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
                 <MediaFileInput
                   name="image_file"
                   accept="image/*"
                   type="image"
                   maxSizeMB={50}
+                  sectionHint="gallery"
                   label="Upload Image File"
-                  helpText="Supports JPG, PNG, WEBP, GIF, AVIF up to 50MB with instant cloud upload"
+                  helpText="Supports JPG, PNG, WEBP, GIF, AVIF up to 50MB — auto-categorized immediately on upload"
                 />
                 <div className="form-group">
                   <label>Or Paste Image URL</label>
                   <input name="image_url" placeholder="e.g. /images/hero_science_lab.jpg" />
                 </div>
                 <FormSubmitButton
-                  label="+ Publish Picture to School Life Gallery"
-                  pendingLabel="Publishing & Syncing Live..."
-                  successLabel="✓ Picture Published & Synced Live!"
+                  label="+ Publish Picture to School Pictorial"
+                  pendingLabel="Publishing & Categorizing..."
+                  successLabel="✓ Picture Published to School Pictorial!"
                   variant="gold"
                   style={{ gridColumn: '1 / -1', marginTop: '5px' }}
                 />

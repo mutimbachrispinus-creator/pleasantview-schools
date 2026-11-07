@@ -46,6 +46,8 @@ const ALLOWED_ACTIONS = new Set([
   'saveGlanceMetrics',
   'addSchoolLifePhoto',
   'delPhoto',
+  'updatePhotoCategory',
+  'discardUnlinkedUpload',
   'saveAdminSmsSettings',
   'saveExamResult',
   'deleteExamResult',

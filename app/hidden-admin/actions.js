@@ -1,7 +1,22 @@
 import crypto from 'crypto';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
-import { q, qWrite, getDb, init, saveImg, saveVideo, D, CATS, SF, getSchoolEmailFromName, S } from '@/lib/db';
+import {
+  q,
+  qWrite,
+  getDb,
+  init,
+  saveImg,
+  saveVideo,
+  D,
+  CATS,
+  SF,
+  getSchoolEmailFromName,
+  S,
+  syncPhotoToPictorial,
+  normalizePictorialCategory,
+  categorizePhoto
+} from '@/lib/db';
 import { getAdmin, eq, checkPw, hashPw, startSession, endSession, limited } from '@/lib/auth';
 import { sendEmail, sendSMS } from '@/lib/notify';
 
@@ -29,6 +44,7 @@ const done = () => {
     revalidatePath('/', 'layout');
     revalidatePath('/', 'page');
     revalidatePath('/about');
+    revalidatePath('/pictorial');
     revalidatePath('/news');
     revalidatePath('/careers');
     revalidatePath('/contact');
@@ -42,6 +58,13 @@ const done = () => {
 const sid = (fd, sc) => sc || +fd.get('school_id') || 0;
 const slugify = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const newKey = () => crypto.randomBytes(8).toString('hex');
+const getUploadedName = (fd, ...keys) => {
+  for (const k of keys) {
+    const val = String(fd.get(k) || '').trim();
+    if (val) return val;
+  }
+  return '';
+};
 
 export async function login(fd) {
   if (limited('a' + ((await headers()).get('x-forwarded-for') || 'x'))) {
@@ -174,7 +197,8 @@ export async function addSchool(fd) {
   if (!name) return { ok: false, error: 'School name is required.' };
   const cat = String(fd.get('category') || 'SENIOR SCHOOL').trim().toUpperCase();
   const preImg = String(fd.get('image_uploaded_url') || fd.get('image_file_uploaded_url') || '').trim();
-  const img = preImg || (await saveImg(fd.get('image'))) || '/images/banner_2_a.webp';
+  const uploadedSchoolImg = preImg || (await saveImg(fd.get('image')));
+  const img = uploadedSchoolImg || '/images/banner_2_a.webp';
 
   const derivedEmail = getSchoolEmailFromName(name);
   const adminEmail = String(fd.get('admin_email') || derivedEmail).trim().toLowerCase();
@@ -207,6 +231,18 @@ export async function addSchool(fd) {
   );
 
   const schoolId = Number(res?.lastInsertRowid || 0);
+
+  if (uploadedSchoolImg) {
+    await syncPhotoToPictorial({
+      image: uploadedSchoolImg,
+      schoolId,
+      fileName: getUploadedName(fd, 'image_uploaded_name', 'image_file_uploaded_name'),
+      title: name,
+      caption: String(fd.get('tagline') || `${name} — ${cat}`).trim(),
+      sourceCategory: cat,
+      sectionHint: 'school'
+    });
+  }
 
   await qWrite(
     'INSERT OR REPLACE INTO admins(name, email, password, role, school_id, school_name, phone, is_active) VALUES(?,?,?,?,?,?,?,1)',
@@ -282,6 +318,18 @@ export async function saveSchool(fd) {
     if (stmts.length) {
       await client.batch(stmts, 'write');
     }
+    if (uploadedImg || imgUrl) {
+      await syncPhotoToPictorial({
+        image: uploadedImg || imgUrl,
+        schoolId: id,
+        fileName: getUploadedName(fd, 'image_file_uploaded_name', 'image_uploaded_name'),
+        title: String(fd.get('name') || '').trim(),
+        caption: String(fd.get('tagline') || fd.get('welcome') || '').trim(),
+        body: String(fd.get('about') || '').trim(),
+        sourceCategory: String(fd.get('category') || '').trim(),
+        sectionHint: 'school'
+      });
+    }
   }
   done();
   return { ok: true, message: 'Institution details saved and synchronized live!' };
@@ -331,6 +379,19 @@ export async function addVideo(fd) {
     'INSERT INTO videos(school_id, title, youtube_url, category, description, thumbnail, featured, sort) VALUES(?,?,?,?,?,?,?,?)',
     [schoolId, title, youtubeUrl, category, description, thumbnail, featured, sort]
   );
+
+  if (uploadedThumb || (thumbUrl && thumbUrl !== '/images/hero_science_lab.jpg')) {
+    await syncPhotoToPictorial({
+      image: thumbnail,
+      schoolId,
+      fileName: getUploadedName(fd, 'thumbnail_file_uploaded_name'),
+      title,
+      caption: description,
+      sourceCategory: category,
+      sectionHint: 'video'
+    });
+  }
+
   done();
   return { ok: true, message: 'Video published to public showcase!' };
 }
@@ -459,6 +520,20 @@ export async function addLeadershipMessage(fd) {
     'INSERT INTO leadership_messages(school_id, role, name, title, quote, message, image, sort, is_active) VALUES(?,?,?,?,?,?,?,?,1)',
     [schoolId, role, name, title, quote, message, image, sort]
   );
+
+  if (uploadedImg || (imgUrl && imgUrl !== '/images/banner_3_a.webp')) {
+    await syncPhotoToPictorial({
+      image,
+      schoolId,
+      fileName: getUploadedName(fd, 'image_file_uploaded_name', 'image_uploaded_name'),
+      title: `${name} — ${role}`,
+      caption: quote || title,
+      body: message,
+      sourceCategory: role,
+      sectionHint: 'leadership'
+    });
+  }
+
   done();
   return { ok: true, message: 'Leadership message published and synced live!' };
 }
@@ -493,10 +568,25 @@ export async function addPost(fd) {
   const cat = String(fd.get('category') || 'School News').trim();
   const body = String(fd.get('body') || '').trim();
 
+  const postSchoolId = sid(fd, sc);
   await qWrite(
     'INSERT INTO posts(school_id,slug,title,body,image,category) VALUES(?,?,?,?,?,?)',
-    [sid(fd, sc), (slugify(t) || 'news') + '-' + Date.now().toString(36), t, body, img, cat]
+    [postSchoolId, (slugify(t) || 'news') + '-' + Date.now().toString(36), t, body, img, cat]
   );
+
+  if (uploaded || (chosenUrl && chosenUrl !== '/images/banner_2_a.webp')) {
+    await syncPhotoToPictorial({
+      image: img,
+      schoolId: postSchoolId,
+      fileName: getUploadedName(fd, 'image_file_uploaded_name', 'image_uploaded_name'),
+      title: t,
+      caption: body ? body.slice(0, 220) : cat,
+      body,
+      sourceCategory: cat,
+      sectionHint: 'news'
+    });
+  }
+
   done();
   return { ok: true, message: 'News story published and synced live!' };
 }
@@ -516,10 +606,24 @@ export async function addHero(fd) {
   const bAltLink = String(fd.get('button_alt_link') || '/contact#visit').trim();
   const sort = Number(fd.get('sort')) || 0;
 
+  const heroSchoolId = sid(fd, sc);
   await qWrite(
     'INSERT INTO hero(school_id, image, headline, sub, button_text, button_link, button_alt_text, button_alt_link, sort) VALUES(?,?,?,?,?,?,?,?,?)',
-    [sid(fd, sc), img, headline, sub, bText, bLink, bAltText, bAltLink, sort]
+    [heroSchoolId, img, headline, sub, bText, bLink, bAltText, bAltLink, sort]
   );
+
+  if (uploaded || (chosenUrl && chosenUrl !== '/images/banner_1_a.webp')) {
+    await syncPhotoToPictorial({
+      image: img,
+      schoolId: heroSchoolId,
+      fileName: getUploadedName(fd, 'image_file_uploaded_name', 'image_uploaded_name'),
+      title: headline,
+      caption: sub,
+      buttonLink: bLink,
+      sectionHint: 'hero'
+    });
+  }
+
   done();
   return { ok: true, message: 'Hero banner slide published and synced live!' };
 }
@@ -546,6 +650,15 @@ export async function updateHero(fd) {
       'UPDATE hero SET image=?, headline=?, sub=?, button_text=?, button_link=?, button_alt_text=?, button_alt_link=?, sort=? WHERE id=?' + (sc ? ' AND school_id=?' : ''),
       sc ? [img, headline, sub, bText, bLink, bAltText, bAltLink, sort, id, sc] : [img, headline, sub, bText, bLink, bAltText, bAltLink, sort, id]
     );
+    await syncPhotoToPictorial({
+      image: img,
+      schoolId: sid(fd, sc),
+      fileName: getUploadedName(fd, 'image_file_uploaded_name', 'image_uploaded_name'),
+      title: headline,
+      caption: sub,
+      buttonLink: bLink,
+      sectionHint: 'hero'
+    });
   } else {
     await qWrite(
       'UPDATE hero SET headline=?, sub=?, button_text=?, button_link=?, button_alt_text=?, button_alt_link=?, sort=? WHERE id=?' + (sc ? ' AND school_id=?' : ''),
@@ -557,29 +670,43 @@ export async function updateHero(fd) {
 }
 
 export async function addPhotos(fd) {
-  const sc = await A(),
-    cat = CATS.includes(fd.get('category')) ? fd.get('category') : (fd.get('category') || CATS[0]);
+  const sc = await A();
+  const rawCat = String(fd.get('category') || 'auto').trim();
   const title = String(fd.get('title') || '').trim();
   const caption = String(fd.get('caption') || '').trim();
+  const schoolId = sid(fd, sc);
   const preUrls = fd.getAll('image_uploaded_url').map(u => String(u || '').trim()).filter(Boolean);
+  const preNames = fd.getAll('image_uploaded_name').map(n => String(n || '').trim());
 
-  for (const url of preUrls) {
-    await qWrite(
-      'INSERT INTO photos(school_id,category,image,title,caption) VALUES(?,?,?,?,?)',
-      [sid(fd, sc), cat, url, title, caption]
-    );
+  for (let i = 0; i < preUrls.length; i++) {
+    await syncPhotoToPictorial({
+      image: preUrls[i],
+      schoolId,
+      explicitCategory: rawCat,
+      fileName: preNames[i] || '',
+      title,
+      caption,
+      sectionHint: 'gallery',
+      forceNewRow: true
+    });
   }
   for (const f of fd.getAll('image')) {
-    const img = await saveImg(f);
+    const img = await saveImg(f, { skipPictorialSync: true });
     if (img) {
-      await qWrite(
-        'INSERT INTO photos(school_id,category,image,title,caption) VALUES(?,?,?,?,?)',
-        [sid(fd, sc), cat, img, title, caption]
-      );
+      await syncPhotoToPictorial({
+        image: img,
+        schoolId,
+        explicitCategory: rawCat,
+        fileName: f?.name || '',
+        title,
+        caption,
+        sectionHint: 'gallery',
+        forceNewRow: true
+      });
     }
   }
   done();
-  return { ok: true, message: 'Photos published to gallery!' };
+  return { ok: true, message: 'Photos published to School Pictorial!' };
 }
 
 export async function del(fd) {
@@ -895,11 +1022,11 @@ export async function saveGlanceMetrics(fd) {
 
 export async function addSchoolLifePhoto(fd) {
   const sc = await A();
-  const category = String(fd.get('category') || 'Academics').trim();
+  const rawCategory = String(fd.get('category') || 'auto').trim();
   const title = String(fd.get('title') || '').trim();
   const caption = String(fd.get('caption') || '').trim();
   const preImg = String(fd.get('image_file_uploaded_url') || fd.get('image_uploaded_url') || '').trim();
-  const uploaded = preImg || (await saveImg(fd.get('image_file') || fd.get('image')));
+  const uploaded = preImg || (await saveImg(fd.get('image_file') || fd.get('image'), { skipPictorialSync: true }));
   const chosenUrl = String(fd.get('image_url') || '').trim();
   const image = uploaded || chosenUrl;
 
@@ -908,13 +1035,78 @@ export async function addSchoolLifePhoto(fd) {
   }
 
   const schoolId = sid(fd, sc);
+  const synced = await syncPhotoToPictorial({
+    image,
+    schoolId,
+    explicitCategory: rawCategory,
+    fileName: getUploadedName(fd, 'image_file_uploaded_name', 'image_uploaded_name'),
+    title,
+    caption,
+    sectionHint: 'gallery',
+    forceNewRow: true
+  });
+
+  done();
+  const assignedCat = synced?.category || 'Pictorial';
+  return {
+    ok: true,
+    category: assignedCat,
+    message: `Picture published to School Pictorial under "${assignedCat}"!`
+  };
+}
+
+export async function updatePhotoCategory(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  if (!id) return { ok: false, error: 'Missing photo ID.' };
+
+  const [existing] = await q('SELECT * FROM photos WHERE id=?', [id]);
+  if (!existing) return { ok: false, error: 'Photo not found.' };
+
+  const rawCat = String(fd.get('category') || '').trim();
+  const nextTitle = fd.get('title') != null ? String(fd.get('title')).trim() : (existing.title || '');
+  const nextCaption = fd.get('caption') != null ? String(fd.get('caption')).trim() : (existing.caption || '');
+
+  let finalCategory = '';
+  if (!rawCat || rawCat.toLowerCase() === 'auto') {
+    let fileName = '';
+    let visualHint = '';
+    const imgMatch = String(existing.image || '').match(/^\/img\/(\d+)(?:\?.*)?$/);
+    if (imgMatch) {
+      const [imgMeta] = await q('SELECT filename, visual_hint FROM images WHERE id=?', [Number(imgMatch[1])]);
+      if (imgMeta) {
+        fileName = String(imgMeta.filename || '');
+        visualHint = String(imgMeta.visual_hint || '');
+      }
+    }
+    finalCategory = categorizePhoto({
+      fileName,
+      imageUrl: existing.image || '',
+      title: nextTitle,
+      caption: nextCaption,
+      sectionHint: existing.source_section || 'gallery',
+      visualHint
+    });
+  } else {
+    finalCategory = normalizePictorialCategory(rawCat, `${nextTitle} ${nextCaption}`) || rawCat;
+  }
 
   await qWrite(
-    'INSERT INTO photos(school_id, category, image, title, caption) VALUES(?,?,?,?,?)',
-    [schoolId, category, image, title, caption]
+    'UPDATE photos SET category=?, title=?, caption=? WHERE id=?',
+    [finalCategory, nextTitle, nextCaption, id]
   );
   done();
-  return { ok: true, message: 'Picture published to School Life Gallery!' };
+  return { ok: true, category: finalCategory, message: `Photo categorized under "${finalCategory}"!` };
+}
+
+export async function discardUnlinkedUpload(fd) {
+  await A();
+  const url = String(fd.get('url') || fd.get('image') || '').trim();
+  if (url) {
+    await qWrite('DELETE FROM photos WHERE image=? AND source_section="upload"', [url]);
+  }
+  done();
+  return { ok: true, message: 'Unlinked upload removed from pictorial.' };
 }
 
 export async function delPhoto(fd) {
@@ -1069,6 +1261,20 @@ export async function saveAlumniStory(fd) {
       [name, gradYear, campusDivision, currentRole, universityOrCompany, quote, story, imageUrl, videoUrl, isFeatured, sort]
     );
   }
+
+  if (uploaded || (chosenUrl && chosenUrl !== '/images/girls_high_school3.webp')) {
+    await syncPhotoToPictorial({
+      image: imageUrl,
+      schoolId: 0,
+      fileName: getUploadedName(fd, 'image_file_uploaded_name', 'image_uploaded_name'),
+      title: `${name} (${gradYear})`,
+      caption: quote || `${currentRole}${universityOrCompany ? ` — ${universityOrCompany}` : ''}`,
+      body: story,
+      sourceCategory: 'Alumni',
+      sectionHint: 'alumni'
+    });
+  }
+
   done();
   return { ok: true, message: 'Alumni story published and synced live!' };
 }
@@ -1117,6 +1323,20 @@ export async function saveLearnerTestimonial(fd) {
       [name, gradeOrClass, schoolId, schoolName, comment, photoUrl, favoriteSubject, futureAspiration, sort, isPublished]
     );
   }
+
+  if (uploaded || (chosenUrl && chosenUrl !== '/images/girls_high_school3.webp')) {
+    await syncPhotoToPictorial({
+      image: photoUrl,
+      schoolId,
+      fileName: getUploadedName(fd, 'image_file_uploaded_name', 'image_uploaded_name'),
+      title: `${name} — ${gradeOrClass}`,
+      caption: comment ? comment.slice(0, 220) : `${favoriteSubject} ${futureAspiration}`.trim(),
+      body: `${comment} ${favoriteSubject} ${futureAspiration}`,
+      sourceCategory: 'Student Voice',
+      sectionHint: 'learner'
+    });
+  }
+
   done();
   return { ok: true, message: 'Student voice published and synced live!' };
 }

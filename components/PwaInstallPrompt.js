@@ -62,34 +62,34 @@ export default function PwaInstallPrompt() {
       aria-label="Install App"
       style={{
         position: 'fixed',
-        bottom: '80px',
-        right: '20px',
+        bottom: '76px',
+        left: '12px',
+        right: '12px',
+        margin: '0 auto',
         zIndex: 99998,
-        background: 'linear-gradient(135deg, #1E232A, #14181E)',
+        background: '#1E232A',
         color: '#ffffff',
-        padding: '14px 18px',
-        borderRadius: '8px',
+        padding: '12px 16px',
+        borderRadius: '10px',
         boxShadow: '0 8px 30px rgba(0,0,0,0.45)',
         border: '1.5px solid #8B1E2D',
         display: 'flex',
         alignItems: 'center',
-        gap: '14px',
-        maxWidth: '380px',
+        gap: '12px',
+        maxWidth: '400px',
         animation: 'slideUpPrompt 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
       }}
     >
       <div style={{
-        width: '42px',
-        height: '42px',
-        borderRadius: '50%',
-        background: '#ffffff',
+        width: '46px',
+        height: '56px',
+        background: 'transparent',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        flexShrink: 0,
-        boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+        flexShrink: 0
       }}>
-        <img src="/images/pvs_crest.png?v=20261105b" alt="Pleasant View Crest" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
+        <img src="/images/pvs_crest.png?v=20261107a" alt="Pleasant View Schools Crest" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
       </div>
 
       <div style={{ flex: 1, fontSize: '13px' }}>

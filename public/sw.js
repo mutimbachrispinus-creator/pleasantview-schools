@@ -1,11 +1,13 @@
-const CACHE_NAME = 'pleasantview-v9';
+const CACHE_NAME = 'pleasantview-v10';
 const STATIC_ASSETS = [
   '/manifest.json',
-  '/favicon.ico',
-  '/icon.png',
-  '/images/pwa_icon_192.png',
-  '/images/pwa_icon_512.png',
-  '/images/pvs_crest.png?v=20261105b'
+  '/favicon.ico?v=20261107a',
+  '/icon.png?v=20261107a',
+  '/images/pwa_icon_192.png?v=20261107a',
+  '/images/pwa_icon_512.png?v=20261107a',
+  '/images/pwa_maskable_192.png?v=20261107a',
+  '/images/pwa_maskable_512.png?v=20261107a',
+  '/images/pvs_crest.png?v=20261107a'
 ];
 
 self.addEventListener('install', (event) => {

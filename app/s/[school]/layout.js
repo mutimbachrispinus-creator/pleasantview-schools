@@ -32,7 +32,7 @@ export default async function SchoolLayout({ children, params }) {
               ['/about', 'About Division'],
               ['/academics', 'Academics (CBE)'],
               ['/news', 'Campus News'],
-              ['/gallery', 'Gallery'],
+              ['/gallery', 'Pictorial & Gallery'],
               ['/visit', 'Book a Visit'],
               ['/contact', 'Contact Desk']
             ].map(([h, t]) => (

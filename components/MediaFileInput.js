@@ -1,6 +1,34 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import { uploadMediaFile } from '@/lib/adminClient';
+import { uploadMediaFile, callAdminAction } from '@/lib/adminClient';
+
+function mapActionToSectionHint(actionName = '') {
+  const a = String(actionName || '');
+  if (a.includes('Hero')) return 'hero';
+  if (a.includes('Post')) return 'news';
+  if (a.includes('Leadership')) return 'leadership';
+  if (a.includes('Alumni')) return 'alumni';
+  if (a.includes('Learner')) return 'learner';
+  if (a.includes('Video')) return 'video';
+  if (a.includes('School') && !a.includes('SchoolLife')) return 'school';
+  if (a.includes('Photo')) return 'gallery';
+  return 'upload';
+}
+
+function readFormUploadContext(wrapperEl) {
+  const form = wrapperEl?.closest('form');
+  if (!form) return {};
+  const fd = new FormData(form);
+  const actionName = form.getAttribute('data-admin-action') || '';
+  const sectionHint = mapActionToSectionHint(actionName);
+  const title = String(fd.get('title') || fd.get('headline') || fd.get('name') || '').trim();
+  const caption = String(fd.get('caption') || fd.get('sub') || fd.get('description') || fd.get('quote') || '').trim();
+  const rawCat = String(fd.get('category') || '').trim();
+  const explicitCategory = sectionHint === 'gallery' && rawCat && rawCat.toLowerCase() !== 'auto' ? rawCat : '';
+  const sourceCategory = sectionHint !== 'gallery' ? rawCat : '';
+  const schoolId = Number(fd.get('school_id')) || 0;
+  return { sectionHint, title, caption, sourceCategory, explicitCategory, schoolId };
+}
 
 export default function MediaFileInput({
   name,
@@ -14,6 +42,7 @@ export default function MediaFileInput({
   const effectiveMaxMB = type === 'video' ? Math.max(maxSizeMB, 100) : Math.max(maxSizeMB, 50);
   const [fileInfo, setFileInfo] = useState(null);
   const [uploadedUrl, setUploadedUrl] = useState('');
+  const [detectedCategory, setDetectedCategory] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
@@ -30,12 +59,14 @@ export default function MediaFileInput({
       uploadSeqRef.current += 1;
       setFileInfo(null);
       setUploadedUrl('');
+      setDetectedCategory('');
       setIsUploading(false);
       setProgress(0);
       setError('');
       if (el) {
         el.__uploadPromise = null;
         delete el.dataset.uploadedUrl;
+        delete el.dataset.uploadedName;
         delete el.dataset.uploadError;
       }
     };
@@ -47,12 +78,14 @@ export default function MediaFileInput({
   const handleFileChange = (e) => {
     setError('');
     setUploadedUrl('');
+    setDetectedCategory('');
     setProgress(0);
 
     const wrapperEl = wrapperRef.current;
     if (wrapperEl) {
       wrapperEl.__uploadPromise = null;
       delete wrapperEl.dataset.uploadedUrl;
+      delete wrapperEl.dataset.uploadedName;
       delete wrapperEl.dataset.uploadError;
     }
 
@@ -89,9 +122,11 @@ export default function MediaFileInput({
     const seq = ++uploadSeqRef.current;
     setIsUploading(true);
     setProgress(5);
+    const context = type === 'image' ? readFormUploadContext(wrapperEl) : {};
 
     const promise = uploadMediaFile(file, {
       type,
+      context,
       onProgress: (pct) => {
         if (uploadSeqRef.current === seq) {
           setProgress(pct);
@@ -103,9 +138,11 @@ export default function MediaFileInput({
 
       if (res?.ok && res?.url) {
         setUploadedUrl(res.url);
+        setDetectedCategory(res.category || '');
         setProgress(100);
         if (wrapperRef.current) {
           wrapperRef.current.dataset.uploadedUrl = res.url;
+          wrapperRef.current.dataset.uploadedName = file.name || '';
           delete wrapperRef.current.dataset.uploadError;
           wrapperRef.current.__uploadPromise = null;
         }
@@ -131,15 +168,21 @@ export default function MediaFileInput({
 
   const handleClear = () => {
     uploadSeqRef.current += 1;
+    const prevUrl = uploadedUrl || wrapperRef.current?.dataset?.uploadedUrl || '';
+    if (prevUrl && type === 'image') {
+      callAdminAction('discardUnlinkedUpload', { url: prevUrl }).catch(() => {});
+    }
     if (inputRef.current) inputRef.current.value = '';
     setFileInfo(null);
     setUploadedUrl('');
+    setDetectedCategory('');
     setIsUploading(false);
     setProgress(0);
     setError('');
     if (wrapperRef.current) {
       wrapperRef.current.__uploadPromise = null;
       delete wrapperRef.current.dataset.uploadedUrl;
+      delete wrapperRef.current.dataset.uploadedName;
       delete wrapperRef.current.dataset.uploadError;
     }
   };
@@ -154,6 +197,7 @@ export default function MediaFileInput({
     >
       {label && <label>{label}{required ? ' *' : ''}</label>}
       <input type="hidden" name={`${name}_uploaded_url`} value={uploadedUrl} />
+      <input type="hidden" name={`${name}_uploaded_name`} value={fileInfo?.name || ''} />
 
       <input
         ref={inputRef}
@@ -238,7 +282,9 @@ export default function MediaFileInput({
                 ) : uploadedUrl ? (
                   <>
                     <i className="fa-solid fa-circle-check" style={{ marginRight: '5px' }} />
-                    Uploaded &amp; verified ({fileInfo.sizeMB} MB) — click Publish/Save below
+                    Uploaded &amp; verified ({fileInfo.sizeMB} MB)
+                    {type === 'image' && detectedCategory ? ` • Auto-added to Pictorial (${detectedCategory})` : ''}
+                    {' '}— click Publish/Save below
                   </>
                 ) : (
                   `Selected (${fileInfo.sizeMB} MB)`

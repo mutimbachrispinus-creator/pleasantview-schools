@@ -57,7 +57,7 @@ export default function HeaderNav({
           <Link href="/" className="brand-logo" title="Pleasant View Schools - Our Aim is Victory">
             <div className="brand-crest-container">
               <img
-                src="/images/pvs_crest.png?v=20261105b"
+                src="/images/pvs_crest.png?v=20261107a"
                 alt="Pleasant View Schools Official Crest"
                 className="brand-crest-img"
               />
@@ -164,8 +164,9 @@ export default function HeaderNav({
 
                 {/* 3. SCHOOL LIFE */}
                 <li className="has-dropdown">
-                  <Link href="/about#life">School Life <i className="fa-solid fa-angle-down nav-arrow" /></Link>
+                  <Link href="/pictorial">School Life <i className="fa-solid fa-angle-down nav-arrow" /></Link>
                   <ul className="sub-menu">
+                    <li><Link href="/pictorial"><strong>School Pictorial &amp; Gallery</strong></Link></li>
                     <li><Link href="/about#boarding">Pastoral Boarding Life (Grade 4+)</Link></li>
                     <li><Link href="/about#transport">Safe School Transport Fleet</Link></li>
                     <li><Link href="/#parent-reviews">Parent Reviews &amp; Testimonials</Link></li>
@@ -261,12 +262,12 @@ export default function HeaderNav({
         <div className="drawer-top">
           <div className="drawer-brand">
             <img
-              src="/images/pvs_crest.png?v=20261105b"
+              src="/images/pvs_crest.png?v=20261107a"
               alt="Pleasant View Schools Crest"
               className="drawer-crest"
             />
             <div>
-              <h3>PLEASANT VIEW</h3>
+              <h3>PLEASANT VIEW SCHOOLS</h3>
               <small>OUR AIM IS VICTORY &bull; EST. 1998</small>
             </div>
           </div>
@@ -366,6 +367,9 @@ export default function HeaderNav({
               <i className={`fa-solid fa-chevron-down acc-icon ${openAccordion === 'life' ? 'rotated' : ''}`} />
             </button>
             <div className={`accordion-panel ${openAccordion === 'life' ? 'expanded' : ''}`}>
+              <Link href="/pictorial" onClick={() => setMobileMenuOpen(false)} className="accordion-item" style={{ fontWeight: 700, color: 'var(--gold-accent)' }}>
+                School Pictorial &amp; Gallery
+              </Link>
               <Link href="/about#boarding" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
                 Pastoral Boarding Life (Grade 4+)
               </Link>

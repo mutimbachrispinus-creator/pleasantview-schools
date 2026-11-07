@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Slider from '@/components/Slider';
 import VmvSlideshow from '@/components/VmvSlideshow';
 import VideoShowcase from '@/components/VideoShowcase';
+import PictorialGallery from '@/components/PictorialGallery';
 import {
   q,
   S,
@@ -567,78 +568,28 @@ export default async function Home({ searchParams }) {
       {/* VIDEO SHOWCASE SECTION (Admins upload / update video links) */}
       <VideoShowcase videos={vids} />
 
-      {/* SCHOOL LIFE & CAMPUS PHOTO GALLERY (Uploaded by Admin) */}
+      {/* SCHOOL PICTORIAL & CAMPUS PHOTO GALLERY (Auto-synced & Smart-Categorized) */}
       {schoolLifePhotos.length > 0 && (
         <section id="gallery" style={{ background: '#ffffff', padding: '75px 0', borderTop: '1px solid #e2e8f0' }}>
           <div className="wrapper">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '35px', flexWrap: 'wrap', gap: '15px' }} className="reveal-on-scroll">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '28px', flexWrap: 'wrap', gap: '15px' }} className="reveal-on-scroll">
               <div>
-                <span className="lead-badge" style={{ color: 'var(--primary-red)' }}>CAMPUS MOMENTS &amp; GALLERY</span>
-                <h2 style={{ margin: '6px 0 0', color: 'var(--primary-navy)' }}>School Life Across Pleasant View</h2>
+                <span className="lead-badge" style={{ color: 'var(--primary-red)' }}>SCHOOL PICTORIAL &amp; CAMPUS MOMENTS</span>
+                <h2 style={{ margin: '6px 0 0', color: 'var(--primary-navy)' }}>Pleasant View in Pictures</h2>
                 <div className="gold-divider" style={{ marginLeft: 0 }} />
               </div>
-              <Link href="/about#life" className="button button-tertiary" style={{ padding: '8px 18px', fontSize: '13px' }}>
-                Explore Campus Life &rarr;
+              <Link href="/pictorial" className="button button-tertiary" style={{ padding: '8px 18px', fontSize: '13px' }}>
+                Explore Full Pictorial &rarr;
               </Link>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '22px' }}>
-              {schoolLifePhotos.map((p) => (
-                <div
-                  key={p.id}
-                  style={{
-                    background: 'var(--soft-bg)',
-                    borderRadius: '10px',
-                    overflow: 'hidden',
-                    border: '1px solid #dde2ec',
-                    boxShadow: '0 6px 20px rgba(0,0,0,0.05)',
-                    display: 'flex',
-                    flexDirection: 'column'
-                  }}
-                >
-                  <div style={{ position: 'relative', height: '240px', overflow: 'hidden', background: '#0f1d3a' }}>
-                    <img
-                      src={p.image}
-                      alt={p.title || p.caption || p.category || 'Pleasant View Campus Life'}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                    />
-                    {p.category && (
-                      <span
-                        style={{
-                          position: 'absolute',
-                          top: '12px',
-                          left: '12px',
-                          background: 'rgba(139,30,45,0.92)',
-                          color: '#ffffff',
-                          fontSize: '11px',
-                          fontWeight: 800,
-                          padding: '4px 10px',
-                          borderRadius: '4px',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.6px'
-                        }}
-                      >
-                        {p.category}
-                      </span>
-                    )}
-                  </div>
-                  {(p.title || p.caption) && (
-                    <div style={{ padding: '16px 18px' }}>
-                      {p.title && (
-                        <h4 style={{ margin: '0 0 6px', fontSize: '16px', color: 'var(--primary-navy)' }}>
-                          {p.title}
-                        </h4>
-                      )}
-                      {p.caption && (
-                        <p style={{ margin: 0, fontSize: '13.5px', color: '#555', lineHeight: 1.55 }}>
-                          {p.caption}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+            <PictorialGallery
+              photos={schoolLifePhotos}
+              compact={true}
+              maxCompactItems={9}
+              fullPictorialHref="/pictorial"
+              fullPictorialLabel="Explore Full School Pictorial"
+            />
           </div>
         </section>
       )}

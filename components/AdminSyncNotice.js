@@ -61,6 +61,7 @@ export default function AdminSyncNotice() {
               text: 'Uploading selected media file...'
             });
             const urls = [];
+            const names = [];
             for (const f of Array.from(fileInput.files)) {
               const isVid = String(f.type || '').startsWith('video/');
               const upRes = await uploadMediaFile(f, { type: isVid ? 'video' : 'image' });
@@ -68,8 +69,10 @@ export default function AdminSyncNotice() {
                 throw new Error(upRes?.error || 'Failed to upload selected media file.');
               }
               urls.push(upRes.url);
+              names.push(f.name || '');
             }
             extraUploaded[`${fileInput.name}_uploaded_url`] = urls.length === 1 ? urls[0] : urls;
+            extraUploaded[`${fileInput.name}_uploaded_name`] = names.length === 1 ? names[0] : names;
           }
         }
 
@@ -84,8 +87,12 @@ export default function AdminSyncNotice() {
         for (const wrapper of mediaWrappers) {
           const fieldName = wrapper.getAttribute('data-field-name');
           const url = wrapper.dataset.uploadedUrl;
+          const upName = wrapper.dataset.uploadedName;
           if (fieldName && url) {
             fd.set(`${fieldName}_uploaded_url`, url);
+          }
+          if (fieldName && upName) {
+            fd.set(`${fieldName}_uploaded_name`, upName);
           }
         }
         for (const [k, v] of Object.entries(extraUploaded)) {

@@ -65,6 +65,18 @@ export default function MobileBottomBar({
             <small>Dispatched straight to admin mobile phone</small>
           </Link>
 
+          {!quickLinks.some(l => l.url === '/pictorial') && (
+            <Link
+              href="/pictorial"
+              onClick={closeDrawer}
+              className="drawer-item"
+              style={{ borderLeftColor: 'var(--primary-red)' }}
+            >
+              <div className="drawer-item-title">School Pictorial &amp; Gallery</div>
+              <small>Science Labs, Sports, Boarding &amp; Campus Life</small>
+            </Link>
+          )}
+
           {quickLinks.map(l => (
             <Link
               key={l.id}

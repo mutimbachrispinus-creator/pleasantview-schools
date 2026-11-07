@@ -1,8 +1,19 @@
 import { NextResponse } from 'next/server';
-import { db, q, qWrite, init, normalizeMediaMime } from '@/lib/db';
+import { revalidatePath } from 'next/cache';
+import { db, q, qWrite, init, normalizeMediaMime, syncPhotoToPictorial } from '@/lib/db';
 import { getAdmin } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
+
+function revalidatePictorial() {
+  try {
+    revalidatePath('/', 'layout');
+    revalidatePath('/', 'page');
+    revalidatePath('/pictorial');
+    revalidatePath('/about');
+    revalidatePath('/staff-portal', 'page');
+  } catch {}
+}
 
 export async function POST(req) {
   try {
@@ -20,6 +31,7 @@ export async function POST(req) {
     if (mode === 'single') {
       const rawMime = searchParams.get('mime') || req.headers.get('x-media-mime') || '';
       const fileName = searchParams.get('name') || req.headers.get('x-media-name') || '';
+      const visualHint = searchParams.get('vh') || '';
       const mime = normalizeMediaMime(rawMime, fileName);
 
       if (!mime.startsWith('image/') && !mime.startsWith('video/')) {
@@ -39,8 +51,8 @@ export async function POST(req) {
       }
 
       const res = await qWrite(
-        'INSERT INTO images(mime, data, is_chunked, total_size, chunk_size, total_chunks) VALUES(?, ?, 0, ?, ?, 1)',
-        [mime, uint8, uint8.byteLength, uint8.byteLength]
+        'INSERT INTO images(mime, data, is_chunked, total_size, chunk_size, total_chunks, filename, visual_hint) VALUES(?, ?, 0, ?, ?, 1, ?, ?)',
+        [mime, uint8, uint8.byteLength, uint8.byteLength, fileName, visualHint]
       );
       let id = res?.lastInsertRowid != null ? Number(res.lastInsertRowid) : null;
       if (!id) {
@@ -48,17 +60,50 @@ export async function POST(req) {
         id = Number(maxRow?.id || 0);
       }
 
+      const url = `/img/${id}`;
+      let detectedCategory = '';
+      if (mime.startsWith('image/') && uint8.byteLength >= 32) {
+        try {
+          const title = searchParams.get('title') || '';
+          const caption = searchParams.get('cap') || '';
+          const sourceCategory = searchParams.get('cat') || '';
+          const explicitCategory = searchParams.get('ecat') || '';
+          const sectionHint = searchParams.get('sec') || 'upload';
+          const schoolId = Number(searchParams.get('sid')) || Number(admin.scope) || 0;
+
+          const syncRes = await syncPhotoToPictorial({
+            image: url,
+            schoolId,
+            explicitCategory,
+            fileName,
+            title,
+            caption,
+            sourceCategory,
+            sectionHint,
+            visualHint,
+            isInitialUpload: !title && !caption
+          });
+          detectedCategory = syncRes?.category || '';
+          revalidatePictorial();
+        } catch (syncErr) {
+          console.warn('[Single Upload Pictorial Sync Notice]:', syncErr?.message);
+        }
+      }
+
       return NextResponse.json({
         ok: true,
         id,
-        url: `/img/${id}`,
-        size: uint8.byteLength
+        url,
+        size: uint8.byteLength,
+        category: detectedCategory
       });
     }
 
     if (mode === 'init') {
       const body = await req.json();
-      const mime = normalizeMediaMime(body?.mime || '', body?.fileName || '');
+      const fileName = String(body?.fileName || '').trim();
+      const visualHint = String(body?.visualHint || '').trim();
+      const mime = normalizeMediaMime(body?.mime || '', fileName);
       const totalSize = Number(body?.totalSize || 0);
       const chunkSize = Number(body?.chunkSize || 524288);
       const totalChunks = Number(body?.totalChunks || Math.ceil(totalSize / chunkSize));
@@ -81,8 +126,8 @@ export async function POST(req) {
 
       await init();
       const res = await qWrite(
-        'INSERT INTO images(mime, data, is_chunked, total_size, chunk_size, total_chunks) VALUES(?, NULL, 1, ?, ?, ?)',
-        [mime, totalSize, chunkSize, totalChunks]
+        'INSERT INTO images(mime, data, is_chunked, total_size, chunk_size, total_chunks, filename, visual_hint) VALUES(?, NULL, 1, ?, ?, ?, ?, ?)',
+        [mime, totalSize, chunkSize, totalChunks, fileName, visualHint]
       );
       let id = res?.lastInsertRowid != null ? Number(res.lastInsertRowid) : null;
       if (!id) {
@@ -135,7 +180,7 @@ export async function POST(req) {
         return NextResponse.json({ ok: false, error: 'Missing media id.' }, { status: 400 });
       }
 
-      const [meta] = await q('SELECT id, total_size, total_chunks FROM images WHERE id=?', [id]);
+      const [meta] = await q('SELECT id, mime, filename, visual_hint, total_size, total_chunks FROM images WHERE id=?', [id]);
       if (!meta) {
         return NextResponse.json({ ok: false, error: 'Media record not found.' }, { status: 404 });
       }
@@ -166,12 +211,43 @@ export async function POST(req) {
         );
       }
 
+      const url = `/img/${id}`;
+      let detectedCategory = '';
+      if (String(meta.mime || '').toLowerCase().startsWith('image/') && actualSize >= 32) {
+        try {
+          const title = searchParams.get('title') || '';
+          const caption = searchParams.get('cap') || '';
+          const sourceCategory = searchParams.get('cat') || '';
+          const explicitCategory = searchParams.get('ecat') || '';
+          const sectionHint = searchParams.get('sec') || 'upload';
+          const schoolId = Number(searchParams.get('sid')) || Number(admin.scope) || 0;
+
+          const syncRes = await syncPhotoToPictorial({
+            image: url,
+            schoolId,
+            explicitCategory,
+            fileName: meta.filename || '',
+            title,
+            caption,
+            sourceCategory,
+            sectionHint,
+            visualHint: meta.visual_hint || searchParams.get('vh') || '',
+            isInitialUpload: !title && !caption
+          });
+          detectedCategory = syncRes?.category || '';
+          revalidatePictorial();
+        } catch (syncErr) {
+          console.warn('[Chunked Upload Pictorial Sync Notice]:', syncErr?.message);
+        }
+      }
+
       return NextResponse.json({
         ok: true,
         verified: true,
         id,
-        url: `/img/${id}`,
-        size: actualSize
+        url,
+        size: actualSize,
+        category: detectedCategory
       });
     }
 
