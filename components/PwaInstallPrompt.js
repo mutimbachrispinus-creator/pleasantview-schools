@@ -89,7 +89,7 @@ export default function PwaInstallPrompt() {
         justifyContent: 'center',
         flexShrink: 0
       }}>
-        <img src="/images/pvs_crest.png?v=20261107a" alt="Pleasant View Schools Crest" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        <img src="/images/pvs_crest.png?v=20261107b" alt="Pleasant View Schools Crest" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
       </div>
 
       <div style={{ flex: 1, fontSize: '13px' }}>

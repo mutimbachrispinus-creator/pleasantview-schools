@@ -3088,7 +3088,7 @@ body::before {
   transform: translate(-50%, -50%);
   width: min(760px, 88vw);
   height: min(900px, 90vh);
-  background-image: url('/images/pvs_crest.png?v=20261107a');
+  background-image: url('/images/pvs_crest.png?v=20261107b');
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
