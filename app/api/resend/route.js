@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { sendEmail } from '@/lib/notify';
-import { q } from '@/lib/db';
+import { q, qWrite } from '@/lib/db';
+import { syncInboundEmailToAdmissions } from '@/lib/admissions';
 
 export const dynamic = 'force-dynamic';
 
@@ -53,14 +54,25 @@ export async function POST(req) {
 
       const recipientStr = Array.isArray(recipient) ? recipient.join(', ') : String(recipient);
 
-      await q(
+      const emIns = await qWrite(
         'INSERT INTO inbound_emails(sender_name, sender_email, recipient, subject, body, html, status) VALUES(?,?,?,?,?,?,?)',
         [senderName, sender, recipientStr, subject, text, html, 'received']
       );
-      await q(
+      await qWrite(
         'INSERT INTO comm_logs(type, direction, sender, recipient, subject, content, status) VALUES(?,?,?,?,?,?,?)',
         ['email', 'inbound', sender, recipientStr, subject, text, 'received']
       );
+
+      // Sync genuine external admissions/tour emails into Campus Visit Bookings & Admissions Enquiries
+      await syncInboundEmailToAdmissions({
+        id: emIns?.lastInsertRowid ? Number(emIns.lastInsertRowid) : Date.now(),
+        sender_name: senderName,
+        sender_email: sender,
+        recipient: recipientStr,
+        subject,
+        body: text,
+        status: 'received'
+      });
 
       // Check for automated routing, auto-responder, and forwarding
       try {

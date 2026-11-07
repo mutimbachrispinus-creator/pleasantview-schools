@@ -19,6 +19,7 @@ import {
 } from '@/lib/db';
 import { getAdmin, eq, checkPw, hashPw, startSession, endSession, limited } from '@/lib/auth';
 import { sendEmail, sendSMS } from '@/lib/notify';
+import { recordCampusVisit, recordAdmissionsEnquiry } from '@/lib/admissions';
 
 const A = async () => {
   const a = await getAdmin();
@@ -470,6 +471,54 @@ export async function delApplication(fd) {
   return { ok: true, message: 'Job application deleted.' };
 }
 
+export async function addVisitBooking(fd) {
+  const sc = await A();
+  const schoolId = sid(fd, sc);
+  const res = await recordCampusVisit(
+    {
+      school_id: schoolId,
+      name: fd.get('name'),
+      phone: fd.get('phone'),
+      email: fd.get('email'),
+      visit_date: fd.get('visit_date'),
+      guests: fd.get('guests'),
+      grade: fd.get('grade'),
+      notes: fd.get('notes'),
+      status: fd.get('status') || 'confirmed'
+    },
+    {
+      skipNotifications: fd.get('notify_parent') !== '1',
+      source: String(fd.get('source') || 'walkin_phone')
+    }
+  );
+  if (!res.ok) return res;
+  done();
+  return { ok: true, message: 'Campus visit booking logged!' };
+}
+
+export async function addAdmissionsEnquiry(fd) {
+  const sc = await A();
+  const schoolId = sid(fd, sc);
+  const res = await recordAdmissionsEnquiry(
+    {
+      school_id: schoolId,
+      name: fd.get('name'),
+      phone: fd.get('phone'),
+      email: fd.get('email'),
+      grade: fd.get('grade'),
+      message: fd.get('message'),
+      status: fd.get('status') || 'pending'
+    },
+    {
+      skipNotifications: fd.get('notify_parent') !== '1',
+      source: String(fd.get('source') || 'walkin_phone')
+    }
+  );
+  if (!res.ok) return res;
+  done();
+  return { ok: true, message: 'Admissions enquiry logged!' };
+}
+
 export async function updateVisitStatus(fd) {
   await A();
   const id = Number(fd.get('id'));
@@ -767,6 +816,8 @@ export async function replySMS(fd) {
   const res = await sendSMS({ to, message: msg });
   if (smsId) {
     await qWrite('UPDATE inbound_sms SET status="replied" WHERE id=?', [smsId]);
+    await qWrite('UPDATE enquiries SET status="replied" WHERE source_ref=?', [`inbound_sms:${smsId}`]);
+    await qWrite('UPDATE visits SET status="confirmed" WHERE source_ref=?', [`inbound_sms:${smsId}`]);
   }
   done();
   if (res?.success === false) {
@@ -792,6 +843,8 @@ export async function replyEmail(fd) {
   });
   if (emailId) {
     await qWrite('UPDATE inbound_emails SET status="replied" WHERE id=?', [emailId]);
+    await qWrite('UPDATE enquiries SET status="replied" WHERE source_ref=?', [`inbound_email:${emailId}`]);
+    await qWrite('UPDATE visits SET status="confirmed" WHERE source_ref=?', [`inbound_email:${emailId}`]);
   }
   done();
   return { ok: true, message: 'Email reply dispatched!', details: res };

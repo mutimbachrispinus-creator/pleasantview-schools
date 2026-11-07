@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Page from '@/components/Page';
-import { book, enquire, sendDirectAdminSms } from '@/app/actions';
+import PublicFormEnhancer from '@/components/PublicFormEnhancer';
 import { schools, S } from '@/lib/db';
 
 export const metadata = {
@@ -15,6 +15,7 @@ export default async function ContactPage({ searchParams }) {
   const isBooked = Boolean(sp.booked || sp.ok === 'visit');
   const isEnquirySent = Boolean(sp.ok && sp.ok !== 'visit');
   const isSmsSent = Boolean(sp.sms_sent);
+  const submitError = sp.error ? String(sp.error) : '';
   const selectedBranch = sp.school || sp.branch || 'all';
   const schList = await schools();
   const st = await S();
@@ -25,7 +26,24 @@ export default async function ContactPage({ searchParams }) {
 
   return (
     <Page title="Admissions &amp; Campus Tours" subtitle="CONNECT WITH PLEASANT VIEW SCHOOLS">
+      <PublicFormEnhancer />
       <div style={{ width: '100%', padding: '0 0 60px' }}>
+        {submitError && (
+          <div style={{
+            background: '#fef2f2',
+            color: '#991b1b',
+            borderRadius: '6px',
+            padding: '20px 24px',
+            marginBottom: '30px',
+            borderLeft: '6px solid #dc2626',
+            textAlign: 'center',
+            fontWeight: 600
+          }}>
+            {submitError === 'rate_limit'
+              ? 'Too many submissions in a short period. Please wait a moment and try again, or call +254 711 689 913.'
+              : submitError}
+          </div>
+        )}
         {/* SUCCESS NOTIFICATION TOAST */}
         {isBooked && (
           <div style={{
@@ -104,7 +122,8 @@ export default async function ContactPage({ searchParams }) {
                 Meet our dedicated teaching faculty, tour our modern science and digital laboratories, inspect the boarding houses, and experience our peaceful green grounds in Githunguri.
               </p>
 
-              <form action={book}>
+              <form action="/api/public/submit?action=book" method="POST" data-public-action="book">
+                <input type="hidden" name="return_to" value="/contact" />
                 <div className="form-group">
                   <label>Select School Division / Campus *</label>
                   <select name="school" defaultValue={selectedBranch} style={{ padding: '12px', fontSize: '14px', width: '100%', borderRadius: '4px', border: '1px solid #ccc', fontWeight: 600 }}>
@@ -178,7 +197,26 @@ export default async function ContactPage({ searchParams }) {
                 Have questions regarding fees, CBE curriculum requirements, boarding intake, or school transport routes? Our admissions desk is on standby.
               </p>
 
-              <form action={enquire}>
+              <form action="/api/public/submit?action=enquire" method="POST" data-public-action="enquire">
+                <input type="hidden" name="return_to" value="/contact" />
+                <div className="form-two-col">
+                  <div className="form-group">
+                    <label>Campus Division</label>
+                    <select name="school" defaultValue={selectedBranch} style={{ padding: '12px', fontSize: '14px', width: '100%', borderRadius: '4px', border: '1px solid #ccc', fontWeight: 600 }}>
+                      <option value="all">All Campuses (General Admissions)</option>
+                      {schList.map(s => (
+                        <option key={s.id} value={s.slug}>
+                          {s.name} &bull; {s.level}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Prospective Grade / Class (Optional)</label>
+                    <input name="grade" placeholder="e.g. PP2, Grade 4, Grade 7, Form 1" style={{ padding: '12px', fontSize: '14px' }} />
+                  </div>
+                </div>
+
                 <div className="form-group">
                   <label>Your Full Name *</label>
                   <input name="name" placeholder="Parent / Guardian Name" required style={{ padding: '12px', fontSize: '14px' }} />
@@ -238,7 +276,7 @@ export default async function ContactPage({ searchParams }) {
                 </strong>
               </p>
 
-              <form action={sendDirectAdminSms}>
+              <form action="/api/public/submit?action=sendDirectAdminSms" method="POST" data-public-action="sendDirectAdminSms">
                 <div className="form-group">
                   <label>Your Name *</label>
                   <input name="name" placeholder="Your Full Name" required style={{ padding: '12px', fontSize: '14px' }} />
@@ -290,7 +328,7 @@ export default async function ContactPage({ searchParams }) {
               boxShadow: '0 8px 24px rgba(139,30,45,0.18)',
               borderTop: '3px solid var(--gold-accent)'
             }}>
-              <span style={{ color: 'var(--gold-accent)', fontSize: '11px', fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase' }}>
+              <span style={{ color: '#fda4af', fontSize: '11px', fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase' }}>
                 DIRECT ADMISSIONS DESK
               </span>
               <h3 style={{ color: '#ffffff', fontSize: '19px', marginTop: '4px', marginBottom: '16px' }}>
@@ -304,12 +342,12 @@ export default async function ContactPage({ searchParams }) {
                     width: '36px',
                     height: '36px',
                     borderRadius: '50%',
-                    background: 'rgba(255,255,255,0.12)',
+                    background: 'rgba(255,255,255,0.16)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
-                    color: 'var(--gold-accent)',
+                    color: '#ffffff',
                     fontSize: '15px'
                   }}>
                     <i className="fa-solid fa-phone" />
@@ -318,7 +356,7 @@ export default async function ContactPage({ searchParams }) {
                     <div style={{ fontSize: '15px', fontWeight: 700 }}>
                       <a href={`tel:${phone}`} style={{ color: '#ffffff', textDecoration: 'none' }}>{phone}</a>
                     </div>
-                    <small style={{ color: 'rgba(255,255,255,0.65)', fontSize: '11.5px' }}>Mon &ndash; Sat 8:00 AM &ndash; 5:00 PM</small>
+                    <small style={{ color: 'rgba(255,255,255,0.82)', fontSize: '11.5px' }}>Mon &ndash; Sat 8:00 AM &ndash; 5:00 PM</small>
                   </div>
                 </div>
 
@@ -328,12 +366,12 @@ export default async function ContactPage({ searchParams }) {
                     width: '36px',
                     height: '36px',
                     borderRadius: '50%',
-                    background: 'rgba(255,255,255,0.12)',
+                    background: 'rgba(255,255,255,0.16)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
-                    color: 'var(--gold-accent)',
+                    color: '#ffffff',
                     fontSize: '15px',
                     marginTop: '2px'
                   }}>
@@ -341,11 +379,11 @@ export default async function ContactPage({ searchParams }) {
                   </div>
                   <div style={{ fontSize: '13px', lineHeight: 1.5 }}>
                     <div>
-                      <strong style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px' }}>ADMISSIONS:</strong><br />
+                      <strong style={{ color: '#fda4af', fontSize: '11px' }}>ADMISSIONS:</strong><br />
                       <a href="mailto:admissions@pleasantviewschools.co.ke" style={{ color: '#ffffff', textDecoration: 'none', fontWeight: 600 }}>admissions@pleasantviewschools.co.ke</a>
                     </div>
                     <div style={{ marginTop: '4px' }}>
-                      <strong style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px' }}>GENERAL INQUIRIES:</strong><br />
+                      <strong style={{ color: '#fda4af', fontSize: '11px' }}>GENERAL INQUIRIES:</strong><br />
                       <a href="mailto:info@pleasantviewschools.co.ke" style={{ color: '#ffffff', textDecoration: 'none', fontWeight: 600 }}>info@pleasantviewschools.co.ke</a>
                     </div>
                   </div>
@@ -357,12 +395,12 @@ export default async function ContactPage({ searchParams }) {
                     width: '36px',
                     height: '36px',
                     borderRadius: '50%',
-                    background: 'rgba(255,255,255,0.12)',
+                    background: 'rgba(255,255,255,0.16)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
-                    color: 'var(--gold-accent)',
+                    color: '#ffffff',
                     fontSize: '15px',
                     marginTop: '2px'
                   }}>
@@ -370,14 +408,14 @@ export default async function ContactPage({ searchParams }) {
                   </div>
                   <div style={{ fontSize: '13px', lineHeight: 1.4 }}>
                     <div style={{ color: '#ffffff', fontWeight: 600 }}>{location}</div>
-                    <small style={{ color: 'rgba(255,255,255,0.65)', fontSize: '11.5px' }}>Adjacent to Komothai Centre, Kiambu</small>
+                    <small style={{ color: 'rgba(255,255,255,0.82)', fontSize: '11.5px' }}>Adjacent to Komothai Centre, Kiambu</small>
                   </div>
                 </div>
               </div>
 
               {/* SOCIAL MEDIA CHANNELS */}
-              <div style={{ marginTop: '18px', paddingTop: '14px', borderTop: '1px solid rgba(255,255,255,0.15)' }}>
-                <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--gold-accent)', fontWeight: 700, display: 'block', marginBottom: '8px' }}>
+              <div style={{ marginTop: '18px', paddingTop: '14px', borderTop: '1px solid rgba(255,255,255,0.18)' }}>
+                <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: '#fda4af', fontWeight: 700, display: 'block', marginBottom: '8px' }}>
                   Social Channels
                 </span>
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>

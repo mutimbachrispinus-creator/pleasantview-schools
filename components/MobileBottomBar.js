@@ -202,7 +202,7 @@ export default function MobileBottomBar({
           className="m-bar-btn"
           title="Google Maps Campus Directions"
         >
-          <i className="fa-solid fa-location-dot" style={{ color: 'var(--gold-accent)' }} />
+          <i className="fa-solid fa-location-dot" style={{ color: '#fda4af' }} />
           <span>Visit/Map</span>
         </a>
 

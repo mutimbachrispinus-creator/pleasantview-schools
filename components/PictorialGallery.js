@@ -259,7 +259,7 @@ export default function PictorialGallery({
                 className={tab.icon}
                 style={{
                   fontSize: '12px',
-                  color: isSelected ? 'var(--gold-accent)' : 'var(--primary-red)'
+                  color: isSelected ? '#ffffff' : 'var(--primary-red)'
                 }}
               />
               <span>{tab.name === 'All' ? 'All Photos' : tab.name}</span>

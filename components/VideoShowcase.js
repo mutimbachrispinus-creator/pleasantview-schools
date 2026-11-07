@@ -31,7 +31,7 @@ export default function VideoShowcase({ videos = [] }) {
     <section className="video-showcase-section" style={{ background: 'var(--dark-grey, #1E232A)', color: '#ffffff', padding: '80px 0' }}>
       <div className="wrapper">
         <div className="section-header" style={{ textAlign: 'center', marginBottom: '50px' }}>
-          <h5 style={{ color: 'var(--primary-red)', letterSpacing: '2px' }}>DISCOVER PLEASANT VIEW IN MOTION</h5>
+          <h5 style={{ color: '#fda4af', letterSpacing: '2px' }}>DISCOVER PLEASANT VIEW IN MOTION</h5>
           <h2 style={{ color: '#ffffff', fontSize: 'clamp(28px, 3.2vw, 44px)', textTransform: 'uppercase' }}>
             Campus Life &amp; Video Tour
           </h2>
@@ -80,15 +80,15 @@ export default function VideoShowcase({ videos = [] }) {
                 <div style={{
                   position: 'absolute',
                   inset: 0,
-                  background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(5,40,107,0.8) 100%)'
+                  background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(20,24,30,0.82) 100%)'
                 }} />
 
                 <span style={{
                   position: 'absolute',
                   top: '12px',
                   left: '12px',
-                  background: 'var(--gold-accent)',
-                  color: 'var(--dark-navy)',
+                  background: 'var(--primary-red)',
+                  color: '#ffffff',
                   fontWeight: 800,
                   fontSize: '11px',
                   padding: '3px 10px',
@@ -125,7 +125,7 @@ export default function VideoShowcase({ videos = [] }) {
                 <h4 style={{ color: '#ffffff', fontSize: '18px', marginBottom: '8px', lineHeight: 1.3 }}>
                   {v.title}
                 </h4>
-                <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '13.5px', lineHeight: 1.6, flex: 1 }}>
+                <p style={{ color: 'rgba(255,255,255,0.88)', fontSize: '13.5px', lineHeight: 1.6, flex: 1 }}>
                   {v.description || 'Watch our students, facilities, and campus culture.'}
                 </p>
                 <button
@@ -134,7 +134,7 @@ export default function VideoShowcase({ videos = [] }) {
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: 'var(--gold-accent)',
+                    color: '#fda4af',
                     fontWeight: 700,
                     fontSize: '13px',
                     letterSpacing: '1px',

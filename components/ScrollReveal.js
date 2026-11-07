@@ -13,116 +13,22 @@ export default function ScrollReveal() {
     let observer = null;
     let mutationObserver = null;
 
-    // 1. ROBUST RECURSIVE WORD SPLITTER
-    const wrapWordsInNode = (node) => {
-      if (node.nodeType === 3) {
-        // Text node
-        const text = node.nodeValue;
-        if (!text || !text.trim()) return null;
-        const tokens = text.split(/(\s+)/);
-        const fragment = document.createDocumentFragment();
-        tokens.forEach(token => {
-          if (!token) return;
-          if (/^\s+$/.test(token)) {
-            fragment.appendChild(document.createTextNode(token));
-          } else {
-            const span = document.createElement('span');
-            span.className = 'scroll-word';
-            span.textContent = token;
-            fragment.appendChild(span);
-          }
-        });
-        return fragment;
-      } else if (node.nodeType === 1) {
-        // Element node: skip if already wrapped or marked no-split
-        if (node.classList.contains('scroll-word') || node.classList.contains('no-word-split')) {
-          return null;
-        }
-        // Do not split inside form inputs, buttons, icons, or badges
-        const tag = node.tagName.toLowerCase();
-        if (['button', 'input', 'select', 'textarea', 'i', 'svg', 'code'].includes(tag)) {
-          return null;
-        }
-        const children = Array.from(node.childNodes);
-        children.forEach(child => {
-          const replacement = wrapWordsInNode(child);
-          if (replacement) {
-            node.replaceChild(replacement, child);
-          }
-        });
-      }
-      return null;
-    };
-
-    // 2. SETUP WORD REVEAL CONTAINERS (Resilient against React Re-renders)
+    // 1. ENSURE ALL PARAGRAPH CONTAINERS REMAIN CRISP & FULLY READABLE (NO WORD DIMMING)
     const setupWordRevealContainers = () => {
-      const selectors = [
-        '.scroll-word-reveal',
-        '.director-content p',
-        '.director-quote',
-        '.text-component p',
-        '.subpage-body p:not(.custom-form p):not(.subpage-nav-bar p)',
-        '.lead:not(.custom-form *)',
-        '.section-intro',
-        '.voices-quote',
-        '.alumni-quote',
-        '.head-message p'
-      ];
-
-      const containers = document.querySelectorAll(selectors.join(', '));
-      if (!containers || containers.length === 0) return;
-
+      const existingWords = document.querySelectorAll('.scroll-word');
+      if (!existingWords || existingWords.length === 0) return;
       isMutating = true;
-      containers.forEach(container => {
-        // Check if words are already wrapped
-        const existingWords = container.querySelectorAll('.scroll-word');
-        if (existingWords.length === 0 && container.textContent.trim().length > 0) {
-          container.classList.add('scroll-word-reveal');
-          wrapWordsInNode(container);
-        }
+      existingWords.forEach(word => {
+        word.classList.add('is-lit');
       });
       isMutating = false;
     };
 
-    // 3. CONTINUOUS SCROLL-LINKED WORD ILLUMINATION
     const updateWordIllumination = () => {
-      const containers = document.querySelectorAll('.scroll-word-reveal');
-      const windowHeight = window.innerHeight || 800;
-
-      containers.forEach(container => {
-        const rect = container.getBoundingClientRect();
-        // Illuminates progressively as element enters viewport
-        const triggerStart = windowHeight * 0.92;
-        const triggerEnd = windowHeight * 0.18;
-        const totalDistance = rect.height + (triggerStart - triggerEnd);
-        const scrolledDistance = triggerStart - rect.top;
-        const rawProgress = totalDistance > 0 ? scrolledDistance / totalDistance : 0;
-        const linearProgress = Math.min(Math.max(rawProgress, 0), 1);
-        // Smooth sine ease
-        const progress = Math.sin((linearProgress * Math.PI) / 2);
-
-        const words = container.querySelectorAll('.scroll-word');
-        const totalWords = words.length;
-        if (totalWords === 0) return;
-
-        // Multiply by 1.15 to ensure paragraph is fully illuminated when centered
-        const targetLitCount = Math.floor(progress * totalWords * 1.15);
-
-        for (let i = 0; i < totalWords; i++) {
-          if (i < targetLitCount) {
-            if (!words[i].classList.contains('is-lit')) {
-              words[i].classList.add('is-lit');
-            }
-          } else {
-            if (words[i].classList.contains('is-lit')) {
-              words[i].classList.remove('is-lit');
-            }
-          }
-        }
-      });
+      // Keep all text at full 100% contrast & crispness at every scroll position
     };
 
-    // 4. INTERSECTION OBSERVER FOR SITE-WIDE PANEL & CARD TRANSITIONS
+    // 2. INTERSECTION OBSERVER FOR SITE-WIDE PANEL & CARD TRANSITIONS
     const setupPanelTransitions = () => {
       const panelSelectors = [
         '.panel-reveal',
@@ -142,8 +48,13 @@ export default function ScrollReveal() {
         '.review-card',
         '.campus-card',
         '.academic-card',
+        '.leadership-card',
+        '.alumni-card',
         '.reveal-on-scroll'
       ];
+
+      const panels = document.querySelectorAll(panelSelectors.join(', '));
+      const windowHeight = window.innerHeight || 800;
 
       if ('IntersectionObserver' in window) {
         if (observer) observer.disconnect();
@@ -158,24 +69,23 @@ export default function ScrollReveal() {
             });
           },
           {
-            rootMargin: '0px 0px -40px 0px',
-            threshold: 0.05
+            rootMargin: '0px 0px -20px 0px',
+            threshold: 0.02
           }
         );
-
-        const panels = document.querySelectorAll(panelSelectors.join(', '));
-        const windowHeight = window.innerHeight || 800;
 
         panels.forEach(panel => {
           panel.classList.add('panel-reveal');
           const rect = panel.getBoundingClientRect();
           // If already in or above viewport, reveal immediately without flicker
-          if (rect.top < windowHeight * 0.95 && rect.bottom > 0) {
+          if (rect.top < windowHeight * 0.98 && rect.bottom > 0) {
             panel.classList.add('is-revealed');
           } else if (!panel.classList.contains('is-revealed')) {
             observer.observe(panel);
           }
         });
+      } else {
+        panels.forEach(panel => panel.classList.add('is-revealed'));
       }
     };
 

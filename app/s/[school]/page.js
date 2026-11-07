@@ -123,11 +123,11 @@ export default async function SchoolHome({ params }) {
               </div>
             )}
 
-            <div style={{ textAlign: 'center', marginTop: '40px' }}>
+            <div className="cta-button-group" style={{ marginTop: '40px' }}>
               <Link href={b + '/visit'} className="button button-secondary">
                 Book a Visit to {s.name}
               </Link>
-              <Link href={b + '/contact'} className="button button-gold" style={{ marginLeft: '15px' }}>
+              <Link href={b + '/contact'} className="button button-gold">
                 Contact Admissions Desk
               </Link>
             </div>

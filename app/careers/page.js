@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Page from '@/components/Page';
+import PublicFormEnhancer from '@/components/PublicFormEnhancer';
 import { getJobs } from '@/lib/db';
-import { applyJob } from '@/app/actions';
 
 export const metadata = {
   title: 'Working at Pleasant View | Careers & Vacancies',
@@ -17,6 +17,7 @@ export default async function CareersPage({ searchParams }) {
 
   return (
     <Page title="Working at Pleasant View" subtitle="CAREERS &amp; FACULTY EXCELLENCE">
+      <PublicFormEnhancer />
       <div className="wrapper" style={{ maxWidth: '1140px', margin: '0 auto', padding: '0 20px 60px' }}>
         {/* SUCCESS NOTIFICATION */}
         {isApplied && (
@@ -49,27 +50,27 @@ export default async function CareersPage({ searchParams }) {
           overflow: 'hidden'
         }}>
           <div style={{ maxWidth: '780px', position: 'relative', zIndex: 2 }}>
-            <span style={{ color: 'var(--gold-accent)', fontSize: '13px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase' }}>
+            <span style={{ color: '#fda4af', fontSize: '13px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase' }}>
               JOIN OUR CHRISTIAN ACADEMIC COMMUNITY
             </span>
             <h2 style={{ color: '#ffffff', fontSize: '32px', marginTop: '10px', marginBottom: '16px', textTransform: 'uppercase' }}>
               Inspire the Leaders of Tomorrow
             </h2>
-            <p style={{ fontSize: '16.5px', lineHeight: 1.7, color: 'rgba(255,255,255,0.9)' }}>
+            <p style={{ fontSize: '16.5px', lineHeight: 1.7, color: 'rgba(255,255,255,0.92)' }}>
               At Pleasant View Schools, we believe an exceptional education begins with exceptional people. We foster an uplifting, collegiate work culture with continuous professional development, competitive compensation, and a shared commitment to Christian character and academic victory.
             </p>
             <div style={{ display: 'flex', gap: '25px', marginTop: '25px', flexWrap: 'wrap' }}>
               <div>
-                <strong style={{ fontSize: '22px', color: 'var(--gold-accent)' }}>100%</strong>
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.8)' }}>TSC Certified Faculty</div>
+                <strong style={{ fontSize: '22px', color: '#ffffff' }}>100%</strong>
+                <div style={{ fontSize: '13px', color: '#fda4af', fontWeight: 600 }}>TSC Certified Faculty</div>
               </div>
               <div style={{ borderLeft: '1px solid rgba(255,255,255,0.2)', paddingLeft: '25px' }}>
-                <strong style={{ fontSize: '22px', color: 'var(--gold-accent)' }}>24+ Years</strong>
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.8)' }}>Tradition of Excellence</div>
+                <strong style={{ fontSize: '22px', color: '#ffffff' }}>24+ Years</strong>
+                <div style={{ fontSize: '13px', color: '#fda4af', fontWeight: 600 }}>Tradition of Excellence</div>
               </div>
               <div style={{ borderLeft: '1px solid rgba(255,255,255,0.2)', paddingLeft: '25px' }}>
-                <strong style={{ fontSize: '22px', color: 'var(--gold-accent)' }}>1:20</strong>
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.8)' }}>Teacher-to-Student Ratio</div>
+                <strong style={{ fontSize: '22px', color: '#ffffff' }}>1:20</strong>
+                <div style={{ fontSize: '13px', color: '#fda4af', fontWeight: 600 }}>Teacher-to-Student Ratio</div>
               </div>
             </div>
           </div>
@@ -151,7 +152,7 @@ export default async function CareersPage({ searchParams }) {
                       alignItems: 'center',
                       gap: '8px',
                       background: 'var(--gold-accent)',
-                      color: 'var(--dark-navy)',
+                      color: '#ffffff',
                       fontWeight: 800,
                       fontSize: '13px',
                       letterSpacing: '1px',
@@ -162,7 +163,7 @@ export default async function CareersPage({ searchParams }) {
                       <i className="fa-solid fa-paper-plane" /> Apply for this Position
                     </summary>
 
-                    <form action={applyJob} style={{
+                    <form action="/api/public/submit?action=applyJob" method="POST" data-public-action="applyJob" style={{
                       marginTop: '20px',
                       background: 'var(--soft-bg)',
                       padding: '25px',
@@ -236,7 +237,7 @@ export default async function CareersPage({ searchParams }) {
             We are always eager to connect with gifted educators, sports coaches, pastoral houseparents, and operational experts. Send your details to our central human resources talent pool.
           </p>
 
-          <form action={applyJob} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
+          <form action="/api/public/submit?action=applyJob" method="POST" data-public-action="applyJob" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
             <input type="hidden" name="job_id" value="0" />
             <input type="hidden" name="job_title" value="General / Speculative Application" />
 

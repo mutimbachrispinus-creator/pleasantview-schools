@@ -168,7 +168,8 @@ export default async function Panel({ scope, edit }) {
             <a href="#careers" style={{ color: 'var(--primary-navy)' }}>💼 Careers ({appsList.length})</a>
             <a href="#hero" style={{ color: 'var(--primary-navy)' }}>🖼️ Hero Sliders ({hero.length})</a>
             <a href="#news" style={{ color: 'var(--primary-navy)', fontWeight: 700 }}>📰 News &amp; Stories ({posts.length})</a>
-            <a href="#visits" style={{ color: 'var(--primary-navy)' }}>📅 Tours ({vis.length})</a>
+            <a href="#visits" style={{ color: 'var(--primary-red)', fontWeight: 700 }}>📅 Tours ({vis.length})</a>
+            <a href="#enquiries" style={{ color: 'var(--primary-red)', fontWeight: 700 }}>📩 Enquiries ({enqs.length})</a>
             <a href="#inbound" style={{ color: 'var(--primary-navy)' }}>✉️ SMS Hub</a>
           </div>
 
@@ -2113,70 +2114,281 @@ export default async function Panel({ scope, edit }) {
 
           {/* 8. CAMPUS VISITS & PARENT ENQUIRIES */}
           <section id="visits" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
-            <h2 style={{ fontSize: '22px', margin: '0 0 15px', color: 'var(--primary-navy)' }}>
-              <i className="fa-regular fa-calendar-check" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
-              Campus Visit Bookings ({vis.length})
-            </h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '15px' }}>
+              <div>
+                <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
+                  <i className="fa-regular fa-calendar-check" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
+                  Campus Visit Bookings ({vis.length})
+                </h2>
+                <p style={{ color: '#666', fontSize: '13.5px', margin: '4px 0 0' }}>
+                  Live campus tour &amp; interview requests submitted via the website, email, SMS, or admissions desk.
+                </p>
+              </div>
+              <details style={{ position: 'relative' }}>
+                <summary style={{
+                  cursor: 'pointer',
+                  background: 'var(--primary-navy)',
+                  color: '#fff',
+                  padding: '8px 14px',
+                  borderRadius: '4px',
+                  fontSize: '12.5px',
+                  fontWeight: 700,
+                  listStyle: 'none'
+                }}>
+                  <i className="fa-solid fa-plus" style={{ marginRight: '6px', color: 'var(--gold-accent)' }} />
+                  Log Walk-In / Phone Visit
+                </summary>
+                <div style={{
+                  marginTop: '10px',
+                  padding: '18px',
+                  background: '#f8fafc',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '6px',
+                  minWidth: '300px'
+                }}>
+                  <form action="/api/admin/action?action=addVisitBooking" method="POST" data-admin-action="addVisitBooking" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+                    <Pick />
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label>Parent / Visitor Name *</label>
+                      <input name="name" placeholder="Full Name" required />
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label>Phone Number *</label>
+                      <input name="phone" placeholder="+254 7..." required />
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label>Email (Optional)</label>
+                      <input name="email" type="email" placeholder="parent@..." />
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label>Visit Date *</label>
+                      <input name="visit_date" type="date" required />
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label>Guests</label>
+                      <input name="guests" type="number" min="1" max="20" defaultValue="2" />
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label>Grade Interested</label>
+                      <input name="grade" placeholder="e.g. Grade 7 JSS, Form 1" />
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0, gridColumn: '1 / -1' }}>
+                      <label>Notes (Optional)</label>
+                      <input name="notes" placeholder="Any tour preferences or remarks..." />
+                    </div>
+                    <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+                      <label style={{ fontSize: '12.5px', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                        <input type="checkbox" name="notify_parent" value="1" /> Send confirmation SMS/email to parent
+                      </label>
+                      <FormSubmitButton
+                        label="Save Visit Booking"
+                        pendingLabel="Saving..."
+                        successLabel="Booking Logged!"
+                        className="button button-gold"
+                        style={{ padding: '8px 18px', fontSize: '12.5px' }}
+                      />
+                    </div>
+                  </form>
+                </div>
+              </details>
+            </div>
+
             {!vis.length ? (
               <p style={{ color: '#888', fontStyle: 'italic', marginBottom: '30px' }}>No campus visit requests yet.</p>
             ) : (
-              <div style={{ overflowX: 'auto', marginBottom: '35px' }}>
+              <div style={{ overflowX: 'auto', marginBottom: '38px' }}>
                 <table className="admin-table">
                   <thead>
                     <tr>
-                      <th>Parent Name</th>
-                      <th>Phone</th>
-                      <th>Email</th>
-                      <th>Campus</th>
-                      <th>Date</th>
+                      <th>Parent / Visitor</th>
+                      <th>Contact</th>
+                      <th>Campus &amp; Grade</th>
+                      <th>Preferred Date</th>
                       <th>Guests</th>
+                      <th>Channel</th>
                       <th>Status</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {vis.map(v => (
-                      <tr key={v.id}>
-                        <td><strong>{v.name}</strong></td>
-                        <td><a href={`tel:${v.phone}`}>{v.phone}</a></td>
-                        <td>{v.email ? <a href={`mailto:${v.email}`}>{v.email}</a> : '—'}</td>
-                        <td>{v.sname || 'All Campuses'}</td>
-                        <td><strong>{v.visit_date}</strong></td>
-                        <td>{v.guests || 2}</td>
-                        <td>
-                          <span style={{
-                            background: v.status === 'confirmed' ? '#d4edda' : '#fff3cd',
-                            color: v.status === 'confirmed' ? '#155724' : '#856404',
-                            padding: '2px 6px',
-                            borderRadius: '3px',
-                            fontSize: '11px',
-                            fontWeight: 700
-                          }}>
-                            {v.status ? v.status.toUpperCase() : 'PENDING'}
-                          </span>
-                        </td>
-                        <td>
-                          <form action="/api/admin/action?action=delVisit" method="POST" data-admin-action="delVisit" style={{ display: 'inline' }}>
-                            <input type="hidden" name="id" value={v.id} />
-                            <DeleteButton
-                              confirmMessage="Delete this campus visit booking?"
-                              style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
-                            >
-                              Del
-                            </DeleteButton>
-                          </form>
-                        </td>
-                      </tr>
-                    ))}
+                    {vis.map(v => {
+                      const cleanTel = String(v.phone || '').replace(/[^\d+]/g, '');
+                      const waNum = cleanTel.replace(/^\+/, '').replace(/^0/, '254');
+                      const isConfirmed = v.status === 'confirmed' || v.status === 'completed';
+                      return (
+                        <tr key={v.id}>
+                          <td>
+                            <strong>{v.name}</strong>
+                            {v.created && (
+                              <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
+                                Logged: {String(v.created).slice(0, 16)}
+                              </div>
+                            )}
+                          </td>
+                          <td>
+                            {v.phone ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                <a href={`tel:${cleanTel}`} style={{ fontWeight: 600 }}>{v.phone}</a>
+                                {waNum.length >= 11 && (
+                                  <a
+                                    href={`https://wa.me/${waNum}?text=${encodeURIComponent(`Hello ${v.name}, this is Pleasant View Schools Admissions confirming your campus tour request for ${v.visit_date}.`)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title="Confirm via WhatsApp"
+                                    style={{ color: '#16a34a', fontSize: '13px' }}
+                                  >
+                                    <i className="fa-brands fa-whatsapp" />
+                                  </a>
+                                )}
+                              </div>
+                            ) : '—'}
+                            {v.email && (
+                              <div style={{ fontSize: '12px', marginTop: '2px' }}>
+                                <a href={`mailto:${v.email}`}>{v.email}</a>
+                              </div>
+                            )}
+                          </td>
+                          <td>
+                            <div style={{ fontWeight: 600 }}>{v.sname || 'All Campuses'}</div>
+                            {v.grade && (
+                              <span style={{ display: 'inline-block', marginTop: '3px', fontSize: '11px', background: '#eff6ff', color: '#1d4ed8', padding: '1px 6px', borderRadius: '3px', fontWeight: 700 }}>
+                                {v.grade}
+                              </span>
+                            )}
+                            {v.notes && (
+                              <div style={{ fontSize: '11.5px', color: '#475569', marginTop: '4px', maxWidth: '240px' }}>
+                                {v.notes}
+                              </div>
+                            )}
+                          </td>
+                          <td><strong>{v.visit_date}</strong></td>
+                          <td>{v.guests || 2}</td>
+                          <td>
+                            <span style={{
+                              background: '#f1f5f9',
+                              color: '#334155',
+                              padding: '2px 7px',
+                              borderRadius: '3px',
+                              fontSize: '10.5px',
+                              fontWeight: 700,
+                              textTransform: 'uppercase'
+                            }}>
+                              {v.source || 'website'}
+                            </span>
+                          </td>
+                          <td>
+                            <span style={{
+                              background: isConfirmed ? '#d4edda' : '#fff3cd',
+                              color: isConfirmed ? '#155724' : '#856404',
+                              padding: '2px 7px',
+                              borderRadius: '3px',
+                              fontSize: '11px',
+                              fontWeight: 700
+                            }}>
+                              {v.status ? v.status.toUpperCase() : 'PENDING'}
+                            </span>
+                          </td>
+                          <td style={{ whiteSpace: 'nowrap' }}>
+                            {!isConfirmed && (
+                              <form action="/api/admin/action?action=updateVisitStatus" method="POST" data-admin-action="updateVisitStatus" style={{ display: 'inline', marginRight: '6px' }}>
+                                <input type="hidden" name="id" value={v.id} />
+                                <input type="hidden" name="status" value="confirmed" />
+                                <InlineActionButton
+                                  label="Confirm"
+                                  pendingLabel="..."
+                                  style={{ background: '#16a34a', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', fontWeight: 700 }}
+                                />
+                              </form>
+                            )}
+                            <form action="/api/admin/action?action=delVisit" method="POST" data-admin-action="delVisit" style={{ display: 'inline' }}>
+                              <input type="hidden" name="id" value={v.id} />
+                              <DeleteButton
+                                confirmMessage="Delete this campus visit booking?"
+                                style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
+                              >
+                                Del
+                              </DeleteButton>
+                            </form>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
             )}
 
-            <h2 style={{ fontSize: '22px', margin: '0 0 15px', color: 'var(--primary-navy)' }}>
-              <i className="fa-regular fa-envelope" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
-              Admissions Enquiries ({enqs.length})
-            </h2>
+            <div id="enquiries" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '15px', paddingTop: '10px', borderTop: '1px solid #edf2f7' }}>
+              <div>
+                <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
+                  <i className="fa-regular fa-envelope" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
+                  Admissions Enquiries ({enqs.length})
+                </h2>
+                <p style={{ color: '#666', fontSize: '13.5px', margin: '4px 0 0' }}>
+                  All parent admissions questions received via the website, email inbox, SMS gateway, or walk-in desk.
+                </p>
+              </div>
+              <details style={{ position: 'relative' }}>
+                <summary style={{
+                  cursor: 'pointer',
+                  background: 'var(--primary-navy)',
+                  color: '#fff',
+                  padding: '8px 14px',
+                  borderRadius: '4px',
+                  fontSize: '12.5px',
+                  fontWeight: 700,
+                  listStyle: 'none'
+                }}>
+                  <i className="fa-solid fa-plus" style={{ marginRight: '6px', color: 'var(--gold-accent)' }} />
+                  Log Walk-In / Phone Enquiry
+                </summary>
+                <div style={{
+                  marginTop: '10px',
+                  padding: '18px',
+                  background: '#f8fafc',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '6px',
+                  minWidth: '300px'
+                }}>
+                  <form action="/api/admin/action?action=addAdmissionsEnquiry" method="POST" data-admin-action="addAdmissionsEnquiry" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+                    <Pick />
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label>Parent / Enquirer Name *</label>
+                      <input name="name" placeholder="Full Name" required />
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label>Phone Number *</label>
+                      <input name="phone" placeholder="+254 7..." required />
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label>Email (Optional)</label>
+                      <input name="email" type="email" placeholder="parent@..." />
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label>Grade Interested</label>
+                      <input name="grade" placeholder="e.g. PP2, Grade 4, Form 1" />
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0, gridColumn: '1 / -1' }}>
+                      <label>Enquiry Details *</label>
+                      <textarea name="message" rows="3" placeholder="Summary of parent's enquiry..." required />
+                    </div>
+                    <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+                      <label style={{ fontSize: '12.5px', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                        <input type="checkbox" name="notify_parent" value="1" /> Send acknowledgement SMS/email to parent
+                      </label>
+                      <FormSubmitButton
+                        label="Save Enquiry"
+                        pendingLabel="Saving..."
+                        successLabel="Enquiry Logged!"
+                        className="button button-primary"
+                        style={{ padding: '8px 18px', fontSize: '12.5px' }}
+                      />
+                    </div>
+                  </form>
+                </div>
+              </details>
+            </div>
+
             {!enqs.length ? (
               <p style={{ color: '#888', fontStyle: 'italic' }}>No enquiries yet.</p>
             ) : (
@@ -2184,37 +2396,107 @@ export default async function Panel({ scope, edit }) {
                 <table className="admin-table">
                   <thead>
                     <tr>
-                      <th>Name</th>
-                      <th>Phone</th>
-                      <th>Email</th>
-                      <th>Campus</th>
-                      <th>Message</th>
+                      <th>Parent Name</th>
+                      <th>Contact</th>
+                      <th>Campus &amp; Grade</th>
+                      <th>Enquiry Message</th>
+                      <th>Channel</th>
+                      <th>Status</th>
                       <th>Date</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {enqs.map(e => (
-                      <tr key={e.id}>
-                        <td><strong>{e.name}</strong></td>
-                        <td><a href={`tel:${e.phone}`}>{e.phone}</a></td>
-                        <td>{e.email ? <a href={`mailto:${e.email}`}>{e.email}</a> : '—'}</td>
-                        <td>{e.sname || 'Group'}</td>
-                        <td style={{ maxWidth: '320px', fontSize: '12.5px' }}>{e.message}</td>
-                        <td style={{ fontSize: '12px', color: '#666' }}>{e.created ? e.created.slice(0, 10) : '—'}</td>
-                        <td>
-                          <form action="/api/admin/action?action=delEnquiry" method="POST" data-admin-action="delEnquiry" style={{ display: 'inline' }}>
-                            <input type="hidden" name="id" value={e.id} />
-                            <DeleteButton
-                              confirmMessage="Delete this parent enquiry?"
-                              style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
-                            >
-                              Del
-                            </DeleteButton>
-                          </form>
-                        </td>
-                      </tr>
-                    ))}
+                    {enqs.map(e => {
+                      const cleanTel = String(e.phone || '').replace(/[^\d+]/g, '');
+                      const waNum = cleanTel.replace(/^\+/, '').replace(/^0/, '254');
+                      const isReplied = e.status === 'replied' || e.status === 'resolved';
+                      return (
+                        <tr key={e.id}>
+                          <td><strong>{e.name}</strong></td>
+                          <td>
+                            {e.phone ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                <a href={`tel:${cleanTel}`} style={{ fontWeight: 600 }}>{e.phone}</a>
+                                {waNum.length >= 11 && (
+                                  <a
+                                    href={`https://wa.me/${waNum}?text=${encodeURIComponent(`Hello ${e.name}, thank you for contacting Pleasant View Schools Admissions regarding your inquiry.`)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title="Reply via WhatsApp"
+                                    style={{ color: '#16a34a', fontSize: '13px' }}
+                                  >
+                                    <i className="fa-brands fa-whatsapp" />
+                                  </a>
+                                )}
+                              </div>
+                            ) : '—'}
+                            {e.email && (
+                              <div style={{ fontSize: '12px', marginTop: '2px' }}>
+                                <a href={`mailto:${e.email}?subject=${encodeURIComponent('Re: Pleasant View Schools Admissions Enquiry')}`}>{e.email}</a>
+                              </div>
+                            )}
+                          </td>
+                          <td>
+                            <div style={{ fontWeight: 600 }}>{e.sname || 'All Campuses'}</div>
+                            {e.grade && (
+                              <span style={{ display: 'inline-block', marginTop: '3px', fontSize: '11px', background: '#eff6ff', color: '#1d4ed8', padding: '1px 6px', borderRadius: '3px', fontWeight: 700 }}>
+                                {e.grade}
+                              </span>
+                            )}
+                          </td>
+                          <td style={{ maxWidth: '340px', fontSize: '12.5px', lineHeight: 1.45 }}>{e.message}</td>
+                          <td>
+                            <span style={{
+                              background: '#f1f5f9',
+                              color: '#334155',
+                              padding: '2px 7px',
+                              borderRadius: '3px',
+                              fontSize: '10.5px',
+                              fontWeight: 700,
+                              textTransform: 'uppercase'
+                            }}>
+                              {e.source || 'website'}
+                            </span>
+                          </td>
+                          <td>
+                            <span style={{
+                              background: isReplied ? '#d4edda' : '#fff3cd',
+                              color: isReplied ? '#155724' : '#856404',
+                              padding: '2px 7px',
+                              borderRadius: '3px',
+                              fontSize: '11px',
+                              fontWeight: 700
+                            }}>
+                              {e.status ? e.status.toUpperCase() : 'PENDING'}
+                            </span>
+                          </td>
+                          <td style={{ fontSize: '12px', color: '#666', whiteSpace: 'nowrap' }}>{e.created ? String(e.created).slice(0, 10) : '—'}</td>
+                          <td style={{ whiteSpace: 'nowrap' }}>
+                            {!isReplied && (
+                              <form action="/api/admin/action?action=updateEnquiryStatus" method="POST" data-admin-action="updateEnquiryStatus" style={{ display: 'inline', marginRight: '6px' }}>
+                                <input type="hidden" name="id" value={e.id} />
+                                <input type="hidden" name="status" value="replied" />
+                                <InlineActionButton
+                                  label="Mark Replied"
+                                  pendingLabel="..."
+                                  style={{ background: '#0284c7', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', fontWeight: 700 }}
+                                />
+                              </form>
+                            )}
+                            <form action="/api/admin/action?action=delEnquiry" method="POST" data-admin-action="delEnquiry" style={{ display: 'inline' }}>
+                              <input type="hidden" name="id" value={e.id} />
+                              <DeleteButton
+                                confirmMessage="Delete this parent enquiry?"
+                                style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
+                              >
+                                Del
+                              </DeleteButton>
+                            </form>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

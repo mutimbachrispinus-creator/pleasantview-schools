@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { sendSMS, formatKenyanPhone } from '@/lib/notify';
-import { q } from '@/lib/db';
+import { q, qWrite } from '@/lib/db';
+import { syncInboundSmsToAdmissions } from '@/lib/admissions';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,14 +46,23 @@ export async function POST(req) {
       const text = String(body.text || body.message || '').trim();
       const rawId = String(body.id || '');
 
-      await q(
+      const smsIns = await qWrite(
         'INSERT INTO inbound_sms(sender, receiver, text, raw_id, status) VALUES(?,?,?,?,?)',
         [sender, receiver, text, rawId, 'received']
       );
-      await q(
+      await qWrite(
         'INSERT INTO comm_logs(type, direction, sender, recipient, content, status) VALUES(?,?,?,?,?,?)',
         ['sms', 'inbound', sender, receiver, text, 'received']
       );
+
+      // Sync genuine inbound parent SMS inquiries / visit requests into Admissions Enquiries & Campus Visit Bookings
+      await syncInboundSmsToAdmissions({
+        id: smsIns?.lastInsertRowid ? Number(smsIns.lastInsertRowid) : Date.now(),
+        sender,
+        receiver,
+        text,
+        status: 'received'
+      });
 
       console.log(`[Africa's Talking Inbound SMS]: From ${sender}: "${text}"`);
 

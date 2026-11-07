@@ -140,11 +140,11 @@ export default async function QuickLinkPage({ params }) {
             </p>
           </div>
 
-          <div style={{ textAlign: 'center', marginTop: '40px' }}>
+          <div className="cta-button-group" style={{ marginTop: '40px' }}>
             <Link href="/contact#visit" className="button button-secondary">
               Book a Campus Visit
             </Link>
-            <Link href="/contact" className="button button-gold" style={{ marginLeft: '15px' }}>
+            <Link href="/contact" className="button button-gold">
               Contact Admissions
             </Link>
           </div>
@@ -189,11 +189,11 @@ export default async function QuickLinkPage({ params }) {
             </div>
           </div>
 
-          <div style={{ textAlign: 'center', marginTop: '40px' }}>
+          <div className="cta-button-group" style={{ marginTop: '40px' }}>
             <Link href="/about#sports" className="button button-secondary">
               Explore All Sports &amp; Clubs
             </Link>
-            <Link href="/contact#visit" className="button button-gold" style={{ marginLeft: '15px' }}>
+            <Link href="/contact#visit" className="button button-gold">
               Visit Our Sports Facilities
             </Link>
           </div>

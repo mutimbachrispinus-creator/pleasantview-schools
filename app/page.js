@@ -18,7 +18,7 @@ import {
   getEvents,
   getPhotos
 } from '@/lib/db';
-import { submitParentReview } from '@/app/actions';
+import PublicFormEnhancer from '@/components/PublicFormEnhancer';
 
 export const dynamic = 'force-dynamic';
 
@@ -385,7 +385,7 @@ export default async function Home({ searchParams }) {
       <section className="at-a-glance-section" aria-label="Pleasant View at a Glance">
         <div className="wrapper">
           <div style={{ textAlign: 'center', marginBottom: '35px' }}>
-            <span style={{ color: 'var(--gold-accent)', fontSize: '12px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase' }}>
+            <span style={{ color: '#fda4af', fontSize: '12px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase' }}>
               DISTINCTION BY NUMBERS
             </span>
             <h2 style={{ color: '#ffffff', fontSize: 'clamp(26px, 2.8vw, 36px)', fontFamily: 'Cinzel, serif', margin: '6px 0 0', textTransform: 'uppercase' }}>
@@ -547,15 +547,23 @@ export default async function Home({ searchParams }) {
                   <div className="program-level">{String(s.level || '').replace(/CBC/g, 'CBE').replace(/pleasantview/gi, 'Pleasant View')}</div>
                   <p>{s.tagline || s.about?.slice(0, 110) + '...' || 'Distinctive academic program tailored for holistic excellence.'}</p>
                   <div className="program-card-meta">
-                    <span>Enrolled: <strong>{s.learners || 'Enrolled'}</strong></span>
-                    <span>Boarding: <strong>{s.boarders || 'Day & Boarding'}</strong></span>
+                    <span>
+                      <i className="fa-solid fa-user-graduate" style={{ color: 'var(--primary-red)', marginRight: '5px', fontSize: '11.5px' }} />
+                      Enrolled: <strong>{s.learners || 'Enrolled'}</strong>
+                    </span>
+                    <span>
+                      <i className="fa-solid fa-bed" style={{ color: 'var(--primary-red)', marginRight: '5px', fontSize: '11.5px' }} />
+                      Boarding: <strong>{s.boarders || 'Day & Boarding'}</strong>
+                    </span>
                   </div>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <Link href={`/s/${s.slug}`} className="button button-primary" style={{ flex: 1, padding: '8px', fontSize: '12.5px', textAlign: 'center' }}>
-                      Explore Campus
+                  <div className="program-card-actions">
+                    <Link href={`/s/${s.slug}`} className="program-action-explore">
+                      <span>Explore Campus</span>
+                      <i className="fa-solid fa-arrow-right" />
                     </Link>
-                    <Link href={`/contact?school=${s.slug}#visit`} className="button button-gold" style={{ padding: '8px 12px', fontSize: '12.5px' }}>
-                      Apply
+                    <Link href={`/contact?school=${s.slug}#visit`} className="program-action-apply">
+                      <i className="fa-regular fa-calendar-check" />
+                      <span>Apply / Visit</span>
                     </Link>
                   </div>
                 </div>
@@ -605,7 +613,7 @@ export default async function Home({ searchParams }) {
                 className="director-portrait"
               />
               <div className="director-frame-badge">
-                <i className="fa-solid fa-award" style={{ marginRight: '8px', color: 'var(--gold-accent)' }} />
+                <i className="fa-solid fa-award" style={{ marginRight: '8px', color: '#fda4af' }} />
                 24 Years of Leadership
               </div>
             </div>
@@ -634,11 +642,14 @@ export default async function Home({ searchParams }) {
               {leadMessages.slice(1).map((lm) => (
                 <div
                   key={lm.id}
+                  className="leadership-card panel-reveal"
                   style={{
-                    background: 'rgba(255,255,255,0.06)',
-                    border: '1px solid rgba(255,255,255,0.14)',
+                    background: '#ffffff',
+                    border: '1px solid #dde2ec',
+                    borderTop: '4px solid var(--primary-red)',
                     borderRadius: '10px',
                     padding: '24px',
+                    boxShadow: '0 8px 24px rgba(30, 35, 42, 0.06)',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '14px'
@@ -648,22 +659,22 @@ export default async function Home({ searchParams }) {
                     <img
                       src={lm.image || '/images/banner_3_a.webp'}
                       alt={lm.name}
-                      style={{ width: '68px', height: '68px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--gold-accent)', flexShrink: 0 }}
+                      style={{ width: '68px', height: '68px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary-red)', flexShrink: 0 }}
                     />
                     <div>
-                      <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--gold-accent)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                      <span style={{ display: 'inline-block', fontSize: '11px', fontWeight: 800, color: 'var(--primary-red)', background: 'rgba(139, 30, 45, 0.09)', padding: '3px 9px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '4px' }}>
                         {lm.role || 'Leadership'}
                       </span>
-                      <h4 style={{ margin: '2px 0', color: '#ffffff', fontSize: '17px' }}>{lm.name}</h4>
-                      <small style={{ color: 'rgba(255,255,255,0.75)', fontSize: '12.5px' }}>{lm.title}</small>
+                      <h4 style={{ margin: '2px 0', color: '#1E232A', fontSize: '17.5px', fontWeight: 800 }}>{lm.name}</h4>
+                      <small style={{ color: '#475569', fontSize: '13px', fontWeight: 600 }}>{lm.title}</small>
                     </div>
                   </div>
                   {lm.quote && (
-                    <blockquote style={{ margin: 0, fontStyle: 'italic', color: 'var(--gold-accent)', fontSize: '14px', lineHeight: 1.5 }}>
+                    <blockquote style={{ margin: 0, padding: '10px 14px', background: 'var(--soft-bg)', borderLeft: '3px solid var(--primary-red)', borderRadius: '4px', fontStyle: 'italic', color: '#1E232A', fontSize: '14px', fontWeight: 600, lineHeight: 1.55 }}>
                       &ldquo;{lm.quote}&rdquo;
                     </blockquote>
                   )}
-                  <p style={{ margin: 0, color: 'rgba(255,255,255,0.88)', fontSize: '14px', lineHeight: 1.65, whiteSpace: 'pre-line' }}>
+                  <p style={{ margin: 0, color: '#334155', fontSize: '14.5px', lineHeight: 1.7, whiteSpace: 'pre-line' }}>
                     {lm.message}
                   </p>
                 </div>
@@ -705,7 +716,7 @@ export default async function Home({ searchParams }) {
                 }}
                 className="quick-gateway-card"
               >
-                <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'var(--primary-navy)', color: 'var(--gold-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0 }}>
+                <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'var(--primary-navy)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px', flexShrink: 0 }}>
                   <i className="fa-solid fa-arrow-up-right-from-square" />
                 </div>
                 <div>
@@ -961,7 +972,8 @@ export default async function Home({ searchParams }) {
               </p>
             </div>
 
-            <form action={submitParentReview} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+            <PublicFormEnhancer />
+            <form action="/api/public/submit?action=submitParentReview" method="POST" data-public-action="submitParentReview" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
               <div className="form-group">
                 <label>Parent / Guardian Full Name *</label>
                 <input name="parent_name" placeholder="e.g. Mrs. Jane Kimani" required />
@@ -1078,7 +1090,7 @@ export default async function Home({ searchParams }) {
                   </span>
                   <div style={{ position: 'absolute', bottom: '12px', left: '16px', right: '16px' }}>
                     <h4 style={{ color: '#ffffff', margin: 0, fontSize: '18px', fontWeight: 700 }}>{l.name}</h4>
-                    <span style={{ color: 'var(--gold-accent)', fontSize: '12.5px', fontWeight: 600 }}>{l.school_name}</span>
+                    <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12.5px', fontWeight: 600 }}>{l.school_name}</span>
                   </div>
                 </div>
 

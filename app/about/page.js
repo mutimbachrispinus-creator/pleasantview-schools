@@ -290,11 +290,11 @@ export default async function About() {
         )}
       </div>
 
-      <div style={{ textAlign: 'center', marginTop: '50px' }}>
+      <div className="cta-button-group" style={{ marginTop: '50px' }}>
         <Link href="/contact#visit" className="button button-secondary">
           Book a Guided Campus Tour
         </Link>
-        <Link href="/contact" className="button button-gold" style={{ marginLeft: '15px' }}>
+        <Link href="/contact" className="button button-gold">
           Contact Admissions Desk
         </Link>
       </div>

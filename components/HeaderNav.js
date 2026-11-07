@@ -296,7 +296,7 @@ export default function HeaderNav({
               className={`accordion-trigger ${openAccordion === 'divisions' ? 'active' : ''}`}
               onClick={() => toggleAccordion('divisions')}
             >
-              <span><i className="fa-solid fa-graduation-cap" style={{ color: 'var(--gold-accent)', marginRight: '10px' }} /> Academic Divisions</span>
+              <span><i className="fa-solid fa-graduation-cap" style={{ color: '#fda4af', marginRight: '10px' }} /> Academic Divisions</span>
               <i className={`fa-solid fa-chevron-down acc-icon ${openAccordion === 'divisions' ? 'rotated' : ''}`} />
             </button>
             <div className={`accordion-panel ${openAccordion === 'divisions' ? 'expanded' : ''}`}>
@@ -310,7 +310,7 @@ export default function HeaderNav({
                   <div style={{ fontWeight: 700, color: '#ffffff' }}>
                     {String(s.name || '').replace(/pleasantview/gi, 'Pleasant View')}
                   </div>
-                  <small style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11.5px' }}>
+                  <small style={{ color: 'rgba(255,255,255,0.82)', fontSize: '11.5px' }}>
                     {s.category} &bull; {String(s.level || '').replace(/CBC/g, 'CBE').replace(/pleasantview/gi, 'Pleasant View')}
                   </small>
                 </Link>
@@ -325,7 +325,7 @@ export default function HeaderNav({
               className={`accordion-trigger ${openAccordion === 'about' ? 'active' : ''}`}
               onClick={() => toggleAccordion('about')}
             >
-              <span><i className="fa-solid fa-landmark" style={{ color: 'var(--gold-accent)', marginRight: '10px' }} /> About Pleasant View</span>
+              <span><i className="fa-solid fa-landmark" style={{ color: '#fda4af', marginRight: '10px' }} /> About Pleasant View</span>
               <i className={`fa-solid fa-chevron-down acc-icon ${openAccordion === 'about' ? 'rotated' : ''}`} />
             </button>
             <div className={`accordion-panel ${openAccordion === 'about' ? 'expanded' : ''}`}>
@@ -363,11 +363,11 @@ export default function HeaderNav({
               className={`accordion-trigger ${openAccordion === 'life' ? 'active' : ''}`}
               onClick={() => toggleAccordion('life')}
             >
-              <span><i className="fa-solid fa-futbol" style={{ color: 'var(--gold-accent)', marginRight: '10px' }} /> School Life</span>
+              <span><i className="fa-solid fa-futbol" style={{ color: '#fda4af', marginRight: '10px' }} /> School Life</span>
               <i className={`fa-solid fa-chevron-down acc-icon ${openAccordion === 'life' ? 'rotated' : ''}`} />
             </button>
             <div className={`accordion-panel ${openAccordion === 'life' ? 'expanded' : ''}`}>
-              <Link href="/pictorial" onClick={() => setMobileMenuOpen(false)} className="accordion-item" style={{ fontWeight: 700, color: 'var(--gold-accent)' }}>
+              <Link href="/pictorial" onClick={() => setMobileMenuOpen(false)} className="accordion-item" style={{ fontWeight: 700, color: '#fda4af' }}>
                 School Pictorial &amp; Gallery
               </Link>
               <Link href="/about#boarding" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
@@ -398,7 +398,7 @@ export default function HeaderNav({
               className={`accordion-trigger ${openAccordion === 'admissions' ? 'active' : ''}`}
               onClick={() => toggleAccordion('admissions')}
             >
-              <span><i className="fa-solid fa-file-signature" style={{ color: 'var(--gold-accent)', marginRight: '10px' }} /> Admissions &amp; Tours</span>
+              <span><i className="fa-solid fa-file-signature" style={{ color: '#fda4af', marginRight: '10px' }} /> Admissions &amp; Tours</span>
               <i className={`fa-solid fa-chevron-down acc-icon ${openAccordion === 'admissions' ? 'rotated' : ''}`} />
             </button>
             <div className={`accordion-panel ${openAccordion === 'admissions' ? 'expanded' : ''}`}>
@@ -424,7 +424,7 @@ export default function HeaderNav({
               className={`accordion-trigger ${openAccordion === 'quick' ? 'active' : ''}`}
               onClick={() => toggleAccordion('quick')}
             >
-              <span><i className="fa-solid fa-bolt" style={{ color: 'var(--gold-accent)', marginRight: '10px' }} /> Quick Links &amp; Portals</span>
+              <span><i className="fa-solid fa-bolt" style={{ color: '#fda4af', marginRight: '10px' }} /> Quick Links &amp; Portals</span>
               <i className={`fa-solid fa-chevron-down acc-icon ${openAccordion === 'quick' ? 'rotated' : ''}`} />
             </button>
             <div className={`accordion-panel ${openAccordion === 'quick' ? 'expanded' : ''}`}>
@@ -439,7 +439,7 @@ export default function HeaderNav({
               <Link href="/careers#tenders" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
                 Tenders and Bids
               </Link>
-              <Link href={adminPath} onClick={() => setMobileMenuOpen(false)} className="accordion-item" style={{ color: 'var(--gold-accent)' }}>
+              <Link href={adminPath} onClick={() => setMobileMenuOpen(false)} className="accordion-item" style={{ color: '#fda4af', fontWeight: 700 }}>
                 Staff &amp; Admin Portal
               </Link>
             </div>
@@ -476,7 +476,7 @@ export default function HeaderNav({
             <Link
               href="/contact#admin-sms"
               onClick={() => setMobileMenuOpen(false)}
-              style={{ display: 'block', textAlign: 'center', color: 'var(--gold-accent)', fontSize: '12.5px', marginTop: '10px', textDecoration: 'none', fontWeight: 600 }}
+              style={{ display: 'block', textAlign: 'center', color: '#fda4af', fontSize: '12.5px', marginTop: '10px', textDecoration: 'none', fontWeight: 700 }}
             >
               <i className="fa-solid fa-comment-sms" style={{ marginRight: '6px' }} />
               Send Direct SMS to Administrator
@@ -485,7 +485,7 @@ export default function HeaderNav({
 
           {/* SOCIAL MEDIA CHANNELS IN MOBILE NAV DRAWER */}
           <div style={{ padding: '18px 20px 30px', borderTop: '1px solid rgba(255,255,255,0.1)', background: '#14181E' }}>
-            <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--gold-accent)', fontWeight: 800, display: 'block', marginBottom: '12px' }}>
+            <span style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'rgba(255,255,255,0.85)', fontWeight: 800, display: 'block', marginBottom: '12px' }}>
               Follow Pleasant View Schools
             </span>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>

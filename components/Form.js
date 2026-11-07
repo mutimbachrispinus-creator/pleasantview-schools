@@ -1,8 +1,14 @@
 import Page from '@/components/Page';
+import PublicFormEnhancer from '@/components/PublicFormEnhancer';
 
-export default function Form({ title, intro, action, school = '', extra = null, ok }) {
+export default function Form({ title, intro, action, actionUrl = '', actionName = '', school = '', extra = null, ok }) {
+  const formProps = actionUrl
+    ? { action: actionUrl, method: 'POST', 'data-public-action': actionName || 'submit' }
+    : { action };
+
   return (
     <Page title={title} subtitle="ADMISSIONS & ENQUIRIES">
+      <PublicFormEnhancer />
       <div className="portal-entry-container" style={{ maxWidth: '680px', width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
         {ok ? (
           <div className="entry-panel-card" style={{ textAlign: 'center', padding: '40px', background: 'var(--soft-bg)', borderRadius: '6px', borderLeft: '4px solid var(--primary-navy)', width: '100%', boxSizing: 'border-box' }}>
@@ -14,8 +20,9 @@ export default function Form({ title, intro, action, school = '', extra = null, 
           <div className="custom-form entry-panel-card" style={{ width: '100%', boxSizing: 'border-box' }}>
             <h3 style={{ marginBottom: '8px' }}>{title}</h3>
             <p style={{ fontSize: '14px', color: '#555', marginBottom: '20px' }}>{intro}</p>
-            <form action={action}>
+            <form {...formProps}>
               <input type="hidden" name="school" value={school} />
+              <input type="hidden" name="from_division" value="1" />
               <div className="form-group">
                 <label>Your Full Name *</label>
                 <input name="name" placeholder="Parent / Guardian Name" required />
