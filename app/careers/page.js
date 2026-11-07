@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Page from '@/components/Page';
 import PublicFormEnhancer from '@/components/PublicFormEnhancer';
-import { getJobs } from '@/lib/db';
+import { getJobs, getYearsOfExistence } from '@/lib/db';
 
 export const metadata = {
   title: 'Working at Pleasant View | Careers & Vacancies',
@@ -11,6 +11,7 @@ export const metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function CareersPage({ searchParams }) {
+  const years = getYearsOfExistence();
   const sp = await searchParams;
   const isApplied = Boolean(sp.applied);
   const jobsList = await getJobs();
@@ -65,8 +66,8 @@ export default async function CareersPage({ searchParams }) {
                 <div style={{ fontSize: '13px', color: '#fda4af', fontWeight: 600 }}>TSC Certified Faculty</div>
               </div>
               <div style={{ borderLeft: '1px solid rgba(255,255,255,0.2)', paddingLeft: '25px' }}>
-                <strong style={{ fontSize: '22px', color: '#ffffff' }}>24+ Years</strong>
-                <div style={{ fontSize: '13px', color: '#fda4af', fontWeight: 600 }}>Tradition of Excellence</div>
+                <strong style={{ fontSize: '22px', color: '#ffffff' }}>{years} Years</strong>
+                <div style={{ fontSize: '13px', color: '#fda4af', fontWeight: 600 }}>Years of Existence</div>
               </div>
               <div style={{ borderLeft: '1px solid rgba(255,255,255,0.2)', paddingLeft: '25px' }}>
                 <strong style={{ fontSize: '22px', color: '#ffffff' }}>1:20</strong>

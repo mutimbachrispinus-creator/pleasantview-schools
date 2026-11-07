@@ -1,8 +1,14 @@
 'use client';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
+import { getYearsOfExistence, syncHeritageYearsText } from '@/lib/heritage';
 
 export default function Slider({ slides = [], base = '' }) {
+  const [years, setYears] = useState(() => getYearsOfExistence());
+  useEffect(() => {
+    const t = setInterval(() => setYears(getYearsOfExistence()), 60000);
+    return () => clearInterval(t);
+  }, []);
   const defaultImages = [
     '/images/banner_1_a.webp',
     '/images/banner_2_a.webp',
@@ -24,7 +30,7 @@ export default function Slider({ slides = [], base = '' }) {
     },
     {
       image: '/images/hero_sports_field.jpg',
-      headline: '24 YEARS OF ACADEMIC EXCELLENCE',
+      headline: `${years} YEARS OF ACADEMIC EXCELLENCE`,
       sub: 'Outstanding KPSEA (EE — Exceeding Expectations) and KJSEA (ME1) distinction, with maiden KCSE B+ university transition',
       button_text: 'Our Academics',
       button_link: '/about#academics',
@@ -95,10 +101,10 @@ export default function Slider({ slides = [], base = '' }) {
 
   // Clean, robust headline strictly splitting PLEASANT VIEW
   const rawHeadline = String(active?.headline || '').trim();
-  const activeHeadline = (rawHeadline || '24 YEARS OF ACADEMIC EXCELLENCE')
+  const activeHeadline = syncHeritageYearsText(rawHeadline || `${years} YEARS OF ACADEMIC EXCELLENCE`)
     .replace(/PLEASANTVIEW/g, 'PLEASANT VIEW')
     .replace(/Pleasantview/g, 'Pleasant View');
-  const activeSub = String(active?.sub || '')
+  const activeSub = syncHeritageYearsText(String(active?.sub || ''))
     .replace(/PLEASANTVIEW/g, 'PLEASANT VIEW')
     .replace(/Pleasantview/g, 'Pleasant View');
 

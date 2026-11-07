@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Page from '@/components/Page';
 import PublicFormEnhancer from '@/components/PublicFormEnhancer';
-import { schools, S } from '@/lib/db';
+import { schools, S, getSchoolMapsUrl } from '@/lib/db';
 
 export const metadata = {
   title: 'Book a Campus Visit & Admissions Contact',
@@ -130,7 +130,7 @@ export default async function ContactPage({ searchParams }) {
                     <option value="all">Pleasant View Schools Main Campus (All Schools)</option>
                     {schList.map(s => (
                       <option key={s.id} value={s.slug}>
-                        {s.name} ({s.category || 'School'}) &bull; {s.level}
+                        {s.name} ({s.category || 'School'}) &bull; {s.location || location}
                       </option>
                     ))}
                   </select>
@@ -206,7 +206,7 @@ export default async function ContactPage({ searchParams }) {
                       <option value="all">All Schools (General Admissions)</option>
                       {schList.map(s => (
                         <option key={s.id} value={s.slug}>
-                          {s.name} &bull; {s.level}
+                          {s.name} &bull; {s.location || location}
                         </option>
                       ))}
                     </select>
@@ -446,13 +446,24 @@ export default async function ContactPage({ searchParams }) {
               <div style={{ display: 'grid', gap: '10px' }}>
                 {schList.map(s => {
                   const cleanedName = s.name.replace(/Pleasantview/gi, 'Pleasant View');
+                  const schoolLoc = s.location || location;
+                  const schoolMap = getSchoolMapsUrl(s, st.maps_url);
                   return (
                     <div key={s.id} style={{ padding: '10px 12px', background: 'var(--soft-bg)', borderRadius: '6px', borderLeft: `3px solid ${s.color || 'var(--primary-navy)'}` }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px' }}>
                         <strong style={{ fontSize: '13.5px', color: 'var(--primary-navy)' }}>{cleanedName}</strong>
                         <span style={{ fontSize: '10px', background: '#fff', padding: '2px 6px', borderRadius: '3px', fontWeight: 700, color: s.color || 'var(--primary-navy)', border: '1px solid #e1e7f0' }}>
                           {s.category}
                         </span>
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#475569', marginTop: '5px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', flexWrap: 'wrap' }}>
+                        <span>
+                          <i className="fa-solid fa-location-dot" style={{ marginRight: '5px', color: 'var(--primary-red)' }} />
+                          {schoolLoc}
+                        </span>
+                        <a href={schoolMap} target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', fontWeight: 700, color: 'var(--medium-blue)', textDecoration: 'none' }}>
+                          Directions &rarr;
+                        </a>
                       </div>
                       <div style={{ fontSize: '12px', color: '#555', marginTop: '4px' }}>
                         <i className="fa-solid fa-phone" style={{ marginRight: '5px', color: 'var(--medium-blue)' }} />

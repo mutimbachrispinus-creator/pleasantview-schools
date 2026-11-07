@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getSchool } from '@/lib/db';
+import { getSchool, getSchoolMapsUrl, S } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +14,10 @@ export async function generateMetadata({ params }) {
 export default async function SchoolLayout({ children, params }) {
   const s = await getSchool((await params).school);
   if (!s) notFound();
+  const st = await S();
   const b = '/s/' + s.slug;
+  const schoolMapUrl = getSchoolMapsUrl(s, st.maps_url);
+  const schoolLocation = s.location || st.location || 'Githunguri, Komothai Subcounty, Kiambu County';
 
   return (
     <div>
@@ -25,6 +28,27 @@ export default async function SchoolLayout({ children, params }) {
               {s.category || 'SCHOOL'}
             </span>
             <h4 style={{ margin: 0, color: '#ffffff', fontSize: '17px', fontWeight: 700 }}>{s.name}</h4>
+            <a
+              href={schoolMapUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Open school location in Google Maps"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                background: 'rgba(0,0,0,0.22)',
+                color: '#ffffff',
+                padding: '3px 10px',
+                borderRadius: '20px',
+                fontSize: '12px',
+                fontWeight: 600,
+                textDecoration: 'none'
+              }}
+            >
+              <i className="fa-solid fa-location-dot" style={{ color: 'var(--gold-accent)' }} />
+              <span>{schoolLocation}</span>
+            </a>
           </div>
           <ul className="school-subbar-links">
             {[

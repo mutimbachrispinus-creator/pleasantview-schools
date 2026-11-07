@@ -1,6 +1,7 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { getYearsOfExistence } from '@/lib/heritage';
 
 export default function MobileBottomBar({
   phone = '+254 711 689 913',
@@ -11,6 +12,12 @@ export default function MobileBottomBar({
   settings = {}
 }) {
   const [openDrawer, setOpenDrawer] = useState(null); // 'quick' | 'schools' | null
+  const [years, setYears] = useState(() => getYearsOfExistence());
+
+  useEffect(() => {
+    const t = setInterval(() => setYears(getYearsOfExistence()), 60000);
+    return () => clearInterval(t);
+  }, []);
 
   const toggleDrawer = (name) => {
     setOpenDrawer(prev => (prev === name ? null : name));
@@ -164,6 +171,12 @@ export default function MobileBottomBar({
             >
               <div className="drawer-item-title">{s.name}</div>
               <small>{s.category} &bull; {s.level}</small>
+              {s.location && (
+                <small style={{ display: 'block', color: 'var(--primary-red)', marginTop: '2px', fontWeight: 600 }}>
+                  <i className="fa-solid fa-location-dot" style={{ marginRight: '4px' }} />
+                  {s.location}
+                </small>
+              )}
             </Link>
           ))}
           <Link
@@ -172,7 +185,7 @@ export default function MobileBottomBar({
             className="drawer-item"
           >
             <div className="drawer-item-title">Why Pleasant View Schools</div>
-            <small>24-Year Heritage, KPSEA, KJSEA &amp; CBE</small>
+            <small>{years} Years of Existence, KPSEA, KJSEA &amp; CBE</small>
           </Link>
         </div>
       </div>

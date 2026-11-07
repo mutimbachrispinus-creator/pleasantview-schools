@@ -1,6 +1,6 @@
 import './globals.css';
 import Link from 'next/link';
-import { schools, S, getQuickLinks } from '@/lib/db';
+import { schools, S, getQuickLinks, getYearsOfExistence } from '@/lib/db';
 import HeaderNav from '@/components/HeaderNav';
 import HeroButtons from '@/components/HeroButtons';
 import PwaInstallPrompt from '@/components/PwaInstallPrompt';
@@ -32,6 +32,7 @@ export const viewport = {
 };
 
 export default async function RootLayout({ children }) {
+  const years = getYearsOfExistence();
   let schList = [];
   let settings = {};
   let quickLinks = [];
@@ -206,7 +207,7 @@ export default async function RootLayout({ children }) {
                   );
                 })}
                 <li><Link href="/pictorial">School Pictorial &amp; Gallery</Link></li>
-                <li><Link href="/about#legacy">24-Year Academic Legacy</Link></li>
+                <li><Link href="/about#legacy">{years} Years of Existence</Link></li>
                 <li><Link href="/news">Latest News &amp; Notices</Link></li>
                 <li><Link href="/contact#visit">Book Campus Visit</Link></li>
               </ul>

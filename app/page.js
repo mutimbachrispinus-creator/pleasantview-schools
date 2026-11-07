@@ -7,6 +7,9 @@ import {
   q,
   S,
   schools,
+  getSchoolMapsUrl,
+  getYearsOfExistence,
+  syncHeritageYearsText,
   getVideos,
   getLeadershipMessages,
   getQuickLinks,
@@ -89,12 +92,14 @@ export default async function Home({ searchParams }) {
     console.warn('[Home Data Fetch Fallback]:', err?.message);
   }
 
+  const years = getYearsOfExistence();
+
   const slides = hero.length
     ? hero.map(h => ({
         id: h.id,
         image: h.image,
-        headline: h.headline,
-        sub: h.sub,
+        headline: syncHeritageYearsText(h.headline),
+        sub: syncHeritageYearsText(h.sub),
         button_text: h.button_text,
         button_link: h.button_link,
         button_alt_text: h.button_alt_text,
@@ -121,7 +126,7 @@ export default async function Home({ searchParams }) {
         },
         {
           image: '/images/hero_library_learning.jpg',
-          headline: '24 YEARS OF ACADEMIC DISTINCTION',
+          headline: `${years} YEARS OF ACADEMIC DISTINCTION`,
           sub: 'Outstanding KPSEA (EE — Exceeding Expectations) and KJSEA (ME1) distinction, with maiden Senior School B+ university transition',
           button_text: 'Academic Curriculum',
           button_link: '/about#academics',
@@ -130,14 +135,19 @@ export default async function Home({ searchParams }) {
         }
       ];
 
-  const primaryLeader = leadMessages[0] || {
-    name: 'Board of Directors & Executive Principal',
-    title: 'Pleasant View Schools Group',
-    role: 'Director',
-    quote: 'Our aim is victory — not merely in examinations, but in shaping disciplined, visionary young people who lead with wisdom, faith, and purpose.',
-    message: 'Welcome to Pleasant View Schools. For over two decades, our community has stood as a beacon of academic excellence and character development in Kiambu County. We believe that true education nurtures the mind while fortifying the soul. Whether in our early learning centre, thriving primary school, modern Junior Secondary (JSS), or distinguished Senior School, we provide state-of-the-art science laboratories, extensive transport coverage, and world-class pastoral boarding.',
-    image: '/images/banner_3_a.webp'
-  };
+  const primaryLeader = leadMessages[0]
+    ? {
+        ...leadMessages[0],
+        message: syncHeritageYearsText(leadMessages[0].message)
+      }
+    : {
+        name: 'Board of Directors & Executive Principal',
+        title: 'Pleasant View Schools Group',
+        role: 'Director',
+        quote: 'Our aim is victory — not merely in examinations, but in shaping disciplined, visionary young people who lead with wisdom, faith, and purpose.',
+        message: `Welcome to Pleasant View Schools. Across ${years} years of existence, our community has stood as a beacon of academic excellence and character development in Kiambu County. We believe that true education nurtures the mind while fortifying the soul. Whether in our early learning centre, thriving primary school, modern Junior Secondary (JSS), or distinguished Senior School, we provide state-of-the-art science laboratories, extensive transport coverage, and world-class pastoral boarding.`,
+        image: '/images/banner_3_a.webp'
+      };
 
   return (
     <>
@@ -409,14 +419,14 @@ export default async function Home({ searchParams }) {
       {/* TEXT INTRODUCTION (PLEASANT VIEW SCHOOLS – OUR AIM IS VICTORY) */}
       <section className="text-component">
         <div className="wrapper">
-          <span className="lead-badge reveal-on-scroll">24 YEARS OF ACADEMIC EMINENCE</span>
+          <span className="lead-badge reveal-on-scroll">{years} YEARS OF EXISTENCE &amp; ACADEMIC EMINENCE</span>
           <h2 className="reveal-on-scroll">PLEASANT VIEW SCHOOLS &ndash; OUR AIM IS VICTORY</h2>
           <div className="gold-divider reveal-on-scroll" />
           <p className="lead scroll-word-reveal">
             Founded in 1998, Pleasant View Schools has grown from a visionary primary institution into one of Kenya&apos;s most celebrated Christian-ethos day and boarding academic institutions, situated amidst the peaceful green highlands of Githunguri, Komothai Subcounty, Kiambu County.
           </p>
           <p className="body-text scroll-word-reveal" style={{ fontSize: '16.5px', lineHeight: 1.85, color: '#444' }}>
-            Across our 24-year academic journey, Pleasant View has consistently maintained distinguished performance, achieving an institutional average of <strong>EE (Exceeding Expectations)</strong> in KPSEA and <strong>ME1 (Meeting Expectations &ndash; Top Tier)</strong> in KJSEA, positioning our scholars permanently among the top 10 academic institutions across Kiambu County. In 2016, answering the earnest appeal of our parent community, we established our celebrated Senior School, which achieved a historic maiden mean grade of <strong>B+</strong> in KCSE examinations. As the 8-4-4 system concludes at the end of next year, our Senior School is dynamically transitioning into the <strong>Kenya Senior School Education Assessment (KSSEA)</strong>, supported by state-of-the-art Pre-Technical, Integrated Science, Agriculture, and Digital STEM hubs designed to nurture each child&apos;s pathway into top university distinction and ethical global leadership.
+            Across our {years} years of existence, Pleasant View has consistently maintained distinguished performance, achieving an institutional average of <strong>EE (Exceeding Expectations)</strong> in KPSEA and <strong>ME1 (Meeting Expectations &ndash; Top Tier)</strong> in KJSEA, positioning our scholars permanently among the top 10 academic institutions across Kiambu County. In 2016, answering the earnest appeal of our parent community, we established our celebrated Senior School, which achieved a historic maiden mean grade of <strong>B+</strong> in KCSE examinations. As the 8-4-4 system concludes at the end of next year, our Senior School is dynamically transitioning into the <strong>Kenya Senior School Education Assessment (KSSEA)</strong>, supported by state-of-the-art Pre-Technical, Integrated Science, Agriculture, and Digital STEM hubs designed to nurture each child&apos;s pathway into top university distinction and ethical global leadership.
           </p>
         </div>
       </section>
@@ -546,6 +556,20 @@ export default async function Home({ searchParams }) {
                 <div className="program-card-body">
                   <h4>{String(s.name || '').replace(/pleasantview/gi, 'Pleasant View')}</h4>
                   <div className="program-level">{String(s.level || '').replace(/CBC/g, 'CBE').replace(/pleasantview/gi, 'Pleasant View')}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', fontSize: '12.5px', color: '#475569', margin: '6px 0 8px', flexWrap: 'wrap' }}>
+                    <span>
+                      <i className="fa-solid fa-location-dot" style={{ color: 'var(--primary-red)', marginRight: '5px' }} />
+                      {s.location || 'Githunguri, Komothai Subcounty, Kiambu County'}
+                    </span>
+                    <a
+                      href={getSchoolMapsUrl(s, st.maps_url)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: 'var(--medium-blue)', fontWeight: 700, fontSize: '11.5px', textDecoration: 'none', whiteSpace: 'nowrap' }}
+                    >
+                      Map &rarr;
+                    </a>
+                  </div>
                   <p>{s.tagline || s.about?.slice(0, 110) + '...' || 'Distinctive academic program tailored for holistic excellence.'}</p>
                   <div className="program-card-meta">
                     <span>
@@ -615,7 +639,7 @@ export default async function Home({ searchParams }) {
               />
               <div className="director-frame-badge">
                 <i className="fa-solid fa-award" style={{ marginRight: '8px', color: '#fda4af' }} />
-                24 Years of Leadership
+                {years} Years of Existence
               </div>
             </div>
 

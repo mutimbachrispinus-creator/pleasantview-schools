@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { getYearsOfExistence } from '@/lib/heritage';
 
 export default function HeaderNav({
   schools = [],
@@ -13,6 +14,12 @@ export default function HeaderNav({
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openAccordion, setOpenAccordion] = useState(null);
+  const [years, setYears] = useState(() => getYearsOfExistence());
+
+  useEffect(() => {
+    const t = setInterval(() => setYears(getYearsOfExistence()), 60000);
+    return () => clearInterval(t);
+  }, []);
 
   const phone = settings.phone || '+254 711 689 913';
   const mapsUrl = settings.maps_url || 'https://maps.app.goo.gl/iBXf1M86VKxqAEft5';
@@ -124,7 +131,7 @@ export default function HeaderNav({
                   <ul className="sub-menu">
                     <li><Link href="/about">About Pleasant View</Link></li>
                     <li><Link href="/about#vision">Vision, Mission &amp; Values</Link></li>
-                    <li><Link href="/about#legacy">24-Year Academic Legacy</Link></li>
+                    <li><Link href="/about#legacy">{years} Years of Existence</Link></li>
                     <li><Link href="/about#academics">Curriculum &amp; Assessment Honors</Link></li>
                     <li><Link href="/#leadership">Leadership &amp; Heads&apos; Remarks</Link></li>
                     <li><Link href="/#parent-reviews">Parent Reviews &amp; Testimonials</Link></li>
@@ -146,7 +153,9 @@ export default function HeaderNav({
                           <li key={s.id}>
                             <Link href={`/s/${s.slug}`}>
                               <strong>{cleanName}</strong>
-                              <span style={{ display: 'block', fontSize: '11px', color: '#888' }}>{cleanLevel}</span>
+                              <span style={{ display: 'block', fontSize: '11px', color: '#666' }}>
+                                {cleanLevel}{s.location ? ` • ${s.location}` : ''}
+                              </span>
                             </Link>
                           </li>
                         );
@@ -310,9 +319,15 @@ export default function HeaderNav({
                   <div style={{ fontWeight: 700, color: '#ffffff' }}>
                     {String(s.name || '').replace(/pleasantview/gi, 'Pleasant View')}
                   </div>
-                  <small style={{ color: 'rgba(255,255,255,0.82)', fontSize: '11.5px' }}>
+                  <small style={{ color: 'rgba(255,255,255,0.82)', fontSize: '11.5px', display: 'block' }}>
                     {s.category} &bull; {String(s.level || '').replace(/CBC/g, 'CBE').replace(/pleasantview/gi, 'Pleasant View')}
                   </small>
+                  {s.location && (
+                    <small style={{ color: '#fda4af', fontSize: '11px', display: 'block', marginTop: '2px' }}>
+                      <i className="fa-solid fa-location-dot" style={{ marginRight: '4px' }} />
+                      {s.location}
+                    </small>
+                  )}
                 </Link>
               ))}
             </div>
@@ -336,7 +351,7 @@ export default function HeaderNav({
                 Vision, Mission &amp; Values
               </Link>
               <Link href="/about#legacy" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
-                24-Year Academic Eminence
+                {years} Years of Existence
               </Link>
               <Link href="/about#christian" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
                 Christian Ethos &amp; Mentorship

@@ -9,6 +9,7 @@ const ALLOWED_ACTIONS = new Set([
   'logout',
   'addSchool',
   'setSchoolAdmin',
+  'setSchoolLocation',
   'saveSchool',
   'addVideo',
   'delVideo',

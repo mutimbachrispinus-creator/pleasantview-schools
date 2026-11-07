@@ -2,14 +2,17 @@ import Link from 'next/link';
 import Slider from '@/components/Slider';
 import VideoShowcase from '@/components/VideoShowcase';
 import BackButton from '@/components/BackButton';
-import { q, getSchool, getLeadershipMessages, getVideos } from '@/lib/db';
+import { q, S, getSchool, getSchoolMapsUrl, getLeadershipMessages, getVideos } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
 export default async function SchoolHome({ params }) {
   const s = await getSchool((await params).school);
   if (!s) return null;
+  const st = await S();
   const b = '/s/' + s.slug;
+  const schoolLocation = s.location || st.location || 'Githunguri, Komothai Subcounty, Kiambu County';
+  const schoolMapUrl = getSchoolMapsUrl(s, st.maps_url);
 
   const [hero, news, pics, leaders, vids] = await Promise.all([
     q('SELECT * FROM hero WHERE school_id=? OR school_id=0 ORDER BY CASE WHEN school_id=? THEN 0 ELSE 1 END, id DESC', [s.id, s.id]),
@@ -130,6 +133,15 @@ export default async function SchoolHome({ params }) {
               <Link href={b + '/contact'} className="button button-gold">
                 Contact Admissions Desk
               </Link>
+              <a
+                href={schoolMapUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="button button-primary"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+              >
+                <i className="fa-solid fa-location-dot" /> Directions: {schoolLocation}
+              </a>
             </div>
           </div>
         </div>

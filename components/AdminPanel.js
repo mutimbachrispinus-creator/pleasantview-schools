@@ -13,6 +13,8 @@ import {
   q,
   S,
   schools,
+  getSchoolMapsUrl,
+  getYearsOfExistence,
   CATS,
   PICTORIAL_CATEGORIES,
   PICTORIAL_CATEGORY_META,
@@ -56,6 +58,7 @@ const Del = ({ t, id }) => (
 export { default as LoginForm } from '@/components/LoginForm';
 
 export default async function Panel({ scope, edit }) {
+  const years = getYearsOfExistence();
   const list = await schools();
   const me = list.find(s => s.id === scope);
   const es = scope ? me : list.find(s => s.slug === edit);
@@ -195,7 +198,7 @@ export default async function Panel({ scope, edit }) {
                       <th>School / Branch Name</th>
                       <th>Category</th>
                       <th>Grades / Level</th>
-                      <th>Location</th>
+                      <th>Location &amp; Map Pin</th>
                       <th>Branch Admin</th>
                       <th>Learners</th>
                       <th>Boarding</th>
@@ -218,7 +221,41 @@ export default async function Panel({ scope, edit }) {
                           </span>
                         </td>
                         <td>{s.level}</td>
-                        <td style={{ fontSize: '13px', color: '#555' }}>{s.location || 'Githunguri, Kiambu'}</td>
+                        <td style={{ minWidth: '250px' }}>
+                          <form action="/api/admin/action?action=setSchoolLocation" method="POST" data-admin-action="setSchoolLocation" style={{ display: 'grid', gap: '5px' }}>
+                            <input type="hidden" name="school_id" value={s.id} />
+                            <input
+                              name="location"
+                              placeholder="Physical location / town"
+                              defaultValue={s.location || 'Githunguri, Komothai Subcounty, Kiambu County'}
+                              required
+                              style={{ padding: '5px 7px', fontSize: '12px', width: '100%' }}
+                            />
+                            <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+                              <input
+                                name="maps_url"
+                                placeholder="Google Maps Pin URL (optional)"
+                                defaultValue={s.maps_url || ''}
+                                style={{ padding: '5px 7px', fontSize: '11.5px', flex: 1, minWidth: '130px' }}
+                              />
+                              <InlineActionButton
+                                label="Set"
+                                pendingLabel="Saving..."
+                                successLabel="✓ Set!"
+                                style={{ padding: '5px 9px', fontSize: '11px', background: '#8B1E2D', color: '#fff', border: 0, borderRadius: '3px', fontWeight: 700, whiteSpace: 'nowrap' }}
+                              />
+                              <a
+                                href={getSchoolMapsUrl(s)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="Open school location in Google Maps"
+                                style={{ fontSize: '11.5px', color: 'var(--medium-blue)', fontWeight: 700, whiteSpace: 'nowrap', textDecoration: 'none' }}
+                              >
+                                <i className="fa-solid fa-location-dot" /> Map
+                              </a>
+                            </div>
+                          </form>
+                        </td>
                         <td style={{ fontSize: '13px', fontWeight: 600, color: 'var(--primary-navy)' }}>{s.admin_name || s.admin_email || 'Assigned Head'}</td>
                         <td><strong>{s.learners || '450 Students'}</strong></td>
                         <td>{s.boarders || '200 Boarders'}</td>
@@ -289,8 +326,18 @@ export default async function Panel({ scope, edit }) {
                     </small>
                   </div>
                   <div className="form-group">
-                    <label>Campus Location *</label>
-                    <input name="location" placeholder="e.g. Githunguri, Komothai Subcounty, Kiambu" defaultValue="Githunguri, Komothai Subcounty, Kiambu County" required />
+                    <label>School Location / Physical Address *</label>
+                    <input name="location" placeholder="e.g. Ruiru, Kiambu County or Githunguri Main Campus" defaultValue="Githunguri, Komothai Subcounty, Kiambu County" required />
+                    <small style={{ color: '#888', fontSize: '11px', display: 'block', marginTop: '2px' }}>
+                      Town, road, subcounty, or landmark displayed on school cards and contact pages.
+                    </small>
+                  </div>
+                  <div className="form-group">
+                    <label>Google Maps Pin / Directions URL (Optional)</label>
+                    <input name="maps_url" placeholder="https://maps.app.goo.gl/..." />
+                    <small style={{ color: '#888', fontSize: '11px', display: 'block', marginTop: '2px' }}>
+                      Paste a specific Google Maps link, or leave blank to auto-search the location above.
+                    </small>
                   </div>
                   <div className="form-group">
                     <label>Assigned Branch Admin Name</label>
@@ -1179,11 +1226,11 @@ export default async function Panel({ scope, edit }) {
                         Metric Card #{idx + 1}
                       </div>
                       <div className="form-group" style={{ marginBottom: '10px' }}>
-                        <label>Stat Value (e.g. 24+, EE &amp; ME1, KCSE B+, 1:20)</label>
+                        <label>Stat Value (e.g. {years}, EE &amp; ME1, KCSE B+, 1:20)</label>
                         <input name={`metric_${idx + 1}_val`} defaultValue={m.stat_value} style={{ fontWeight: 800, fontSize: '16px' }} required />
                       </div>
                       <div className="form-group" style={{ marginBottom: '10px' }}>
-                        <label>Stat Label (e.g. Years of Excellence)</label>
+                        <label>Stat Label (e.g. Years of Existence)</label>
                         <input name={`metric_${idx + 1}_label`} defaultValue={m.stat_label} required />
                       </div>
                       <div className="form-group">
@@ -1411,13 +1458,29 @@ export default async function Panel({ scope, edit }) {
               )}
               {keys.map(k => (
                 <div key={k} className="form-group" style={{ gridColumn: LONG.includes(k) ? '1 / -1' : 'auto' }}>
-                  <label>{k.replace(/_/g, ' ').toUpperCase()}</label>
+                  <label>
+                    {k === 'location'
+                      ? 'SCHOOL LOCATION / PHYSICAL ADDRESS'
+                      : k === 'maps_url'
+                        ? 'GOOGLE MAPS PIN / DIRECTIONS URL'
+                        : k.replace(/_/g, ' ').toUpperCase()}
+                  </label>
                   {k === 'color' ? (
                     <input name={k} type="color" defaultValue={vals[k] || '#8B1E2D'} style={{ height: '44px', width: '100%' }} />
                   ) : LONG.includes(k) ? (
                     <textarea name={k} defaultValue={vals[k]} rows={4} />
                   ) : (
-                    <input name={k} defaultValue={vals[k]} />
+                    <input
+                      name={k}
+                      defaultValue={vals[k]}
+                      placeholder={
+                        k === 'location'
+                          ? 'e.g. Githunguri, Komothai Subcounty, Kiambu County'
+                          : k === 'maps_url'
+                            ? 'https://maps.app.goo.gl/... (leave blank to auto-map from location)'
+                            : undefined
+                      }
+                    />
                   )}
                 </div>
               ))}
@@ -1975,7 +2038,7 @@ export default async function Panel({ scope, edit }) {
                 <Pick />
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                   <label>Slide Headline *</label>
-                  <input name="headline" placeholder="e.g. 24 YEARS OF ACADEMIC EXCELLENCE" required />
+                  <input name="headline" placeholder={`e.g. ${years} YEARS OF ACADEMIC EXCELLENCE`} required />
                 </div>
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                   <label>Slide Subtext *</label>

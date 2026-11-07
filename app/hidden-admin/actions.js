@@ -206,10 +206,11 @@ export async function addSchool(fd) {
   const adminPassword = String(fd.get('admin_password') || '').trim();
   const adminName = String(fd.get('admin_name') || `${name} Head`).trim();
   const location = String(fd.get('location') || 'Githunguri, Komothai Subcounty, Kiambu County').trim();
+  const mapsUrl = String(fd.get('maps_url') || '').trim();
   const h = adminPassword ? hashPw(adminPassword) : '';
 
   const res = await qWrite(
-    'INSERT OR IGNORE INTO schools(slug,name,category,tagline,level,color,image,learners,boarders,ratio,phone,email,admin_key,admin_email,admin_hash,admin_name,location) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+    'INSERT OR IGNORE INTO schools(slug,name,category,tagline,level,color,image,learners,boarders,ratio,phone,email,admin_key,admin_email,admin_hash,admin_name,location,maps_url) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
     [
       slugify(name),
       name,
@@ -227,7 +228,8 @@ export async function addSchool(fd) {
       adminEmail,
       h,
       adminName,
-      location
+      location,
+      mapsUrl
     ]
   );
 
@@ -269,6 +271,24 @@ export async function setSchoolAdmin(fd) {
   );
   done();
   return { ok: true, message: 'Branch administrator credentials saved!' };
+}
+
+export async function setSchoolLocation(fd) {
+  await init();
+  const sc = await A();
+  if (sc === null) throw new Error('Unauthorized');
+  const schoolId = sc || Number(fd.get('school_id') || 0);
+  if (!schoolId) return { ok: false, error: 'Please select a valid school.' };
+  const location = String(fd.get('location') || '').trim();
+  if (!location) return { ok: false, error: 'School location is required.' };
+  const mapsUrl = String(fd.get('maps_url') || '').trim();
+
+  await qWrite(
+    'UPDATE schools SET location=?, maps_url=? WHERE id=?',
+    [location, mapsUrl, schoolId]
+  );
+  done();
+  return { ok: true, message: 'School location & map pin updated live!' };
 }
 
 export async function saveSchool(fd) {
