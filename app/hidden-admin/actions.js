@@ -835,9 +835,9 @@ export async function replySMS(fd) {
 
   const res = await sendSMS({ to, message: msg });
   if (smsId) {
-    await qWrite('UPDATE inbound_sms SET status="replied" WHERE id=?', [smsId]);
-    await qWrite('UPDATE enquiries SET status="replied" WHERE source_ref=?', [`inbound_sms:${smsId}`]);
-    await qWrite('UPDATE visits SET status="confirmed" WHERE source_ref=?', [`inbound_sms:${smsId}`]);
+    await qWrite("UPDATE inbound_sms SET status = 'replied' WHERE id=?", [smsId]);
+    await qWrite("UPDATE enquiries SET status = 'replied' WHERE source_ref=?", [`inbound_sms:${smsId}`]);
+    await qWrite("UPDATE visits SET status = 'confirmed' WHERE source_ref=?", [`inbound_sms:${smsId}`]);
   }
   done();
   if (res?.success === false) {
@@ -862,9 +862,9 @@ export async function replyEmail(fd) {
     ...(fromAccount ? { from: `Pleasant View Schools <${fromAccount}>` } : {})
   });
   if (emailId) {
-    await qWrite('UPDATE inbound_emails SET status="replied" WHERE id=?', [emailId]);
-    await qWrite('UPDATE enquiries SET status="replied" WHERE source_ref=?', [`inbound_email:${emailId}`]);
-    await qWrite('UPDATE visits SET status="confirmed" WHERE source_ref=?', [`inbound_email:${emailId}`]);
+    await qWrite("UPDATE inbound_emails SET status = 'replied' WHERE id=?", [emailId]);
+    await qWrite("UPDATE enquiries SET status = 'replied' WHERE source_ref=?", [`inbound_email:${emailId}`]);
+    await qWrite("UPDATE visits SET status = 'confirmed' WHERE source_ref=?", [`inbound_email:${emailId}`]);
   }
   done();
   return { ok: true, message: 'Email reply dispatched!', details: res };
@@ -1176,7 +1176,7 @@ export async function discardUnlinkedUpload(fd) {
   await A();
   const url = String(fd.get('url') || fd.get('image') || '').trim();
   if (url) {
-    await qWrite('DELETE FROM photos WHERE image=? AND source_section="upload"', [url]);
+    await qWrite("DELETE FROM photos WHERE image=? AND source_section = 'upload'", [url]);
   }
   done();
   return { ok: true, message: 'Unlinked upload removed from pictorial.' };
@@ -1255,7 +1255,7 @@ export async function addParentTestimonial(fd) {
   if (!comment) return { ok: false, error: 'Parent review comment is required.' };
 
   await qWrite(
-    'INSERT INTO parent_testimonials(parent_name, learner_name, grade_or_division, relationship, rating, comment, status) VALUES(?,?,?,?,?,?,"approved")',
+    "INSERT INTO parent_testimonials(parent_name, learner_name, grade_or_division, relationship, rating, comment, status) VALUES(?,?,?,?,?,?,'approved')",
     [parentName, learnerName, gradeOrDivision, relationship, rating, comment]
   );
   done();
@@ -1266,7 +1266,7 @@ export async function approveTestimonial(fd) {
   await A();
   const id = Number(fd.get('id'));
   if (id) {
-    await qWrite('UPDATE parent_testimonials SET status="approved" WHERE id=?', [id]);
+    await qWrite("UPDATE parent_testimonials SET status = 'approved' WHERE id=?", [id]);
   }
   done();
   return { ok: true, message: 'Parent review approved and live on website!' };
@@ -1276,7 +1276,7 @@ export async function rejectTestimonial(fd) {
   await A();
   const id = Number(fd.get('id'));
   if (id) {
-    await qWrite('UPDATE parent_testimonials SET status="rejected" WHERE id=?', [id]);
+    await qWrite("UPDATE parent_testimonials SET status = 'rejected' WHERE id=?", [id]);
   }
   done();
   return { ok: true, message: 'Parent review rejected.' };
@@ -1529,7 +1529,7 @@ export async function saveAdminRecoveryProfile(fd) {
       const h = hashPw(newPassword);
       await qWrite('INSERT INTO settings(k,v) VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', ['admin_master_password', newPassword]);
       await qWrite('INSERT INTO settings(k,v) VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', ['admin_master_password_hash', h]);
-      await qWrite('UPDATE admins SET password=? WHERE role="Super Administrator" OR school_id=0', [newPassword]);
+      await qWrite("UPDATE admins SET password=? WHERE role = 'Super Administrator' OR school_id=0", [newPassword]);
     }
 
     done();
@@ -1714,12 +1714,12 @@ export async function saveApiIntegrations(fd) {
 
   const client = getDb();
   const batch = [];
-  if (resendKey) batch.push({ sql: 'INSERT INTO settings(k,v) VALUES("resend_api_key",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', args: [resendKey] });
-  if (resendFrom) batch.push({ sql: 'INSERT INTO settings(k,v) VALUES("resend_from",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', args: [resendFrom] });
-  if (atKey) batch.push({ sql: 'INSERT INTO settings(k,v) VALUES("at_api_key",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', args: [atKey] });
-  if (atUser) batch.push({ sql: 'INSERT INTO settings(k,v) VALUES("at_username",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', args: [atUser] });
-  if (atSender) batch.push({ sql: 'INSERT INTO settings(k,v) VALUES("at_sender_id",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', args: [atSender] });
-  if (adminSmsPhone) batch.push({ sql: 'INSERT INTO settings(k,v) VALUES("admin_sms_phone",?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', args: [adminSmsPhone] });
+  if (resendKey) batch.push({ sql: "INSERT INTO settings(k,v) VALUES('resend_api_key',?) ON CONFLICT(k) DO UPDATE SET v=excluded.v", args: [resendKey] });
+  if (resendFrom) batch.push({ sql: "INSERT INTO settings(k,v) VALUES('resend_from',?) ON CONFLICT(k) DO UPDATE SET v=excluded.v", args: [resendFrom] });
+  if (atKey) batch.push({ sql: "INSERT INTO settings(k,v) VALUES('at_api_key',?) ON CONFLICT(k) DO UPDATE SET v=excluded.v", args: [atKey] });
+  if (atUser) batch.push({ sql: "INSERT INTO settings(k,v) VALUES('at_username',?) ON CONFLICT(k) DO UPDATE SET v=excluded.v", args: [atUser] });
+  if (atSender) batch.push({ sql: "INSERT INTO settings(k,v) VALUES('at_sender_id',?) ON CONFLICT(k) DO UPDATE SET v=excluded.v", args: [atSender] });
+  if (adminSmsPhone) batch.push({ sql: "INSERT INTO settings(k,v) VALUES('admin_sms_phone',?) ON CONFLICT(k) DO UPDATE SET v=excluded.v", args: [adminSmsPhone] });
 
   if (batch.length) {
     await client.batch(batch, 'write');
@@ -1759,15 +1759,15 @@ export async function verifyPasswordChangeOTP(fd) {
     const client = getDb();
     const batchStmts = [
       {
-        sql: 'INSERT INTO settings (k, v) VALUES ("admin_master_password", ?) ON CONFLICT(k) DO UPDATE SET v=excluded.v',
+        sql: "INSERT INTO settings (k, v) VALUES ('admin_master_password', ?) ON CONFLICT(k) DO UPDATE SET v=excluded.v",
         args: [finalPassword]
       },
       {
-        sql: 'INSERT INTO settings (k, v) VALUES ("admin_master_password_hash", ?) ON CONFLICT(k) DO UPDATE SET v=excluded.v',
+        sql: "INSERT INTO settings (k, v) VALUES ('admin_master_password_hash', ?) ON CONFLICT(k) DO UPDATE SET v=excluded.v",
         args: [h]
       },
       {
-        sql: 'UPDATE admins SET password=? WHERE role="Super Administrator" OR school_id=0 OR lower(email)=? OR lower(name)=?',
+        sql: "UPDATE admins SET password=? WHERE role = 'Super Administrator' OR school_id=0 OR lower(email)=? OR lower(name)=?",
         args: [finalPassword, targetEmail, targetKey]
       },
       {

@@ -5,7 +5,9 @@ import { callAdminAction } from '@/lib/adminClient';
 export default function TelecomGatewayTester({
   initialSettings = {},
   hasEnvAtKey = false,
-  hasEnvAtUser = false
+  hasEnvAtUser = false,
+  dbHasAtKey = false,
+  dbHasAtUser = false
 }) {
   const [atUser, setAtUser] = useState(initialSettings.at_username || '');
   const [atKey, setAtKey] = useState(initialSettings.at_api_key || '');
@@ -19,9 +21,21 @@ export default function TelecomGatewayTester({
   const [saveStatus, setSaveStatus] = useState(null);
   const [isSavePending, startSaveTransition] = useTransition();
 
+  const keyConfigured = hasEnvAtKey || dbHasAtKey || Boolean(atKey);
+  const userConfigured = hasEnvAtUser || dbHasAtUser || Boolean(atUser);
+
   const handleTestSms = (e) => {
     e.preventDefault();
     setTestStatus(null);
+
+    if (!userConfigured) {
+      setTestStatus({
+        type: 'error',
+        message: "Africa's Talking Username (AT_USERNAME) is missing. Africa's Talking strictly requires your account username alongside your API key to authenticate SMS. Please enter your account username in the field above and click 'Save Telecom Credentials'."
+      });
+      return;
+    }
+
     const fd = new FormData();
     fd.append('phone', testPhone);
 
@@ -36,7 +50,7 @@ export default function TelecomGatewayTester({
         } else {
           setTestStatus({
             type: 'error',
-            message: res?.error || 'Failed to dispatch SMS through Africa\'s Talking.'
+            message: res?.error || "Failed to dispatch SMS through Africa's Talking."
           });
         }
       } catch (err) {
@@ -59,9 +73,9 @@ export default function TelecomGatewayTester({
         if (res?.ok) {
           setSaveStatus({
             type: 'success',
-            message: '✓ Africa\'s Talking credentials and recipient handsets saved and synced live!'
+            message: "✓ Africa's Talking credentials and recipient handsets saved and synced live!"
           });
-          setTimeout(() => setSaveStatus(null), 5000);
+          setTimeout(() => setSaveStatus(null), 6000);
         } else {
           setSaveStatus({
             type: 'error',
@@ -76,9 +90,6 @@ export default function TelecomGatewayTester({
       }
     });
   };
-
-  const keyConfigured = hasEnvAtKey || Boolean(atKey);
-  const userConfigured = hasEnvAtUser || Boolean(atUser);
 
   return (
     <div style={{ background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px', padding: '22px', marginBottom: '30px' }}>
@@ -99,7 +110,7 @@ export default function TelecomGatewayTester({
             display: 'inline-flex',
             alignItems: 'center',
             gap: '6px',
-            padding: '5px 10px',
+            padding: '5px 12px',
             borderRadius: '20px',
             fontSize: '11.5px',
             fontWeight: 700,
@@ -108,14 +119,14 @@ export default function TelecomGatewayTester({
             border: `1px solid ${keyConfigured ? '#86efac' : '#fecaca'}`
           }}>
             <i className={`fa-solid ${keyConfigured ? 'fa-check' : 'fa-xmark'}`} />
-            API Key: {keyConfigured ? 'Connected' : 'Missing'}
+            API Key: {keyConfigured ? (hasEnvAtKey ? 'Connected (Environment)' : 'Connected (Saved in Portal)') : 'Missing'}
           </span>
 
           <span style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '6px',
-            padding: '5px 10px',
+            padding: '5px 12px',
             borderRadius: '20px',
             fontSize: '11.5px',
             fontWeight: 700,
@@ -123,13 +134,41 @@ export default function TelecomGatewayTester({
             color: userConfigured ? '#15803d' : '#b45309',
             border: `1px solid ${userConfigured ? '#86efac' : '#fde68a'}`
           }}>
-            <i className={`fa-solid ${userConfigured ? 'fa-user-check' : 'fa-user-xmark'}`} />
-            Username: {userConfigured ? (hasEnvAtUser ? 'Cloudflare Env' : atUser) : 'Required (Missing)'}
+            <i className={`fa-solid ${userConfigured ? 'fa-user-check' : 'fa-triangle-exclamation'}`} />
+            Username: {userConfigured ? (hasEnvAtUser ? 'Connected (Environment)' : `Connected (${atUser || initialSettings.at_username})`) : 'Required (Missing)'}
           </span>
         </div>
       </div>
 
-      {!userConfigured && (
+      {/* ACTIONABLE GUIDANCE BANNERS */}
+      {keyConfigured && !userConfigured && (
+        <div style={{
+          background: '#eff6ff',
+          border: '1.5px solid #93c5fd',
+          borderRadius: '6px',
+          padding: '14px 16px',
+          fontSize: '13px',
+          color: '#1e3a8a',
+          lineHeight: 1.5,
+          marginBottom: '18px',
+          display: 'flex',
+          gap: '12px'
+        }}>
+          <i className="fa-solid fa-circle-info" style={{ marginTop: '2px', color: '#2563eb', fontSize: '18px' }} />
+          <div>
+            <strong>API Key Detected &mdash; One Final Step: Enter your Africa&apos;s Talking Username (AT_USERNAME)</strong>
+            <p style={{ margin: '6px 0 0', fontSize: '12.5px', color: '#1e3a8a' }}>
+              Your API key is active. However, unlike standard single-token APIs, Africa&apos;s Talking API keys are strictly tied to a specific account username. Mobile telecom carriers in Kenya require <strong>both</strong> the API Key and your Account Username:
+            </p>
+            <ul style={{ margin: '6px 0 6px 18px', padding: 0, fontSize: '12.5px', color: '#1e3a8a' }}>
+              <li><strong>Where to find it:</strong> Look at the very top-right corner of your <a href="https://account.africastalking.com" target="_blank" rel="noreferrer" style={{ textDecoration: 'underline', fontWeight: 700, color: '#1d4ed8' }}>Africa&apos;s Talking Console</a>. It is your account or app name (e.g. <code>pleasantviewschools</code>, or your login username, or <code>sandbox</code> for testing).</li>
+              <li><strong>Instant Live Activation:</strong> Enter it into the <em>Africa&apos;s Talking Username</em> field below and click <strong>Save Telecom Credentials</strong>. It activates immediately with zero build wait time.</li>
+            </ul>
+          </div>
+        </div>
+      )}
+
+      {!keyConfigured && (
         <div style={{
           background: '#fffbeb',
           border: '1.5px solid #fde68a',
@@ -144,10 +183,10 @@ export default function TelecomGatewayTester({
         }}>
           <i className="fa-solid fa-triangle-exclamation" style={{ marginTop: '2px', color: '#d97706', fontSize: '16px' }} />
           <div>
-            <strong>Missing Africa&apos;s Talking Username (AT_USERNAME):</strong>
+            <strong>Missing Africa&apos;s Talking Telecom Credentials:</strong>
             <p style={{ margin: '4px 0 0', fontSize: '12.5px' }}>
-              Africa&apos;s Talking strictly requires your account username alongside your API key to route live SMS to Kenyan mobile networks.
-              Please enter your Africa&apos;s Talking username below (found at the top of your <a href="https://africastalking.com" target="_blank" rel="noreferrer" style={{ textDecoration: 'underline', fontWeight: 700 }}>Africa&apos;s Talking dashboard</a>) and tap Save.
+              To dispatch live SMS alerts for parent inquiries, tours, and staff notifications, enter your Africa&apos;s Talking <strong>Username</strong> and <strong>API Key</strong> below and tap Save Telecom Credentials.
+              <em>Note: If you recently added credentials in Cloudflare Pages Dashboard &gt; Settings &gt; Environment variables, Cloudflare requires a redeployment (or you can save them here for instant live activation).</em>
             </p>
           </div>
         </div>
@@ -163,12 +202,12 @@ export default function TelecomGatewayTester({
             name="at_username"
             value={atUser}
             onChange={(e) => setAtUser(e.target.value)}
-            placeholder="e.g. pleasantviewschools or your username"
+            placeholder={hasEnvAtUser ? 'Configured via Environment' : (dbHasAtUser ? atUser : 'e.g. pleasantviewschools or your username')}
             required
             style={{ width: '100%', padding: '9px 12px', fontSize: '13px', border: '1px solid #cbd5e1', borderRadius: '4px', boxSizing: 'border-box' }}
           />
           <small style={{ color: '#64748b', fontSize: '11px', display: 'block', marginTop: '2px' }}>
-            Account username from Africa&apos;s Talking dashboard (never &apos;sandbox&apos; in production).
+            {hasEnvAtUser ? 'Active via Environment.' : (dbHasAtUser ? 'Active and securely stored in portal database.' : "Account username from Africa's Talking dashboard (never 'sandbox' for live production SMS).")}
           </small>
         </div>
 
@@ -181,11 +220,11 @@ export default function TelecomGatewayTester({
             type="password"
             value={atKey}
             onChange={(e) => setAtKey(e.target.value)}
-            placeholder={hasEnvAtKey ? '●●●●●● (Configured via Cloudflare)' : 'Enter Africa\'s Talking API Key'}
+            placeholder={hasEnvAtKey ? '●●●●●● (Active via Environment)' : (dbHasAtKey ? '●●●●●● (Saved in Portal Database)' : 'Enter Africa\'s Talking API Key')}
             style={{ width: '100%', padding: '9px 12px', fontSize: '13px', border: '1px solid #cbd5e1', borderRadius: '4px', boxSizing: 'border-box' }}
           />
           <small style={{ color: '#64748b', fontSize: '11px', display: 'block', marginTop: '2px' }}>
-            {hasEnvAtKey ? 'Active via Cloudflare Pages environment.' : 'Generated under Settings > API Key.'}
+            {hasEnvAtKey ? 'Active via Environment.' : (dbHasAtKey ? 'Active and securely stored in portal database.' : 'Generated under Settings > API Key.')}
           </small>
         </div>
 

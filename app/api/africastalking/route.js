@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server';
-import { sendSMS, formatKenyanPhone } from '@/lib/notify';
+import { sendSMS, formatKenyanPhone, getTelecomCredentials } from '@/lib/notify';
 import { q, qWrite } from '@/lib/db';
 import { syncInboundSmsToAdmissions } from '@/lib/admissions';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req) {
-  const isConfigured = Boolean(process.env.AT_API_KEY || process.env.AFRICASTALKING_API_KEY);
+  const telecom = await getTelecomCredentials();
+  const isKeyConfigured = Boolean(telecom.apiKey);
+  const isUserConfigured = Boolean(telecom.username);
+  const isFullyConfigured = isKeyConfigured && isUserConfigured;
   const { searchParams } = new URL(req.url);
 
   if (searchParams.get('inbound') === '1') {
@@ -18,10 +21,14 @@ export async function GET(req) {
 
   return NextResponse.json({
     service: "Africa's Talking SMS Gateway",
-    status: isConfigured ? 'configured' : 'missing_api_key',
-    configured: isConfigured,
-    username: process.env.AT_USERNAME || process.env.AFRICASTALKING_USERNAME || 'sandbox',
-    senderId: process.env.AT_SENDER_ID || process.env.AFRICASTALKING_SENDER_ID || '(default)',
+    status: isFullyConfigured ? 'configured' : (!isKeyConfigured ? 'missing_api_key' : 'missing_username'),
+    configured: isFullyConfigured,
+    hasApiKey: isKeyConfigured,
+    hasUsername: isUserConfigured,
+    apiKeySource: telecom.apiKeySource,
+    usernameSource: telecom.usernameSource,
+    username: telecom.username || '(missing)',
+    senderId: telecom.senderId || '(default)',
     inboundSmsCount: countRow ? Number(countRow.c) : 0,
     timestamp: new Date().toISOString()
   });
@@ -68,7 +75,7 @@ export async function POST(req) {
 
       // Forward inbound parent SMS directly to admin handset phone numbers
       try {
-        const [phoneSetting] = await q('SELECT v FROM settings WHERE k="admin_sms_phone"');
+        const [phoneSetting] = await q("SELECT v FROM settings WHERE k = 'admin_sms_phone'");
         const rawAdminNumbers = String(phoneSetting?.v || process.env.ADMIN_SMS_PHONE || '+254711689913');
         const adminNumbers = rawAdminNumbers.split(/[,;\n]+/).map(n => n.trim()).filter(Boolean);
         const forwardMsg = `[Parent SMS] From: ${sender}: "${text.slice(0, 120)}"`;

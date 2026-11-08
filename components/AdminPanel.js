@@ -9,6 +9,7 @@ import MediaFileInput from '@/components/MediaFileInput';
 import InlineActionButton from '@/components/InlineActionButton';
 import SignOutButton from '@/components/SignOutButton';
 import TelecomGatewayTester from '@/components/TelecomGatewayTester';
+import { getTelecomCredentials } from '@/lib/notify';
 import {
   q,
   S,
@@ -65,6 +66,7 @@ export default async function Panel({ scope, edit }) {
 
   const keys = es ? SF : Object.keys(D);
   const vals = es || (await S());
+  const telecomCreds = await getTelecomCredentials();
 
   const w = scope ? ' WHERE school_id=' + Number(scope) : '';
 
@@ -2635,13 +2637,15 @@ export default async function Panel({ scope, edit }) {
             {/* TELECOM GATEWAY SETTINGS & INTERACTIVE TESTER */}
             <TelecomGatewayTester
               initialSettings={{
-                at_api_key: vals.at_api_key || '',
-                at_username: vals.at_username || '',
-                at_sender_id: vals.at_sender_id || '',
+                at_api_key: telecomCreds?.apiKey || vals.at_api_key || '',
+                at_username: telecomCreds?.username || vals.at_username || '',
+                at_sender_id: telecomCreds?.senderId || vals.at_sender_id || '',
                 admin_sms_phone: vals.admin_sms_phone || '+254 711 689 913'
               }}
-              hasEnvAtKey={Boolean(process.env.AT_API_KEY || process.env.AFRICASTALKING_API_KEY)}
-              hasEnvAtUser={Boolean(process.env.AT_USERNAME || process.env.AFRICASTALKING_USERNAME)}
+              hasEnvAtKey={telecomCreds?.apiKeySource === 'environment'}
+              hasEnvAtUser={telecomCreds?.usernameSource === 'environment'}
+              dbHasAtKey={telecomCreds?.apiKeySource === 'database'}
+              dbHasAtUser={telecomCreds?.usernameSource === 'database'}
             />
 
             {/* INBOUND SMS TABLE */}
