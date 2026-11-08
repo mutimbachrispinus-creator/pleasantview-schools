@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { sendEmail } from '@/lib/notify';
 import { q, qWrite } from '@/lib/db';
 import { syncInboundEmailToAdmissions } from '@/lib/admissions';
+import { triggerDepartmentalAutoReply } from '@/lib/autoReply';
 
 export const dynamic = 'force-dynamic';
 
@@ -74,28 +75,17 @@ export async function POST(req) {
         status: 'received'
       });
 
-      // Check for automated routing, auto-responder, and forwarding
+      // Automated departmental auto-reply and forwarding
       try {
-        const [acc] = await q('SELECT * FROM email_accounts WHERE lower(email)=? AND is_active=1', [recipientStr.toLowerCase().trim()]);
-        if (acc) {
-          if (acc.auto_reply && sender) {
-            await sendEmail({
-              to: sender,
-              from: `Pleasant View ${acc.department || 'Schools'} <${acc.email}>`,
-              subject: `Re: ${subject}`,
-              text: acc.auto_reply
-            });
-          }
-          if (acc.forward_to) {
-            await sendEmail({
-              to: acc.forward_to,
-              subject: `[FWD to ${acc.email}] ${subject}`,
-              text: `Forwarded inbound message from ${senderName} <${sender}> to ${acc.email}:\n\n${text}`
-            });
-          }
-        }
+        await triggerDepartmentalAutoReply({
+          senderName,
+          senderEmail: sender,
+          recipientEmail: recipientStr,
+          subject,
+          body: text
+        });
       } catch (routingErr) {
-        console.warn('[Resend Routing] Auto-responder/forwarding note:', routingErr.message);
+        console.warn('[Resend Routing] Auto-responder/forwarding note:', routingErr?.message);
       }
 
       return NextResponse.json({

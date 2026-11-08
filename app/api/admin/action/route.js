@@ -37,6 +37,7 @@ const ALLOWED_ACTIONS = new Set([
   'replyEmail',
   'addEmailAccount',
   'updateEmailAccount',
+  'saveEmailAccountAutoReply',
   'delEmailAccount',
   'simulateInboundSMS',
   'simulateInboundEmail',

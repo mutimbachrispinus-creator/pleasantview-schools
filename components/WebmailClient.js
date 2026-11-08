@@ -17,6 +17,8 @@ export default function WebmailClient({
   const [showCompose, setShowCompose] = useState(false);
   const [showSimulate, setShowSimulate] = useState(false);
   const [showResendInfo, setShowResendInfo] = useState(false);
+  const [showAutoReplyModal, setShowAutoReplyModal] = useState(false);
+  const [activeAutoReplyTab, setActiveAutoReplyTab] = useState('admissions@pleasantviewschools.co.ke');
   const [toastMsg, setToastMsg] = useState('');
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -143,6 +145,24 @@ export default function WebmailClient({
         router.refresh();
       } catch (err) {
         showToast('Simulation error: ' + err.message);
+      }
+    });
+  };
+
+  const handleSaveAutoReply = async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    startTransition(async () => {
+      try {
+        const res = await callAdminAction('saveEmailAccountAutoReply', fd);
+        if (res?.ok) {
+          showToast(res.message || 'Auto-reply rule saved and activated live!');
+          router.refresh();
+        } else {
+          showToast('Failed to save auto-reply: ' + (res?.error || 'Unknown error'));
+        }
+      } catch (err) {
+        showToast('Error saving auto-reply: ' + err.message);
       }
     });
   };
@@ -274,6 +294,27 @@ export default function WebmailClient({
 
         {/* TOP FAST ACTION BUTTONS */}
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <button
+            type="button"
+            onClick={() => setShowAutoReplyModal(true)}
+            style={{
+              background: showAutoReplyModal ? '#8B1E2D' : 'rgba(255,255,255,0.15)',
+              color: '#ffffff',
+              border: '1px solid rgba(255,255,255,0.25)',
+              padding: '7px 12px',
+              borderRadius: '4px',
+              fontSize: '12px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+            title="Configure departmental auto-responders"
+          >
+            <i className="fa-solid fa-robot" style={{ color: '#D4AF37' }} /> Auto-Replies
+          </button>
+
           <button
             type="button"
             onClick={() => setShowSimulate(true)}
@@ -1115,6 +1156,244 @@ export default function WebmailClient({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* 4. DEPARTMENTAL AUTO-REPLY SETTINGS MODAL */}
+      {showAutoReplyModal && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.65)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px'
+        }}>
+          <div style={{
+            background: '#ffffff',
+            borderRadius: '8px',
+            width: '100%',
+            maxWidth: '820px',
+            maxHeight: '90vh',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.3)'
+          }}>
+            <div style={{
+              background: '#1E232A',
+              color: '#ffffff',
+              padding: '16px 20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              borderBottom: '3px solid #8B1E2D'
+            }}>
+              <div>
+                <strong style={{ fontSize: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <i className="fa-solid fa-robot" style={{ color: '#D4AF37' }} />
+                  Departmental Automated Response Rules &amp; Auto-Replies
+                </strong>
+                <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#94a3b8' }}>
+                  Emails sent to any @pleasantviewschools.co.ke department automatically trigger relevant, branded acknowledgments to senders.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAutoReplyModal(false)}
+                style={{ background: 0, border: 0, color: '#ffffff', fontSize: '22px', cursor: 'pointer' }}
+              >
+                &times;
+              </button>
+            </div>
+
+            {/* TAB SELECTOR FOR DEPARTMENTS */}
+            <div style={{
+              display: 'flex',
+              gap: '6px',
+              padding: '12px 18px',
+              background: '#f8fafc',
+              borderBottom: '1px solid #e2e8f0',
+              overflowX: 'auto',
+              flexWrap: 'nowrap'
+            }}>
+              {accountList.map(acc => {
+                const isSelected = (activeAutoReplyTab || accountList[0]?.email).toLowerCase() === acc.email.toLowerCase();
+                return (
+                  <button
+                    key={acc.email}
+                    type="button"
+                    onClick={() => setActiveAutoReplyTab(acc.email)}
+                    style={{
+                      padding: '7px 12px',
+                      borderRadius: '20px',
+                      border: isSelected ? '1px solid #8B1E2D' : '1px solid #cbd5e1',
+                      background: isSelected ? '#8B1E2D' : '#ffffff',
+                      color: isSelected ? '#ffffff' : '#334155',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    {acc.email.split('@')[0]}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* FORM FOR SELECTED ACCOUNT */}
+            {(() => {
+              const currentAcc = accountList.find(a => a.email.toLowerCase() === (activeAutoReplyTab || accountList[0]?.email).toLowerCase()) || accountList[0];
+              if (!currentAcc) return null;
+
+              return (
+                <form onSubmit={handleSaveAutoReply} style={{ padding: '20px', overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <input type="hidden" name="email" value={currentAcc.email} />
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', background: '#f1f5f9', padding: '12px 16px', borderRadius: '6px' }}>
+                    <div>
+                      <div style={{ fontSize: '14px', fontWeight: 800, color: '#1E232A' }}>
+                        {currentAcc.display_name || currentAcc.email}
+                      </div>
+                      <div style={{ fontSize: '12.5px', color: '#64748b' }}>
+                        <code>{currentAcc.email}</code> &bull; {currentAcc.department || 'General'}
+                      </div>
+                    </div>
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      background: '#f0fdf4',
+                      color: '#15803d',
+                      border: '1px solid #86efac',
+                      borderRadius: '20px',
+                      padding: '4px 10px',
+                      fontSize: '11.5px',
+                      fontWeight: 700
+                    }}>
+                      <i className="fa-solid fa-circle-check" /> Active Auto-Responder
+                    </span>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>
+                      Automated Response Message (Sent immediately to any sender):
+                    </label>
+                    <textarea
+                      name="auto_reply"
+                      rows="7"
+                      key={currentAcc.email}
+                      defaultValue={currentAcc.auto_reply || ''}
+                      placeholder="Type the relevant departmental auto-reply message here..."
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        borderRadius: '6px',
+                        border: '1px solid #cbd5e1',
+                        fontSize: '13px',
+                        fontFamily: 'inherit',
+                        lineHeight: 1.6,
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                    <small style={{ color: '#64748b', fontSize: '11.5px', display: 'block', marginTop: '4px' }}>
+                      This message is automatically formatted inside a branded Pleasant View Schools HTML acknowledgment letter with logo, crest, motto, and contact cards.
+                    </small>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>
+                      Forward Inbound Emails To (Optional external email):
+                    </label>
+                    <input
+                      name="forward_to"
+                      key={`fwd_${currentAcc.email}`}
+                      defaultValue={currentAcc.forward_to || ''}
+                      placeholder="e.g. administrator@gmail.com (leave blank for no forwarding)"
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        borderRadius: '6px',
+                        border: '1px solid #cbd5e1',
+                        fontSize: '13px',
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                    <small style={{ color: '#64748b', fontSize: '11.5px', display: 'block', marginTop: '4px' }}>
+                      All incoming messages will automatically be copied and forwarded to this address in addition to landing in Webmail.
+                    </small>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', paddingTop: '14px', borderTop: '1px solid #e2e8f0' }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowAutoReplyModal(false);
+                        setShowSimulate(true);
+                      }}
+                      style={{
+                        background: '#f1f5f9',
+                        color: '#334155',
+                        border: '1px solid #cbd5e1',
+                        padding: '9px 14px',
+                        borderRadius: '4px',
+                        fontSize: '12.5px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                    >
+                      <i className="fa-solid fa-flask" style={{ color: '#8B1E2D' }} /> Test Live Auto-Reply
+                    </button>
+
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <button
+                        type="button"
+                        onClick={() => setShowAutoReplyModal(false)}
+                        style={{
+                          background: '#f8fafc',
+                          border: '1px solid #cbd5e1',
+                          padding: '9px 16px',
+                          borderRadius: '4px',
+                          fontSize: '13px',
+                          fontWeight: 600,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Close
+                      </button>
+
+                      <button
+                        type="submit"
+                        disabled={isPending}
+                        style={{
+                          background: '#8B1E2D',
+                          color: '#ffffff',
+                          border: 0,
+                          padding: '9px 20px',
+                          borderRadius: '4px',
+                          fontSize: '13px',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px'
+                        }}
+                      >
+                        <i className={`fa-solid ${isPending ? 'fa-spinner fa-spin' : 'fa-floppy-disk'}`} />
+                        {isPending ? 'Saving...' : 'Save & Activate Auto-Reply'}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              );
+            })()}
           </div>
         </div>
       )}

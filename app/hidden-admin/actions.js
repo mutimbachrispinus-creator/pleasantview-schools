@@ -20,6 +20,7 @@ import {
 import { getAdmin, eq, checkPw, hashPw, startSession, endSession, limited } from '@/lib/auth';
 import { sendEmail, sendSMS } from '@/lib/notify';
 import { recordCampusVisit, recordAdmissionsEnquiry } from '@/lib/admissions';
+import { triggerDepartmentalAutoReply } from '@/lib/autoReply';
 
 const A = async () => {
   const a = await getAdmin();
@@ -921,6 +922,22 @@ export async function updateEmailAccount(fd) {
   return { ok: true, message: 'Email account updated!' };
 }
 
+export async function saveEmailAccountAutoReply(fd) {
+  await C();
+  const email = String(fd.get('email') || '').trim().toLowerCase();
+  const autoReply = String(fd.get('auto_reply') || '').trim();
+  const forwardTo = String(fd.get('forward_to') || '').trim();
+
+  if (!email) return { ok: false, error: 'Email address is required.' };
+
+  await qWrite(
+    'UPDATE email_accounts SET auto_reply=?, forward_to=? WHERE lower(email)=?',
+    [autoReply, forwardTo, email]
+  );
+  done();
+  return { ok: true, message: `Auto-reply updated for ${email}!` };
+}
+
 export async function delEmailAccount(fd) {
   await C();
   const id = Number(fd.get('id'));
@@ -980,8 +997,26 @@ export async function simulateInboundEmail(fd) {
     body,
     'received'
   ]);
+
+  // Trigger automated departmental auto-reply to the simulated sender
+  let autoReplyStatus = 'Auto-reply dispatched';
+  try {
+    const replyRes = await triggerDepartmentalAutoReply({
+      senderName: name,
+      senderEmail: email,
+      recipientEmail: recipient,
+      subject,
+      body
+    });
+    if (replyRes?.autoReplied) {
+      autoReplyStatus = `Auto-reply sent from ${replyRes.department} to ${email}`;
+    }
+  } catch (err) {
+    console.warn('[Simulate AutoReply Notice]:', err?.message);
+  }
+
   done();
-  return { ok: true, message: 'Inbound email simulated and added to inbox!' };
+  return { ok: true, message: `Inbound email logged to inbox! ${autoReplyStatus}` };
 }
 
 export async function delInbound(fd) {
