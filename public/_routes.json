@@ -8,6 +8,8 @@
     "/images/*",
     "/favicon.ico",
     "/manifest.json",
-    "/sw.js"
+    "/sw.js",
+    "/sitemap.xml",
+    "/robots.txt"
   ]
 }

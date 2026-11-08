@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /hidden-admin
+Disallow: /staff-portal
+Disallow: /p/
+Disallow: /api/
+
+Sitemap: https://pleasantviewschools.co.ke/sitemap.xml
