@@ -9,6 +9,8 @@
     "/favicon.ico",
     "/manifest.json",
     "/sw.js",
-    "/robots.txt"
+    "/robots.txt",
+    "/sitemap.xml",
+    "/sitemap.xsl"
   ]
 }

@@ -68,7 +68,10 @@ const routesJson = {
     "/icon.png",
     "/apple-touch-icon.png",
     "/manifest.json",
-    "/sw.js"
+    "/sw.js",
+    "/sitemap.xml",
+    "/sitemap.xsl",
+    "/robots.txt"
   ]
 };
 fs.writeFileSync(
