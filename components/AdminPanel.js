@@ -31,6 +31,7 @@ import {
   getAllLearnerTestimonials,
   getAllEvents
 } from '@/lib/db';
+import { calculateInstitutionalPopulation } from '@/lib/population';
 
 const LONG = ['welcome', 'about', 'mission', 'vision'];
 
@@ -61,6 +62,7 @@ export { default as LoginForm } from '@/components/LoginForm';
 export default async function Panel({ scope, edit }) {
   const years = getYearsOfExistence();
   const list = await schools();
+  const popSummary = calculateInstitutionalPopulation(list);
   const me = list.find(s => s.id === scope);
   const es = scope ? me : list.find(s => s.slug === edit);
 
@@ -195,6 +197,41 @@ export default async function Panel({ scope, edit }) {
                 </div>
               </div>
 
+              {/* INSTITUTIONAL POPULATION SUMMARY & TALLY BANNER */}
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(139,30,45,0.06), rgba(30,35,42,0.04))',
+                border: '1px solid rgba(139,30,45,0.2)',
+                borderLeft: '5px solid var(--primary-red)',
+                borderRadius: '8px',
+                padding: '16px 20px',
+                marginBottom: '20px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '12px'
+              }}>
+                <div>
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--primary-red)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    MATHEMATICALLY TALLIED ENROLMENT (1000+)
+                  </span>
+                  <h4 style={{ margin: '3px 0 2px', fontSize: '17px', color: 'var(--primary-navy)' }}>
+                    Total Population: {popSummary.totalPopulation.toLocaleString()} Scholars ({popSummary.totalBoarders.toLocaleString()} Boarders + {popSummary.totalDayScholars.toLocaleString()} Day Scholars)
+                  </h4>
+                  <small style={{ color: '#64748b', fontSize: '12.5px' }}>
+                    Formula: {popSummary.formulaByAttendance} &bull; Tally Check: {popSummary.isTallied ? '✓ 100% Exact Match Across All Divisions' : 'Discrepancy Detected'}
+                  </small>
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <span style={{ background: '#ffffff', padding: '6px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '12px', fontWeight: 700, color: 'var(--primary-red)' }}>
+                    {popSummary.totalBoarders} Boarders
+                  </span>
+                  <span style={{ background: '#ffffff', padding: '6px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '12px', fontWeight: 700, color: 'var(--primary-navy)' }}>
+                    {popSummary.totalDayScholars} Day Scholars
+                  </span>
+                </div>
+              </div>
+
               <div style={{ overflowX: 'auto' }}>
                 <table className="admin-table">
                   <thead>
@@ -204,8 +241,9 @@ export default async function Panel({ scope, edit }) {
                       <th>Grades / Level</th>
                       <th>Location &amp; Map Pin</th>
                       <th>Branch Admin</th>
-                      <th>Learners</th>
+                      <th>Day Scholars</th>
                       <th>Boarding</th>
+                      <th>Total Enrolled</th>
                       <th>Ratio</th>
                       <th>Portal Access</th>
                       <th>Actions</th>
@@ -261,8 +299,9 @@ export default async function Panel({ scope, edit }) {
                           </form>
                         </td>
                         <td style={{ fontSize: '13px', fontWeight: 600, color: 'var(--primary-navy)' }}>{s.admin_name || s.admin_email || 'Assigned Head'}</td>
-                        <td><strong>{s.learners || '450 Students'}</strong></td>
-                        <td>{s.boarders || '200 Boarders'}</td>
+                        <td><span style={{ color: '#0369a1', fontWeight: 600 }}>{s.day_scholars || '—'}</span></td>
+                        <td><span style={{ color: '#b91c1c', fontWeight: 600 }}>{s.boarders || 'Day Only'}</span></td>
+                        <td><strong style={{ color: 'var(--primary-navy)' }}>{s.learners || '280 Students'}</strong></td>
                         <td>{s.ratio || '1:20'}</td>
                         <td>
                           <form action="/api/admin/action?action=setSchoolAdmin" method="POST" data-admin-action="setSchoolAdmin" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
@@ -348,12 +387,16 @@ export default async function Panel({ scope, edit }) {
                     <input name="admin_name" placeholder="e.g. Mrs. Grace Njeri (Principal)" defaultValue="Branch Principal" />
                   </div>
                   <div className="form-group">
-                    <label>Learners Population</label>
-                    <input name="learners" placeholder="e.g. 500 Students" defaultValue="500 Students" />
+                    <label>Total Enrolled Learners</label>
+                    <input name="learners" placeholder="e.g. 280 Students" defaultValue="280 Students" />
                   </div>
                   <div className="form-group">
                     <label>Boarding Population</label>
-                    <input name="boarders" placeholder="e.g. 200 Boarders" defaultValue="200 Boarders" />
+                    <input name="boarders" placeholder="e.g. 220 Boarders" defaultValue="220 Boarders" />
+                  </div>
+                  <div className="form-group">
+                    <label>Day Scholars Population</label>
+                    <input name="day_scholars" placeholder="e.g. 60 Day Scholars" defaultValue="60 Day Scholars" />
                   </div>
                   <div className="form-group">
                     <label>Teacher-Student Ratio</label>

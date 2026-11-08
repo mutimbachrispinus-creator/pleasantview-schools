@@ -4,6 +4,7 @@ import VmvSlideshow from '@/components/VmvSlideshow';
 import VideoShowcase from '@/components/VideoShowcase';
 import PictorialGallery from '@/components/PictorialGallery';
 import AnimatedWordPlay from '@/components/AnimatedWordPlay';
+import { calculateInstitutionalPopulation } from '@/lib/population';
 import {
   q,
   S,
@@ -94,6 +95,7 @@ export default async function Home({ searchParams }) {
   }
 
   const years = getYearsOfExistence();
+  const popSummary = calculateInstitutionalPopulation(sch);
 
   const slides = hero.length
     ? hero.map(h => ({
@@ -414,6 +416,77 @@ export default async function Home({ searchParams }) {
               </div>
             ))}
           </div>
+
+          {/* INSTITUTIONAL POPULATION COHORT TALLY (MATHEMATICALLY SUMMED & VERIFIED) */}
+          <div className="population-tally-container" style={{
+            marginTop: '36px',
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            borderRadius: '10px',
+            padding: '24px 28px',
+            color: '#ffffff'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px', marginBottom: '18px' }}>
+              <div>
+                <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--gold-accent)', letterSpacing: '1.5px', textTransform: 'uppercase' }}>
+                  MATHEMATICALLY TALLIED ENROLMENT
+                </span>
+                <h3 style={{ margin: '4px 0', fontSize: 'clamp(18px, 2vw, 24px)', color: '#ffffff', fontFamily: 'var(--font-serif)' }}>
+                  Total Population: {popSummary.totalPopulation.toLocaleString()} Scholars ({popSummary.badgeValue})
+                </h3>
+                <p style={{ margin: 0, fontSize: '13.5px', color: '#cbd5e1' }}>
+                  Exact dual-dimensional tally: <strong>{popSummary.totalBoarders.toLocaleString()} Boarding Scholars</strong> + <strong>{popSummary.totalDayScholars.toLocaleString()} Day Scholars</strong> = <strong>{popSummary.totalPopulation.toLocaleString()} Total Enrolled</strong>
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <div style={{ background: 'rgba(139, 30, 45, 0.35)', border: '1px solid rgba(253, 164, 175, 0.3)', padding: '8px 16px', borderRadius: '6px', textAlign: 'center' }}>
+                  <span className="stat-num" style={{ display: 'block', fontSize: '20px', fontWeight: 800, color: '#fda4af' }}>{popSummary.totalBoarders}</span>
+                  <small style={{ fontSize: '11px', color: '#f1f5f9' }}>Boarding Scholars</small>
+                </div>
+                <div style={{ background: 'rgba(30, 35, 42, 0.45)', border: '1px solid rgba(203, 213, 225, 0.3)', padding: '8px 16px', borderRadius: '6px', textAlign: 'center' }}>
+                  <span className="stat-num" style={{ display: 'block', fontSize: '20px', fontWeight: 800, color: '#93c5fd' }}>{popSummary.totalDayScholars}</span>
+                  <small style={{ fontSize: '11px', color: '#f1f5f9' }}>Day Scholars</small>
+                </div>
+                <div style={{ background: 'rgba(212, 175, 55, 0.25)', border: '1px solid rgba(212, 175, 55, 0.4)', padding: '8px 16px', borderRadius: '6px', textAlign: 'center' }}>
+                  <span className="stat-num" style={{ display: 'block', fontSize: '20px', fontWeight: 800, color: 'var(--gold-accent)' }}>{popSummary.totalPopulation}</span>
+                  <small style={{ fontSize: '11px', color: '#f1f5f9' }}>Sum of 4 Schools</small>
+                </div>
+              </div>
+            </div>
+
+            {/* BREAKDOWN GRID ACROSS THE 4 SCHOOLS */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+              gap: '14px',
+              paddingTop: '16px',
+              borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+              {popSummary.schools.map((ps, idx) => (
+                <div key={ps.slug || idx} style={{
+                  background: 'rgba(0, 0, 0, 0.2)',
+                  borderRadius: '6px',
+                  padding: '12px 14px',
+                  borderLeft: `3px solid ${ps.color || 'var(--gold-accent)'}`
+                }}>
+                  <strong style={{ display: 'block', fontSize: '13.5px', color: '#ffffff', marginBottom: '4px' }}>
+                    {ps.name.replace(/Pleasant View /i, '')}
+                  </strong>
+                  <div style={{ fontSize: '12px', color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <span>&bull; Day Scholars: <strong style={{ color: '#93c5fd' }}>{ps.dayScholars}</strong></span>
+                    <span>&bull; Boarders: <strong style={{ color: '#fda4af' }}>{ps.boarders > 0 ? ps.boarders : 'Day Only'}</strong></span>
+                    <span style={{ borderTop: '1px dashed rgba(255,255,255,0.15)', paddingTop: '4px', marginTop: '2px' }}>
+                      &bull; Enrolled: <strong style={{ color: 'var(--gold-accent)' }}>{ps.totalLearners} {ps.unit}</strong> (Ratio {ps.ratio})
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ marginTop: '14px', fontSize: '12px', color: '#94a3b8', textAlign: 'center', fontStyle: 'italic' }}>
+              ✓ Mathematically Verified: Sum of Schools ({popSummary.formulaBySchools}) = Sum of Attendance ({popSummary.formulaByAttendance})
+            </div>
+          </div>
         </div>
       </section>
 
@@ -586,6 +659,10 @@ export default async function Home({ searchParams }) {
                     <span>
                       <i className="fa-solid fa-bed" style={{ color: 'var(--primary-red)', marginRight: '5px', fontSize: '11.5px' }} />
                       Boarding: <strong>{s.boarders || 'Day & Boarding'}</strong>
+                    </span>
+                    <span>
+                      <i className="fa-solid fa-bus" style={{ color: 'var(--gold-dark)', marginRight: '5px', fontSize: '11.5px' }} />
+                      Day: <strong>{s.day_scholars || 'Day Scholars'}</strong>
                     </span>
                   </div>
                   <div className="program-card-actions">

@@ -46,7 +46,7 @@ export default async function HistoryPage() {
     {
       year: '2026',
       title: `${years} Years of Academic Eminence`,
-      desc: `Celebrating ${years} years of existence, Pleasant View stands as a distinguished four-tier educational institution (Early Years, Primary, JSS, and Senior School) serving over 600 boarding scholars and hundreds of day learners with unyielding commitment to victory.`
+      desc: `Celebrating ${years} years of existence, Pleasant View stands as a distinguished four-tier educational institution (Early Years, Primary, JSS, and Senior School) serving 600 boarding scholars and 450 day scholars across our 4 divisions (1,050 total enrolled scholars) with unyielding commitment to victory.`
     }
   ];
 

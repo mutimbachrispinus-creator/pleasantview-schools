@@ -211,7 +211,7 @@ export async function addSchool(fd) {
   const h = adminPassword ? hashPw(adminPassword) : '';
 
   const res = await qWrite(
-    'INSERT OR IGNORE INTO schools(slug,name,category,tagline,level,color,image,learners,boarders,ratio,phone,email,admin_key,admin_email,admin_hash,admin_name,location,maps_url) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+    'INSERT OR IGNORE INTO schools(slug,name,category,tagline,level,color,image,learners,boarders,day_scholars,ratio,phone,email,admin_key,admin_email,admin_hash,admin_name,location,maps_url) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
     [
       slugify(name),
       name,
@@ -220,8 +220,9 @@ export async function addSchool(fd) {
       fd.get('level') || 'Grades 10 – 12',
       fd.get('color') || '#8B1E2D',
       img,
-      fd.get('learners') || '450 Students',
-      fd.get('boarders') || '200 Boarders',
+      fd.get('learners') || '280 Students',
+      fd.get('boarders') || '220 Boarders',
+      fd.get('day_scholars') || '60 Day Scholars',
       fd.get('ratio') || '1:20',
       fd.get('phone') || '+254 711 689 913',
       adminEmail,

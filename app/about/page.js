@@ -114,9 +114,9 @@ export default async function About() {
       )}
 
       {/* YEARS OF EXISTENCE & ACADEMIC EMINENCE */}
-      <h3 id="legacy" style={{ marginTop: '45px', marginBottom: '15px' }}>{years} Years of Existence &amp; Academic Eminence</h3>
+      <h3 id="legacy" style={{ marginTop: '45px', marginBottom: '15px' }}>{years} Years of Existence &amp; Institutional Population (1000+)</h3>
       <p style={{ lineHeight: 1.85, fontSize: '16px', marginBottom: '20px', color: '#444' }}>
-        Across our {years} years of existence, Pleasant View has consistently maintained distinguished scholastic performance, achieving an institutional average of <strong>EE (Exceeding Expectations)</strong> in KPSEA and <strong>ME1 (Meeting Expectations &ndash; Top Tier)</strong> in KJSEA, positioning our scholars permanently among the top 10 academic institutions across Kiambu County. In 2016, answering the earnest appeal of our parent community, we established our celebrated Senior School, which achieved a historic maiden mean grade of <strong>B+</strong> in KCSE examinations. As the 8-4-4 system concludes at the end of next year, our Senior School is dynamically transitioning into the <strong>Kenya Senior School Education Assessment (KSSEA)</strong>.
+        Across our {years} years of existence, Pleasant View has consistently maintained distinguished scholastic performance with a mathematically tallied institutional population of <strong>1,050 scholars (1,000+)</strong>&mdash;comprising <strong>600 boarding scholars</strong> and <strong>450 day scholars</strong> across our Early Learning, Primary, Junior Secondary (JSS), and Senior High School divisions. Our scholars achieve an institutional average of <strong>EE (Exceeding Expectations)</strong> in KPSEA and <strong>ME1 (Meeting Expectations &ndash; Top Tier)</strong> in KJSEA, positioning our scholars permanently among the top 10 academic institutions across Kiambu County. In 2016, answering the earnest appeal of our parent community, we established our celebrated Senior School, which achieved a historic maiden mean grade of <strong>B+</strong> in KCSE examinations. As the 8-4-4 system concludes at the end of next year, our Senior School is dynamically transitioning into the <strong>Kenya Senior School Education Assessment (KSSEA)</strong>.
       </p>
 
       {/* CBE TRANSITION & STEM */}
