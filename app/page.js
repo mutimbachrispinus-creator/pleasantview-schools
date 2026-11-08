@@ -3,6 +3,7 @@ import Slider from '@/components/Slider';
 import VmvSlideshow from '@/components/VmvSlideshow';
 import VideoShowcase from '@/components/VideoShowcase';
 import PictorialGallery from '@/components/PictorialGallery';
+import AnimatedWordPlay from '@/components/AnimatedWordPlay';
 import {
   q,
   S,
@@ -420,7 +421,10 @@ export default async function Home({ searchParams }) {
       <section className="text-component">
         <div className="wrapper">
           <span className="lead-badge reveal-on-scroll">{years} YEARS OF EXISTENCE &amp; ACADEMIC EMINENCE</span>
-          <h2 className="reveal-on-scroll">PLEASANT VIEW SCHOOLS &ndash; OUR AIM IS VICTORY</h2>
+          <h2 className="reveal-on-scroll">
+            PLEASANT VIEW SCHOOLS &ndash; NURTURING TOMORROW&apos;S{' '}
+            <AnimatedWordPlay words={['LEADERS', 'INNOVATORS', 'SCHOLARS', 'CHAMPIONS', 'VISIONARIES']} />
+          </h2>
           <div className="gold-divider reveal-on-scroll" />
           <p className="lead scroll-word-reveal">
             Founded in 1998, Pleasant View Schools has grown from a visionary primary institution into one of Kenya&apos;s most celebrated Christian-ethos day and boarding academic institutions, situated amidst the peaceful green highlands of Githunguri, Komothai Subcounty, Kiambu County.
@@ -436,7 +440,10 @@ export default async function Home({ searchParams }) {
         <div className="wrapper">
           <div className="pillars-header">
             <h5>HOLISTIC CHRISTIAN EDUCATION</h5>
-            <h2>Transforming Hearts, Minds, Bodies &amp; Souls</h2>
+            <h2>
+              Transforming Hearts, Minds, Bodies &amp; Souls for{' '}
+              <AnimatedWordPlay words={['Victory', 'Excellence', 'Distinction', 'Integrity', 'Leadership']} />
+            </h2>
             <div className="gold-divider" />
             <p className="lead scroll-word-reveal" style={{ fontSize: '17px', color: '#555', margin: 0 }}>
               Guided by our motto &ldquo;Our Aim is Victory&rdquo;, we educate the whole child through four foundational pillars that equip every learner to thrive academically, spiritually, and socially.

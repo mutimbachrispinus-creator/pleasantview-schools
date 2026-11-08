@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Page from '@/components/Page';
+import AnimatedWordPlay from '@/components/AnimatedWordPlay';
 import { schools, S, getExamResults, getSeniorAssessmentInfo, getYearsOfExistence } from '@/lib/db';
 
 export const metadata = {
@@ -41,10 +42,11 @@ export default async function AcademicsPage() {
         <div style={{ textAlign: 'center', maxWidth: '820px', margin: '0 auto 40px auto' }}>
           <span className="lead-badge">THE ACADEMIC STANDARD</span>
           <h2 style={{ fontSize: 'clamp(28px, 3.2vw, 44px)', margin: '8px 0 14px' }}>
-            Nurturing Critical Thinkers, Innovators &amp; Leaders
+            Nurturing Critical Thinkers, Innovators &amp;{' '}
+            <AnimatedWordPlay words={['Leaders', 'Scholars', 'Champions', 'Visionaries']} />
           </h2>
           <div className="gold-divider" style={{ margin: '0 auto 20px auto' }} />
-          <p style={{ fontSize: '17px', color: '#4b5563', lineHeight: 1.8 }}>
+          <p style={{ fontSize: '17px', color: '#4b5563', lineHeight: 1.8 }} className="scroll-word-reveal">
             At Pleasant View Schools, academic excellence is anchored in deep intellectual curiosity, rigorous inquiry, and Christian integrity. Across our {years} years of existence, our scholars have consistently achieved top-tier distinctions in national assessments while cultivating lifelong problem-solving skills.
           </p>
         </div>
@@ -61,7 +63,7 @@ export default async function AcademicsPage() {
           border: '1px solid #e2e8f0'
         }}>
           <div style={{ textAlign: 'center' }}>
-            <span style={{ display: 'block', fontSize: '36px', fontWeight: 800, color: 'var(--primary-red)', fontFamily: 'var(--font-serif)' }}>
+            <span className="stat-num" style={{ display: 'block', fontSize: '36px', fontWeight: 800, color: 'var(--primary-red)', fontFamily: 'var(--font-serif)' }}>
               EE &amp; ME1
             </span>
             <strong style={{ display: 'block', fontSize: '15px', color: 'var(--dark-grey)', marginTop: '4px' }}>
@@ -71,7 +73,7 @@ export default async function AcademicsPage() {
           </div>
 
           <div style={{ textAlign: 'center' }}>
-            <span style={{ display: 'block', fontSize: '36px', fontWeight: 800, color: 'var(--primary-red)', fontFamily: 'var(--font-serif)' }}>
+            <span className="stat-num" style={{ display: 'block', fontSize: '36px', fontWeight: 800, color: 'var(--primary-red)', fontFamily: 'var(--font-serif)' }}>
               B+ Mean
             </span>
             <strong style={{ display: 'block', fontSize: '15px', color: 'var(--dark-grey)', marginTop: '4px' }}>
@@ -81,7 +83,7 @@ export default async function AcademicsPage() {
           </div>
 
           <div style={{ textAlign: 'center' }}>
-            <span style={{ display: 'block', fontSize: '36px', fontWeight: 800, color: 'var(--primary-red)', fontFamily: 'var(--font-serif)' }}>
+            <span className="stat-num" style={{ display: 'block', fontSize: '36px', fontWeight: 800, color: 'var(--primary-red)', fontFamily: 'var(--font-serif)' }}>
               1:20
             </span>
             <strong style={{ display: 'block', fontSize: '15px', color: 'var(--dark-grey)', marginTop: '4px' }}>
@@ -91,7 +93,7 @@ export default async function AcademicsPage() {
           </div>
 
           <div style={{ textAlign: 'center' }}>
-            <span style={{ display: 'block', fontSize: '36px', fontWeight: 800, color: 'var(--primary-red)', fontFamily: 'var(--font-serif)' }}>
+            <span className="stat-num" style={{ display: 'block', fontSize: '36px', fontWeight: 800, color: 'var(--primary-red)', fontFamily: 'var(--font-serif)' }}>
               100%
             </span>
             <strong style={{ display: 'block', fontSize: '15px', color: 'var(--dark-grey)', marginTop: '4px' }}>

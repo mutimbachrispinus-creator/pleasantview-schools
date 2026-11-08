@@ -56,19 +56,19 @@ export default async function SchoolHome({ params }) {
         <div className="wrapper">
           <div className="stats-grid">
             <div className="stat-item">
-              <b>{s.learners || '500+'}</b>
+              <b className="stat-num">{s.learners || '500+'}</b>
               <span>Enrolled Learners</span>
             </div>
             <div className="stat-item">
-              <b>{s.boarders || '200+'}</b>
+              <b className="stat-num">{s.boarders || '200+'}</b>
               <span>Boarding Capacity</span>
             </div>
             <div className="stat-item">
-              <b>{s.ratio || '1:20'}</b>
+              <b className="stat-num">{s.ratio || '1:20'}</b>
               <span>Learner : Teacher Ratio</span>
             </div>
             <div className="stat-item">
-              <b>{s.founded || 'Established'}</b>
+              <b className="stat-num">{s.founded || 'Established'}</b>
               <span>Established Year</span>
             </div>
           </div>
