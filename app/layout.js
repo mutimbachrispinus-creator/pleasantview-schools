@@ -9,6 +9,7 @@ import CookieConsent from '@/components/CookieConsent';
 import ScrollReveal from '@/components/ScrollReveal';
 
 export const metadata = {
+  metadataBase: new URL('https://pleasantviewschools.co.ke'),
   title: {
     default: 'PLEASANT VIEW SCHOOLS | OUR AIM IS VICTORY',
     template: '%s | PLEASANT VIEW SCHOOLS'
@@ -17,13 +18,36 @@ export const metadata = {
   manifest: '/manifest.json',
   icons: {
     icon: [
-      { url: '/favicon.ico?v=20261107b', sizes: 'any' },
-      { url: '/icon.png?v=20261107b', sizes: '192x192', type: 'image/png' },
-      { url: '/images/pwa_icon_512.png?v=20261107b', sizes: '512x512', type: 'image/png' }
+      { url: '/favicon.ico' },
+      { url: '/icon.png', sizes: '192x192', type: 'image/png' },
+      { url: '/images/pwa_icon_512.png', sizes: '512x512', type: 'image/png' }
     ],
     apple: [
-      { url: '/apple-touch-icon.png?v=20261107b', sizes: '180x180', type: 'image/png' }
+      { url: '/logo.png' },
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }
     ]
+  },
+  openGraph: {
+    title: 'PLEASANT VIEW SCHOOLS | OUR AIM IS VICTORY',
+    description: 'Pleasant View Schools — Our Aim is Victory. Leading Christian Day and Boarding Schools in Githunguri, Kiambu County.',
+    url: 'https://pleasantviewschools.co.ke',
+    siteName: 'Pleasant View Schools',
+    images: [
+      {
+        url: 'https://pleasantviewschools.co.ke/logo.png',
+        width: 692,
+        height: 857,
+        alt: 'Pleasant View Schools Logo'
+      }
+    ],
+    locale: 'en_KE',
+    type: 'website'
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'PLEASANT VIEW SCHOOLS | OUR AIM IS VICTORY',
+    description: 'Leading Christian Day and Boarding Schools in Githunguri, Kiambu County.',
+    images: ['https://pleasantviewschools.co.ke/logo.png']
   }
 };
 
@@ -78,11 +102,17 @@ export default async function RootLayout({ children }) {
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         />
         <link rel="manifest" href="/manifest.json" crossOrigin="anonymous" />
-        <link rel="icon" href="/favicon.ico?v=20261107b" sizes="any" />
-        <link rel="icon" href="/icon.png?v=20261107b" type="image/png" sizes="192x192" />
-        <link rel="icon" href="/images/pwa_icon_512.png?v=20261107b" type="image/png" sizes="512x512" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20261107b" sizes="180x180" />
-        <link rel="apple-touch-icon" href="/images/pwa_icon_192.png?v=20261107b" />
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/icon.png" type="image/png" sizes="192x192" />
+        <link rel="icon" href="/images/pwa_icon_512.png" type="image/png" sizes="512x512" />
+        <link rel="apple-touch-icon" href="/logo.png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+        <meta property="og:image" content="https://pleasantviewschools.co.ke/logo.png" />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:width" content="692" />
+        <meta property="og:image:height" content="857" />
+        <meta property="og:image:alt" content="Pleasant View Schools Logo" />
+        <meta name="twitter:image" content="https://pleasantviewschools.co.ke/logo.png" />
         <meta name="theme-color" content="#1E232A" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
