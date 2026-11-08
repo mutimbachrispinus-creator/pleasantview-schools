@@ -428,6 +428,68 @@ export async function delVideo(fd) {
   return { ok: true, message: 'Video removed.' };
 }
 
+export async function updateVideo(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  if (!id) return { ok: false, error: 'Missing video ID.' };
+
+  const [existing] = await q('SELECT * FROM videos WHERE id=?', [id]);
+  if (!existing) return { ok: false, error: 'Video not found.' };
+
+  const title = String(fd.get('title') || existing.title || 'Pleasant View Campus Highlight').trim();
+  let youtubeUrl = String(fd.get('youtube_url') || '').trim();
+
+  const preUploadedVideo = String(fd.get('video_file_uploaded_url') || '').trim();
+  if (preUploadedVideo) {
+    youtubeUrl = preUploadedVideo;
+  } else {
+    const videoFile = fd.get('video_file');
+    if (videoFile && typeof videoFile === 'object' && videoFile.size > 0) {
+      const savedVid = (await saveVideo(videoFile)) || (await saveImg(videoFile));
+      if (savedVid) youtubeUrl = savedVid;
+    }
+  }
+  if (!youtubeUrl) youtubeUrl = existing.youtube_url;
+
+  const category = String(fd.get('category') || existing.category || 'Campus Tour').trim();
+  const description = fd.get('description') != null ? String(fd.get('description')).trim() : (existing.description || '');
+
+  let uploadedThumb = String(fd.get('thumbnail_file_uploaded_url') || '').trim() || null;
+  if (!uploadedThumb) {
+    const thumbFile = fd.get('thumbnail_file');
+    if (thumbFile && typeof thumbFile === 'object' && thumbFile.size > 0) {
+      uploadedThumb = (await saveImg(thumbFile)) || (await saveVideo(thumbFile));
+    }
+  }
+
+  const thumbUrl = String(fd.get('thumbnail_url') || '').trim();
+  const thumbnail = uploadedThumb || (thumbUrl && thumbUrl !== existing.thumbnail ? thumbUrl : '') || existing.thumbnail || '/images/hero_science_lab.jpg';
+
+  const schoolId = fd.get('school_id') != null ? Number(fd.get('school_id')) : existing.school_id;
+  const featured = fd.get('featured') != null ? (fd.get('featured') === '0' ? 0 : 1) : existing.featured;
+  const sort = fd.get('sort') != null ? Number(fd.get('sort')) : (existing.sort || 0);
+
+  await qWrite(
+    'UPDATE videos SET school_id=?, title=?, youtube_url=?, category=?, description=?, thumbnail=?, featured=?, sort=? WHERE id=?',
+    [schoolId, title, youtubeUrl, category, description, thumbnail, featured, sort, id]
+  );
+
+  if (uploadedThumb || (thumbUrl && thumbUrl !== existing.thumbnail)) {
+    await syncPhotoToPictorial({
+      image: thumbnail,
+      schoolId,
+      fileName: getUploadedName(fd, 'thumbnail_file_uploaded_name'),
+      title,
+      caption: description,
+      sourceCategory: category,
+      sectionHint: 'video'
+    });
+  }
+
+  done();
+  return { ok: true, message: 'Video and thumbnail updated and synced live!' };
+}
+
 export async function addJob(fd) {
   await A();
   const title = String(fd.get('title') || '').trim();
@@ -618,6 +680,50 @@ export async function delLeadershipMessage(fd) {
   return { ok: true, message: 'Leadership message removed.' };
 }
 
+export async function updateLeadershipMessage(fd) {
+  await A();
+  const id = Number(fd.get('id'));
+  if (!id) return { ok: false, error: 'Missing leadership message ID.' };
+
+  const [existing] = await q('SELECT * FROM leadership_messages WHERE id=?', [id]);
+  if (!existing) return { ok: false, error: 'Leadership message not found.' };
+
+  const role = String(fd.get('role') || existing.role || 'Director').trim();
+  const name = String(fd.get('name') || existing.name || 'School Leadership').trim();
+  const title = String(fd.get('title') || existing.title || 'Pleasant View Schools').trim();
+  const quote = fd.get('quote') != null ? String(fd.get('quote')).trim() : (existing.quote || '');
+  const message = fd.get('message') != null ? String(fd.get('message')).trim() : (existing.message || quote);
+
+  const preImg = String(fd.get('image_file_uploaded_url') || fd.get('image_uploaded_url') || '').trim();
+  const uploadedImg = preImg || (await saveImg(fd.get('image_file')));
+  const imgUrl = String(fd.get('image_url') || '').trim();
+  const image = uploadedImg || (imgUrl && imgUrl !== existing.image ? imgUrl : '') || existing.image || '/images/banner_3_a.webp';
+
+  const schoolId = fd.get('school_id') != null ? Number(fd.get('school_id')) : existing.school_id;
+  const sort = fd.get('sort') != null ? Number(fd.get('sort')) : (existing.sort || 0);
+
+  await qWrite(
+    'UPDATE leadership_messages SET school_id=?, role=?, name=?, title=?, quote=?, message=?, image=?, sort=? WHERE id=?',
+    [schoolId, role, name, title, quote, message, image, sort, id]
+  );
+
+  if (uploadedImg || (imgUrl && imgUrl !== existing.image)) {
+    await syncPhotoToPictorial({
+      image,
+      schoolId,
+      fileName: getUploadedName(fd, 'image_file_uploaded_name', 'image_uploaded_name'),
+      title: `${name} — ${role}`,
+      caption: quote || title,
+      body: message,
+      sourceCategory: role,
+      sectionHint: 'leadership'
+    });
+  }
+
+  done();
+  return { ok: true, message: 'Leadership message and portrait photo updated and synced live!' };
+}
+
 export async function delEnquiry(fd) {
   await A();
   const id = Number(fd.get('id'));
@@ -659,6 +765,46 @@ export async function addPost(fd) {
 
   done();
   return { ok: true, message: 'News story published and synced live!' };
+}
+
+export async function updatePost(fd) {
+  const sc = await A();
+  const id = Number(fd.get('id'));
+  if (!id) return { ok: false, error: 'Missing story ID.' };
+
+  const [existing] = await q('SELECT * FROM posts WHERE id=?' + (sc ? ' AND school_id=?' : ''), sc ? [id, sc] : [id]);
+  if (!existing) return { ok: false, error: 'Story not found.' };
+
+  const preImg = String(fd.get('image_file_uploaded_url') || fd.get('image_uploaded_url') || '').trim();
+  const uploaded = preImg || (await saveImg(fd.get('image_file') || fd.get('image')));
+  const chosenUrl = String(fd.get('image_url') || '').trim();
+  const img = uploaded || (chosenUrl && chosenUrl !== existing.image ? chosenUrl : '') || existing.image || '/images/banner_2_a.webp';
+
+  const t = String(fd.get('title') || existing.title || 'News Update').trim();
+  const cat = String(fd.get('category') || existing.category || 'School News').trim();
+  const body = fd.get('body') != null ? String(fd.get('body')).trim() : (existing.body || '');
+  const postSchoolId = fd.get('school_id') != null ? sid(fd, sc) : existing.school_id;
+
+  await qWrite(
+    'UPDATE posts SET school_id=?, title=?, body=?, image=?, category=? WHERE id=?' + (sc ? ' AND school_id=?' : ''),
+    sc ? [postSchoolId, t, body, img, cat, id, sc] : [postSchoolId, t, body, img, cat, id]
+  );
+
+  if (uploaded || (chosenUrl && chosenUrl !== existing.image)) {
+    await syncPhotoToPictorial({
+      image: img,
+      schoolId: postSchoolId,
+      fileName: getUploadedName(fd, 'image_file_uploaded_name', 'image_uploaded_name'),
+      title: t,
+      caption: body ? body.slice(0, 220) : cat,
+      body,
+      sourceCategory: cat,
+      sectionHint: 'news'
+    });
+  }
+
+  done();
+  return { ok: true, message: 'News story and photo updated and synced live!' };
 }
 
 export async function addHero(fd) {
@@ -703,40 +849,42 @@ export async function updateHero(fd) {
   const id = Number(fd.get('id'));
   if (!id) return { ok: false, error: 'Missing hero slide ID.' };
 
+  const [existing] = await q('SELECT * FROM hero WHERE id=?' + (sc ? ' AND school_id=?' : ''), sc ? [id, sc] : [id]);
+  if (!existing) return { ok: false, error: 'Hero slide not found.' };
+
   const preImg = String(fd.get('image_uploaded_url') || fd.get('image_file_uploaded_url') || '').trim();
   const uploaded = preImg || (await saveImg(fd.get('image_file') || fd.get('image')));
   const chosenUrl = String(fd.get('imageUrl') || fd.get('image_url') || '').trim();
-  const headline = String(fd.get('headline') || '').trim();
-  const sub = String(fd.get('sub') || '').trim();
-  const bText = String(fd.get('button_text') || 'Explore Our Schools').trim();
-  const bLink = String(fd.get('button_link') || '/#schools').trim();
-  const bAltText = String(fd.get('button_alt_text') || 'Book a Campus Tour').trim();
-  const bAltLink = String(fd.get('button_alt_link') || '/contact#visit').trim();
-  const sort = Number(fd.get('sort')) || 0;
+  const headline = fd.get('headline') != null ? String(fd.get('headline')).trim() : existing.headline;
+  const sub = fd.get('sub') != null ? String(fd.get('sub')).trim() : existing.sub;
+  const bText = String(fd.get('button_text') || existing.button_text || 'Explore Our Schools').trim();
+  const bLink = String(fd.get('button_link') || existing.button_link || '/#schools').trim();
+  const bAltText = String(fd.get('button_alt_text') || existing.button_alt_text || 'Book a Campus Tour').trim();
+  const bAltLink = String(fd.get('button_alt_link') || existing.button_alt_link || '/contact#visit').trim();
+  const sort = fd.get('sort') != null ? Number(fd.get('sort')) : (existing.sort || 0);
+  const targetSchoolId = fd.get('school_id') != null ? sid(fd, sc) : existing.school_id;
 
-  if (uploaded || chosenUrl) {
-    const img = uploaded || chosenUrl;
-    await qWrite(
-      'UPDATE hero SET image=?, headline=?, sub=?, button_text=?, button_link=?, button_alt_text=?, button_alt_link=?, sort=? WHERE id=?' + (sc ? ' AND school_id=?' : ''),
-      sc ? [img, headline, sub, bText, bLink, bAltText, bAltLink, sort, id, sc] : [img, headline, sub, bText, bLink, bAltText, bAltLink, sort, id]
-    );
+  const img = uploaded || (chosenUrl && chosenUrl !== existing.image ? chosenUrl : '') || existing.image;
+
+  await qWrite(
+    'UPDATE hero SET image=?, headline=?, sub=?, button_text=?, button_link=?, button_alt_text=?, button_alt_link=?, sort=?, school_id=? WHERE id=?' + (sc ? ' AND school_id=?' : ''),
+    sc ? [img, headline, sub, bText, bLink, bAltText, bAltLink, sort, targetSchoolId, id, sc] : [img, headline, sub, bText, bLink, bAltText, bAltLink, sort, targetSchoolId, id]
+  );
+
+  if (uploaded || (chosenUrl && chosenUrl !== existing.image)) {
     await syncPhotoToPictorial({
       image: img,
-      schoolId: sid(fd, sc),
+      schoolId: targetSchoolId,
       fileName: getUploadedName(fd, 'image_file_uploaded_name', 'image_uploaded_name'),
       title: headline,
       caption: sub,
       buttonLink: bLink,
       sectionHint: 'hero'
     });
-  } else {
-    await qWrite(
-      'UPDATE hero SET headline=?, sub=?, button_text=?, button_link=?, button_alt_text=?, button_alt_link=?, sort=? WHERE id=?' + (sc ? ' AND school_id=?' : ''),
-      sc ? [headline, sub, bText, bLink, bAltText, bAltLink, sort, id, sc] : [headline, sub, bText, bLink, bAltText, bAltLink, sort, id]
-    );
   }
+
   done();
-  return { ok: true, message: 'Hero slide updated and synced live!' };
+  return { ok: true, message: 'Hero banner slide and picture updated and synced live!' };
 }
 
 export async function addPhotos(fd) {
@@ -1207,6 +1355,56 @@ export async function updatePhotoCategory(fd) {
   return { ok: true, category: finalCategory, message: `Photo categorized under "${finalCategory}"!` };
 }
 
+export async function updatePhoto(fd) {
+  const sc = await A();
+  const id = Number(fd.get('id'));
+  if (!id) return { ok: false, error: 'Missing photo ID.' };
+
+  const [existing] = await q('SELECT * FROM photos WHERE id=?' + (sc ? ' AND school_id=?' : ''), sc ? [id, sc] : [id]);
+  if (!existing) return { ok: false, error: 'Photo not found.' };
+
+  const preImg = String(fd.get('image_file_uploaded_url') || fd.get('image_uploaded_url') || '').trim();
+  const uploaded = preImg || (await saveImg(fd.get('image_file') || fd.get('image'), { skipPictorialSync: true }));
+  const chosenUrl = String(fd.get('image_url') || '').trim();
+  const image = uploaded || (chosenUrl && chosenUrl !== existing.image ? chosenUrl : '') || existing.image;
+
+  const nextTitle = fd.get('title') != null ? String(fd.get('title')).trim() : (existing.title || '');
+  const nextCaption = fd.get('caption') != null ? String(fd.get('caption')).trim() : (existing.caption || '');
+  const rawCat = String(fd.get('category') || '').trim();
+  const targetSchoolId = fd.get('school_id') != null ? sid(fd, sc) : existing.school_id;
+
+  let finalCategory = '';
+  if (!rawCat || rawCat.toLowerCase() === 'auto') {
+    let fileName = getUploadedName(fd, 'image_file_uploaded_name', 'image_uploaded_name') || '';
+    let visualHint = '';
+    const imgMatch = String(image || '').match(/^\/img\/(\d+)(?:\?.*)?$/);
+    if (imgMatch) {
+      const [imgMeta] = await q('SELECT filename, visual_hint FROM images WHERE id=?', [Number(imgMatch[1])]);
+      if (imgMeta) {
+        fileName = fileName || String(imgMeta.filename || '');
+        visualHint = String(imgMeta.visual_hint || '');
+      }
+    }
+    finalCategory = categorizePhoto({
+      fileName,
+      imageUrl: image,
+      title: nextTitle,
+      caption: nextCaption,
+      sectionHint: existing.source_section || 'gallery',
+      visualHint
+    });
+  } else {
+    finalCategory = normalizePictorialCategory(rawCat, `${nextTitle} ${nextCaption}`) || rawCat;
+  }
+
+  await qWrite(
+    'UPDATE photos SET image=?, category=?, title=?, caption=?, school_id=? WHERE id=?' + (sc ? ' AND school_id=?' : ''),
+    sc ? [image, finalCategory, nextTitle, nextCaption, targetSchoolId, id, sc] : [image, finalCategory, nextTitle, nextCaption, targetSchoolId, id]
+  );
+  done();
+  return { ok: true, category: finalCategory, message: `Photo and details updated under "${finalCategory}"!` };
+}
+
 export async function discardUnlinkedUpload(fd) {
   await A();
   const url = String(fd.get('url') || fd.get('image') || '').trim();
@@ -1330,18 +1528,24 @@ export async function deleteTestimonial(fd) {
 export async function saveAlumniStory(fd) {
   await A();
   const id = Number(fd.get('id')) || 0;
-  const name = String(fd.get('name') || 'Pleasant View Alumnus').trim();
-  const gradYear = String(fd.get('grad_year') || 'Class of 2022').trim();
-  const campusDivision = String(fd.get('campus_division') || 'Senior School').trim();
-  const currentRole = String(fd.get('current_role') || 'Scholar & Professional').trim();
-  const universityOrCompany = String(fd.get('university_or_company') || '').trim();
-  const quote = String(fd.get('quote') || '').trim();
-  const story = String(fd.get('story') || quote || 'Proud graduate of Pleasant View Schools.').trim();
+  let existing = null;
+  if (id > 0) {
+    const rows = await q('SELECT * FROM alumni_stories WHERE id=?', [id]);
+    existing = rows[0] || null;
+  }
+
+  const name = String(fd.get('name') || existing?.name || 'Pleasant View Alumnus').trim();
+  const gradYear = String(fd.get('grad_year') || existing?.grad_year || 'Class of 2022').trim();
+  const campusDivision = String(fd.get('campus_division') || existing?.campus_division || 'Senior School').trim();
+  const currentRole = String(fd.get('current_role') || existing?.current_role || 'Scholar & Professional').trim();
+  const universityOrCompany = fd.get('university_or_company') != null ? String(fd.get('university_or_company')).trim() : (existing?.university_or_company || '');
+  const quote = fd.get('quote') != null ? String(fd.get('quote')).trim() : (existing?.quote || '');
+  const story = String(fd.get('story') || quote || existing?.story || 'Proud graduate of Pleasant View Schools.').trim();
 
   const preImg = String(fd.get('image_file_uploaded_url') || fd.get('image_uploaded_url') || '').trim();
   const uploaded = preImg || (await saveImg(fd.get('image_file')));
   const chosenUrl = String(fd.get('image_url') || '').trim();
-  const imageUrl = uploaded || chosenUrl || '/images/girls_high_school3.webp';
+  const imageUrl = uploaded || (chosenUrl && chosenUrl !== existing?.image_url ? chosenUrl : '') || existing?.image_url || chosenUrl || '/images/girls_high_school3.webp';
 
   let videoUrl = String(fd.get('video_url') || '').trim();
   const preVid = String(fd.get('video_file_uploaded_url') || '').trim();
@@ -1354,9 +1558,12 @@ export async function saveAlumniStory(fd) {
       if (savedVid) videoUrl = savedVid;
     }
   }
+  if (!videoUrl && existing?.video_url) {
+    videoUrl = existing.video_url;
+  }
 
-  const isFeatured = fd.get('is_featured') === '0' ? 0 : 1;
-  const sort = Number(fd.get('sort')) || 0;
+  const isFeatured = fd.get('is_featured') != null ? (fd.get('is_featured') === '0' ? 0 : 1) : (existing?.is_featured ?? 1);
+  const sort = fd.get('sort') != null ? Number(fd.get('sort')) : (existing?.sort || 0);
 
   if (id > 0) {
     await qWrite(
@@ -1370,7 +1577,7 @@ export async function saveAlumniStory(fd) {
     );
   }
 
-  if (uploaded || (chosenUrl && chosenUrl !== '/images/girls_high_school3.webp')) {
+  if (uploaded || (chosenUrl && chosenUrl !== existing?.image_url)) {
     await syncPhotoToPictorial({
       image: imageUrl,
       schoolId: 0,
@@ -1384,7 +1591,7 @@ export async function saveAlumniStory(fd) {
   }
 
   done();
-  return { ok: true, message: 'Alumni story published and synced live!' };
+  return { ok: true, message: id > 0 ? 'Alumni story and media updated!' : 'Alumni story published and synced live!' };
 }
 
 export async function deleteAlumniStory(fd) {
@@ -1400,23 +1607,29 @@ export async function deleteAlumniStory(fd) {
 export async function saveLearnerTestimonial(fd) {
   const sc = await A();
   const id = Number(fd.get('id')) || 0;
-  const name = String(fd.get('name') || 'Pleasant View Scholar').trim();
-  const gradeOrClass = String(fd.get('grade_or_class') || 'Scholar').trim();
+  let existing = null;
+  if (id > 0) {
+    const rows = await q('SELECT * FROM learner_testimonials WHERE id=?' + (sc ? ' AND school_id=?' : ''), sc ? [id, sc] : [id]);
+    existing = rows[0] || null;
+  }
+
+  const name = String(fd.get('name') || existing?.name || 'Pleasant View Scholar').trim();
+  const gradeOrClass = String(fd.get('grade_or_class') || existing?.grade_or_class || 'Scholar').trim();
   const schoolId = sid(fd, sc);
-  const schoolName = String(fd.get('school_name') || 'All Campuses').trim();
-  const comment = String(fd.get('comment') || '').trim();
+  const schoolName = String(fd.get('school_name') || existing?.school_name || 'All Campuses').trim();
+  const comment = fd.get('comment') != null ? String(fd.get('comment')).trim() : (existing?.comment || '');
 
   const preImg = String(fd.get('image_file_uploaded_url') || fd.get('image_uploaded_url') || '').trim();
   const uploaded = preImg || (await saveImg(fd.get('image_file')));
   const chosenUrl = String(fd.get('image_url') || '').trim();
-  const photoUrl = uploaded || chosenUrl || '/images/girls_high_school3.webp';
+  const photoUrl = uploaded || (chosenUrl && chosenUrl !== existing?.photo_url ? chosenUrl : '') || existing?.photo_url || chosenUrl || '/images/girls_high_school3.webp';
 
-  const favoriteSubject = String(fd.get('favorite_subject') || '').trim();
-  const futureAspiration = String(fd.get('future_aspiration') || '').trim();
-  const sort = Number(fd.get('sort')) || 0;
-  const isPublished = fd.get('is_published') === '0' ? 0 : 1;
+  const favoriteSubject = fd.get('favorite_subject') != null ? String(fd.get('favorite_subject')).trim() : (existing?.favorite_subject || '');
+  const futureAspiration = fd.get('future_aspiration') != null ? String(fd.get('future_aspiration')).trim() : (existing?.future_aspiration || '');
+  const sort = fd.get('sort') != null ? Number(fd.get('sort')) : (existing?.sort || 0);
+  const isPublished = fd.get('is_published') != null ? (fd.get('is_published') === '0' ? 0 : 1) : (existing?.is_published ?? 1);
 
-  if (!comment && !uploaded && !chosenUrl) {
+  if (!comment && !uploaded && !chosenUrl && !existing) {
     return { ok: false, error: 'Please enter the scholar perspective/comment before publishing.' };
   }
 
@@ -1432,7 +1645,7 @@ export async function saveLearnerTestimonial(fd) {
     );
   }
 
-  if (uploaded || (chosenUrl && chosenUrl !== '/images/girls_high_school3.webp')) {
+  if (uploaded || (chosenUrl && chosenUrl !== existing?.photo_url)) {
     await syncPhotoToPictorial({
       image: photoUrl,
       schoolId,
@@ -1446,7 +1659,7 @@ export async function saveLearnerTestimonial(fd) {
   }
 
   done();
-  return { ok: true, message: 'Student voice published and synced live!' };
+  return { ok: true, message: id > 0 ? 'Student voice and photo updated!' : 'Student voice published and synced live!' };
 }
 
 export async function deleteLearnerTestimonial(fd) {

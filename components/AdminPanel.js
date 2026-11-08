@@ -875,6 +875,94 @@ export default async function Panel({ scope, edit }) {
                       </DeleteButton>
                     </form>
                   </div>
+
+                  <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '10px', paddingTop: '10px' }}>
+                    <details>
+                      <summary style={{
+                        cursor: 'pointer',
+                        fontSize: '11.5px',
+                        fontWeight: 700,
+                        color: 'var(--primary-navy)',
+                        background: '#f8fafc',
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        border: '1px solid #cbd5e1',
+                        listStyle: 'none',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '5px'
+                      }}>
+                        <i className="fa-solid fa-pen-to-square" style={{ color: 'var(--gold-accent)' }} />
+                        Replace Photo / Edit Scholar
+                      </summary>
+                      <form
+                        action="/api/admin/action?action=saveLearnerTestimonial"
+                        method="POST"
+                        data-admin-action="saveLearnerTestimonial"
+                        style={{
+                          marginTop: '8px',
+                          padding: '10px',
+                          background: '#ffffff',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '6px',
+                          display: 'grid',
+                          gap: '8px'
+                        }}
+                      >
+                        <input type="hidden" name="id" value={l.id} />
+                        <div className="form-group">
+                          <label style={{ fontSize: '11px', fontWeight: 700 }}>Scholar Name *</label>
+                          <input name="name" defaultValue={l.name} required style={{ fontSize: '11.5px', padding: '5px 7px' }} />
+                        </div>
+                        <div className="form-group">
+                          <label style={{ fontSize: '11px', fontWeight: 700 }}>Grade / Class *</label>
+                          <input name="grade_or_class" defaultValue={l.grade_or_class} required style={{ fontSize: '11.5px', padding: '5px 7px' }} />
+                        </div>
+                        <div className="form-group">
+                          <label style={{ fontSize: '11px', fontWeight: 700 }}>School Campus</label>
+                          <select name="school_name" defaultValue={l.school_name || 'All Campuses'} style={{ fontSize: '11.5px', padding: '5px 7px' }}>
+                            <option value="All Campuses">All Campuses</option>
+                            {list.map(s => (
+                              <option key={s.id} value={s.name}>{s.name}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <MediaFileInput
+                          name="image_file"
+                          accept="image/*"
+                          type="image"
+                          maxSizeMB={50}
+                          label="Upload Replacement Scholar Photo (Optional)"
+                          helpText="Upload a new photo up to 50MB to replace current scholar image"
+                        />
+                        <div className="form-group">
+                          <label style={{ fontSize: '10.5px', fontWeight: 700 }}>Or Photo URL</label>
+                          <input name="image_url" defaultValue={l.photo_url || ''} style={{ fontSize: '11px', padding: '4px 6px' }} />
+                        </div>
+                        <div className="form-group">
+                          <label style={{ fontSize: '11px', fontWeight: 700 }}>Perspective / Comment *</label>
+                          <textarea name="comment" defaultValue={l.comment || ''} rows={3} required style={{ fontSize: '11.5px', padding: '5px 7px' }} />
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                          <div className="form-group">
+                            <label style={{ fontSize: '10.5px' }}>Favorite Subject</label>
+                            <input name="favorite_subject" defaultValue={l.favorite_subject || ''} style={{ fontSize: '11px', padding: '4px 6px' }} />
+                          </div>
+                          <div className="form-group">
+                            <label style={{ fontSize: '10.5px' }}>Future Ambition</label>
+                            <input name="future_aspiration" defaultValue={l.future_aspiration || ''} style={{ fontSize: '11px', padding: '4px 6px' }} />
+                          </div>
+                        </div>
+                        <FormSubmitButton
+                          label="✓ Save & Replace Scholar Photo"
+                          pendingLabel="Replacing & Syncing..."
+                          successLabel="✓ Scholar Photo Replaced Live!"
+                          variant="gold"
+                          style={{ width: '100%', fontSize: '11.5px', padding: '6px' }}
+                        />
+                      </form>
+                    </details>
+                  </div>
                 </div>
               ))}
             </div>
@@ -986,6 +1074,107 @@ export default async function Panel({ scope, edit }) {
                           Delete Story
                         </DeleteButton>
                       </form>
+                    </div>
+
+                    <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '10px', paddingTop: '10px' }}>
+                      <details>
+                        <summary style={{
+                          cursor: 'pointer',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          color: 'var(--primary-navy)',
+                          background: '#f8fafc',
+                          padding: '5px 10px',
+                          borderRadius: '4px',
+                          border: '1px solid #cbd5e1',
+                          listStyle: 'none',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px'
+                        }}>
+                          <i className="fa-solid fa-pen-to-square" style={{ color: 'var(--gold-accent)' }} />
+                          Replace Picture/Video &amp; Edit
+                        </summary>
+                        <form
+                          action="/api/admin/action?action=saveAlumniStory"
+                          method="POST"
+                          data-admin-action="saveAlumniStory"
+                          style={{
+                            marginTop: '10px',
+                            padding: '12px',
+                            background: 'var(--soft-bg)',
+                            border: '1px solid #e2e8f0',
+                            borderRadius: '6px',
+                            display: 'grid',
+                            gap: '9px'
+                          }}
+                        >
+                          <input type="hidden" name="id" value={a.id} />
+                          <div className="form-group">
+                            <label style={{ fontSize: '11px', fontWeight: 700 }}>Alumnus Full Name *</label>
+                            <input name="name" defaultValue={a.name} required style={{ fontSize: '12px', padding: '5px 7px' }} />
+                          </div>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                            <div className="form-group">
+                              <label style={{ fontSize: '10.5px', fontWeight: 700 }}>Graduation Class *</label>
+                              <input name="grad_year" defaultValue={a.grad_year} required style={{ fontSize: '11.5px', padding: '4px 6px' }} />
+                            </div>
+                            <div className="form-group">
+                              <label style={{ fontSize: '10.5px', fontWeight: 700 }}>School Attended</label>
+                              <input name="campus_division" defaultValue={a.campus_division || 'Pleasant View Senior School'} style={{ fontSize: '11.5px', padding: '4px 6px' }} />
+                            </div>
+                          </div>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                            <div className="form-group">
+                              <label style={{ fontSize: '10.5px', fontWeight: 700 }}>Current Profession *</label>
+                              <input name="current_role" defaultValue={a.current_role} required style={{ fontSize: '11.5px', padding: '4px 6px' }} />
+                            </div>
+                            <div className="form-group">
+                              <label style={{ fontSize: '10.5px', fontWeight: 700 }}>University / Company</label>
+                              <input name="university_or_company" defaultValue={a.university_or_company || ''} style={{ fontSize: '11.5px', padding: '4px 6px' }} />
+                            </div>
+                          </div>
+                          <MediaFileInput
+                            name="image_file"
+                            accept="image/*"
+                            type="image"
+                            maxSizeMB={50}
+                            label="Upload Replacement Photo (Optional)"
+                            helpText="Upload a new portrait photo up to 50MB to replace current alumni picture"
+                          />
+                          <div className="form-group">
+                            <label style={{ fontSize: '10.5px', fontWeight: 700 }}>Or Photo URL</label>
+                            <input name="image_url" defaultValue={a.image_url || ''} style={{ fontSize: '11.5px', padding: '4px 6px' }} />
+                          </div>
+                          <MediaFileInput
+                            name="video_file"
+                            accept="video/*,.mp4,.webm,.ogg,.mov,.m4v"
+                            type="video"
+                            maxSizeMB={100}
+                            label="Upload Replacement Video (Optional, up to 100MB)"
+                            helpText="Upload a new video testimonial file"
+                          />
+                          <div className="form-group">
+                            <label style={{ fontSize: '10.5px', fontWeight: 700 }}>Or Video URL / YouTube Link</label>
+                            <input name="video_url" defaultValue={a.video_url || ''} style={{ fontSize: '11.5px', padding: '4px 6px' }} />
+                          </div>
+                          <div className="form-group">
+                            <label style={{ fontSize: '10.5px', fontWeight: 700 }}>Inspirational Quote</label>
+                            <input name="quote" defaultValue={a.quote || ''} style={{ fontSize: '11.5px', padding: '4px 6px' }} />
+                          </div>
+                          <div className="form-group">
+                            <label style={{ fontSize: '10.5px', fontWeight: 700 }}>Full Story / Profile *</label>
+                            <textarea name="story" defaultValue={a.story || ''} rows={3} required style={{ fontSize: '11.5px', padding: '4px 6px' }} />
+                          </div>
+                          <FormSubmitButton
+                            label="✓ Save & Replace Alumni Media"
+                            pendingLabel="Replacing & Syncing..."
+                            successLabel="✓ Alumni Media Replaced Live!"
+                            variant="gold"
+                            style={{ width: '100%', fontSize: '12px', padding: '7px' }}
+                          />
+                        </form>
+                      </details>
                     </div>
                   </div>
                 </div>
@@ -1331,42 +1520,132 @@ export default async function Panel({ scope, edit }) {
                       </div>
 
                       <div style={{ borderTop: '1px solid #eef2f7', paddingTop: '9px', display: 'flex', flexDirection: 'column', gap: '7px' }}>
-                        <form
-                          action="/api/admin/action?action=updatePhotoCategory"
-                          method="POST"
-                          data-admin-action="updatePhotoCategory"
-                          style={{ display: 'flex', gap: '6px', alignItems: 'center' }}
-                        >
-                          <input type="hidden" name="id" value={p.id} />
-                          <select
-                            name="category"
-                            defaultValue={PICTORIAL_CATEGORIES.includes(p.category) ? p.category : PICTORIAL_CATEGORIES[0]}
-                            aria-label="Photo category"
-                            style={{ flex: 1, padding: '5px 7px', fontSize: '11.5px', borderRadius: '4px', border: '1px solid #cbd5e1' }}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                          <form
+                            action="/api/admin/action?action=updatePhotoCategory"
+                            method="POST"
+                            data-admin-action="updatePhotoCategory"
+                            style={{ display: 'flex', gap: '6px', alignItems: 'center', flex: 1, minWidth: '160px' }}
                           >
-                            {PICTORIAL_CATEGORIES.map(c => (
-                              <option key={c} value={c}>{c}</option>
-                            ))}
-                            <option value="auto">✨ Auto-Detect Again</option>
-                          </select>
-                          <InlineActionButton
-                            label="Set"
-                            pendingLabel="..."
-                            successLabel="✓"
-                            className="button button-primary"
-                            style={{ padding: '5px 10px', fontSize: '11px' }}
-                          />
-                        </form>
+                            <input type="hidden" name="id" value={p.id} />
+                            <select
+                              name="category"
+                              defaultValue={PICTORIAL_CATEGORIES.includes(p.category) ? p.category : PICTORIAL_CATEGORIES[0]}
+                              aria-label="Photo category"
+                              style={{ flex: 1, padding: '5px 7px', fontSize: '11px', borderRadius: '4px', border: '1px solid #cbd5e1' }}
+                            >
+                              {PICTORIAL_CATEGORIES.map(c => (
+                                <option key={c} value={c}>{c}</option>
+                              ))}
+                              <option value="auto">✨ Auto-Detect Again</option>
+                            </select>
+                            <InlineActionButton
+                              label="Set"
+                              pendingLabel="..."
+                              successLabel="✓"
+                              className="button button-primary"
+                              style={{ padding: '5px 10px', fontSize: '11px' }}
+                            />
+                          </form>
 
-                        <form action="/api/admin/action?action=delPhoto" method="POST" data-admin-action="delPhoto" style={{ textAlign: 'right' }}>
-                          <input type="hidden" name="id" value={p.id} />
-                          <DeleteButton
-                            confirmMessage="Are you sure you want to remove this photo from the School Pictorial?"
-                            style={{ background: '#d9534f', color: '#fff', border: 0, padding: '3px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
+                          <form action="/api/admin/action?action=delPhoto" method="POST" data-admin-action="delPhoto">
+                            <input type="hidden" name="id" value={p.id} />
+                            <DeleteButton
+                              confirmMessage="Are you sure you want to remove this photo from the School Pictorial?"
+                              style={{ background: '#d9534f', color: '#fff', border: 0, padding: '4px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
+                            >
+                              Delete
+                            </DeleteButton>
+                          </form>
+                        </div>
+
+                        <details>
+                          <summary style={{
+                            cursor: 'pointer',
+                            fontSize: '11.5px',
+                            fontWeight: 700,
+                            color: 'var(--primary-navy)',
+                            background: '#f8fafc',
+                            padding: '4px 8px',
+                            borderRadius: '4px',
+                            border: '1px solid #cbd5e1',
+                            listStyle: 'none',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            width: '100%',
+                            boxSizing: 'border-box'
+                          }}>
+                            <i className="fa-solid fa-camera-rotate" style={{ color: 'var(--gold-accent)' }} />
+                            Replace Picture / Edit Photo Details
+                          </summary>
+                          <form
+                            action="/api/admin/action?action=updatePhoto"
+                            method="POST"
+                            data-admin-action="updatePhoto"
+                            style={{
+                              marginTop: '8px',
+                              padding: '10px',
+                              background: 'var(--soft-bg)',
+                              border: '1px solid #e2e8f0',
+                              borderRadius: '6px',
+                              display: 'grid',
+                              gap: '8px'
+                            }}
                           >
-                            Remove from Pictorial
-                          </DeleteButton>
-                        </form>
+                            <input type="hidden" name="id" value={p.id} />
+                            <MediaFileInput
+                              name="image_file"
+                              accept="image/*"
+                              type="image"
+                              maxSizeMB={50}
+                              sectionHint="gallery"
+                              label="Upload Replacement Picture (Optional)"
+                              helpText="Select a new image file to replace this photo across the pictorial"
+                            />
+                            <div className="form-group">
+                              <label style={{ fontSize: '10.5px', fontWeight: 700 }}>Or Image URL</label>
+                              <input name="image_url" defaultValue={p.image} style={{ fontSize: '11px', padding: '4px 6px' }} />
+                            </div>
+                            <div className="form-group">
+                              <label style={{ fontSize: '10.5px', fontWeight: 700 }}>Title</label>
+                              <input name="title" defaultValue={p.title || ''} placeholder="Photo title" style={{ fontSize: '11px', padding: '4px 6px' }} />
+                            </div>
+                            <div className="form-group">
+                              <label style={{ fontSize: '10.5px', fontWeight: 700 }}>Caption</label>
+                              <input name="caption" defaultValue={p.caption || ''} placeholder="Photo caption" style={{ fontSize: '11px', padding: '4px 6px' }} />
+                            </div>
+                            <div className="form-group">
+                              <label style={{ fontSize: '10.5px', fontWeight: 700 }}>Category</label>
+                              <select name="category" defaultValue={p.category || 'auto'} style={{ fontSize: '11px', padding: '4px 6px' }}>
+                                <option value="auto">✨ Auto-Detect</option>
+                                {PICTORIAL_CATEGORIES.map(c => (
+                                  <option key={c} value={c}>{c}</option>
+                                ))}
+                              </select>
+                            </div>
+                            {scope ? (
+                              <input type="hidden" name="school_id" value={scope} />
+                            ) : (
+                              <div className="form-group">
+                                <label style={{ fontSize: '10.5px' }}>School Branch</label>
+                                <select name="school_id" defaultValue={p.school_id || 0} style={{ fontSize: '11px', padding: '4px 6px' }}>
+                                  <option value="0">All Campuses</option>
+                                  {list.map(s => (
+                                    <option key={s.id} value={s.id}>{s.name}</option>
+                                  ))}
+                                </select>
+                              </div>
+                            )}
+                            <FormSubmitButton
+                              label="✓ Save & Replace Picture"
+                              pendingLabel="Replacing & Syncing..."
+                              successLabel="✓ Picture Replaced Live!"
+                              variant="gold"
+                              style={{ width: '100%', fontSize: '11.5px', padding: '6px' }}
+                            />
+                          </form>
+                        </details>
                       </div>
                     </div>
                   </div>
@@ -1449,14 +1728,20 @@ export default async function Panel({ scope, edit }) {
             <form action="/api/admin/action?action=saveSchool" method="POST" data-admin-action="saveSchool" key={es?.id || 0} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '18px' }}>
               <input type="hidden" name="school_id" value={es ? es.id : 0} />
               {es && (
-                <MediaFileInput
-                  name="image_file"
-                  accept="image/*"
-                  type="image"
-                  maxSizeMB={50}
-                  label="Upload New School Cover Photo"
-                  helpText="Upload a photo up to 50MB to update this school's cover image"
-                />
+                <>
+                  <MediaFileInput
+                    name="image_file"
+                    accept="image/*"
+                    type="image"
+                    maxSizeMB={50}
+                    label="Upload New School Cover Photo"
+                    helpText="Upload a photo up to 50MB to update this school's cover image"
+                  />
+                  <div className="form-group">
+                    <label>Or School Cover Photo URL</label>
+                    <input name="image_url" defaultValue={es.image || ''} placeholder="e.g. /images/girls_high_school3.webp" />
+                  </div>
+                </>
               )}
               {keys.map(k => (
                 <div key={k} className="form-group" style={{ gridColumn: LONG.includes(k) ? '1 / -1' : 'auto' }}>
@@ -1546,6 +1831,103 @@ export default async function Panel({ scope, edit }) {
                         Remove Message
                       </DeleteButton>
                     </form>
+                  </div>
+
+                  <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '10px', paddingTop: '10px' }}>
+                    <details>
+                      <summary style={{
+                        cursor: 'pointer',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        color: 'var(--primary-navy)',
+                        background: '#f8fafc',
+                        padding: '5px 10px',
+                        borderRadius: '4px',
+                        border: '1px solid #cbd5e1',
+                        listStyle: 'none',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}>
+                        <i className="fa-solid fa-pen-to-square" style={{ color: 'var(--gold-accent)' }} />
+                        Replace Leader Photo / Edit Message
+                      </summary>
+                      <form
+                        action="/api/admin/action?action=updateLeadershipMessage"
+                        method="POST"
+                        data-admin-action="updateLeadershipMessage"
+                        style={{
+                          marginTop: '10px',
+                          padding: '12px',
+                          background: '#ffffff',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '6px',
+                          display: 'grid',
+                          gap: '9px'
+                        }}
+                      >
+                        <input type="hidden" name="id" value={m.id} />
+                        <div className="form-group">
+                          <label style={{ fontSize: '11px', fontWeight: 700 }}>Executive Role *</label>
+                          <select name="role" defaultValue={m.role || 'Director'} style={{ fontSize: '12px', padding: '5px 7px' }}>
+                            <option value="Director">Director / Board of Directors</option>
+                            <option value="Head of Institution (HOI)">Head of Institution (HOI)</option>
+                            <option value="Coordinator">Academic Coordinator / CBE Lead</option>
+                            <option value="Principal">Campus Principal</option>
+                            <option value="Dean of Students">Dean of Students / Pastoral Care</option>
+                            <option value="Chaplain">Chaplain / Spiritual Life</option>
+                          </select>
+                        </div>
+                        <div className="form-group">
+                          <label style={{ fontSize: '11px', fontWeight: 700 }}>Leader Full Name *</label>
+                          <input name="name" defaultValue={m.name} required style={{ fontSize: '12px', padding: '5px 7px' }} />
+                        </div>
+                        <div className="form-group">
+                          <label style={{ fontSize: '11px', fontWeight: 700 }}>Official Title *</label>
+                          <input name="title" defaultValue={m.title} required style={{ fontSize: '12px', padding: '5px 7px' }} />
+                        </div>
+                        <div className="form-group">
+                          <label style={{ fontSize: '11px', fontWeight: 700 }}>Key Inspirational Quote</label>
+                          <input name="quote" defaultValue={m.quote || ''} style={{ fontSize: '12px', padding: '5px 7px' }} />
+                        </div>
+                        <div className="form-group">
+                          <label style={{ fontSize: '11px', fontWeight: 700 }}>Full Message Body *</label>
+                          <textarea name="message" defaultValue={m.message || ''} rows={4} required style={{ fontSize: '12px', padding: '5px 7px' }} />
+                        </div>
+                        <MediaFileInput
+                          name="image_file"
+                          accept="image/*"
+                          type="image"
+                          maxSizeMB={50}
+                          label="Upload Replacement Portrait Photo (Optional)"
+                          helpText="Select a new portrait photo up to 50MB to replace current leader photo"
+                        />
+                        <div className="form-group">
+                          <label style={{ fontSize: '11px', fontWeight: 700 }}>Or Photo URL</label>
+                          <input name="image_url" defaultValue={m.image || ''} style={{ fontSize: '12px', padding: '5px 7px' }} />
+                        </div>
+                        {scope ? (
+                          <input type="hidden" name="school_id" value={scope} />
+                        ) : (
+                          <div className="form-group">
+                            <label style={{ fontSize: '11px' }}>Campus Assignment</label>
+                            <select name="school_id" defaultValue={m.school_id || 0} style={{ fontSize: '11.5px', padding: '4px 6px' }}>
+                              <option value="0">All Campuses</option>
+                              {list.map(s => (
+                                <option key={s.id} value={s.id}>{s.name}</option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+                        <FormSubmitButton
+                          label="✓ Save & Replace Leader Photo"
+                          pendingLabel="Replacing & Syncing..."
+                          successLabel="✓ Leader Photo Replaced Live!"
+                          variant="secondary"
+                          style={{ width: '100%', fontSize: '12px', padding: '7px' }}
+                        />
+                      </form>
+                    </details>
                   </div>
                 </div>
               ))}
@@ -1751,6 +2133,106 @@ export default async function Panel({ scope, edit }) {
                           Delete
                         </DeleteButton>
                       </form>
+                    </div>
+
+                    <div style={{ borderTop: '1px solid #edf2f7', marginTop: '10px', paddingTop: '10px' }}>
+                      <details>
+                        <summary style={{
+                          cursor: 'pointer',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          color: 'var(--primary-navy)',
+                          background: '#f8fafc',
+                          padding: '5px 10px',
+                          borderRadius: '4px',
+                          border: '1px solid #cbd5e1',
+                          listStyle: 'none',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px'
+                        }}>
+                          <i className="fa-solid fa-pen-to-square" style={{ color: 'var(--gold-accent)' }} />
+                          Replace Video &amp; Thumbnail
+                        </summary>
+                        <form
+                          action="/api/admin/action?action=updateVideo"
+                          method="POST"
+                          data-admin-action="updateVideo"
+                          style={{
+                            marginTop: '10px',
+                            padding: '12px',
+                            background: 'var(--soft-bg)',
+                            border: '1px solid #e2e8f0',
+                            borderRadius: '6px',
+                            display: 'grid',
+                            gap: '9px'
+                          }}
+                        >
+                          <input type="hidden" name="id" value={v.id} />
+                          <div className="form-group">
+                            <label style={{ fontSize: '11px', fontWeight: 700 }}>Video Title</label>
+                            <input name="title" defaultValue={v.title} required style={{ fontSize: '12px', padding: '5px 7px' }} />
+                          </div>
+                          <MediaFileInput
+                            name="video_file"
+                            accept="video/*,.mp4,.webm,.ogg,.mov,.m4v"
+                            type="video"
+                            maxSizeMB={100}
+                            label="Upload Replacement Video File (Optional, up to 100MB)"
+                            helpText="Select a new video file to replace the current video clip"
+                          />
+                          <div className="form-group">
+                            <label style={{ fontSize: '11px', fontWeight: 700 }}>Or Video URL / YouTube Link</label>
+                            <input name="youtube_url" defaultValue={v.youtube_url} style={{ fontSize: '12px', padding: '5px 7px' }} />
+                          </div>
+                          <MediaFileInput
+                            name="thumbnail_file"
+                            accept="image/*"
+                            type="image"
+                            maxSizeMB={50}
+                            label="Upload Replacement Thumbnail (Optional, up to 50MB)"
+                            helpText="Upload a new cover image for this video"
+                          />
+                          <div className="form-group">
+                            <label style={{ fontSize: '11px', fontWeight: 700 }}>Or Thumbnail URL</label>
+                            <input name="thumbnail_url" defaultValue={v.thumbnail} style={{ fontSize: '12px', padding: '5px 7px' }} />
+                          </div>
+                          <div className="form-group">
+                            <label style={{ fontSize: '11px', fontWeight: 700 }}>Category</label>
+                            <select name="category" defaultValue={v.category || 'Campus Tour'} style={{ fontSize: '12px', padding: '5px 7px' }}>
+                              <option value="Campus Tour">Campus Tour</option>
+                              <option value="Academics">Academics &amp; STEM</option>
+                              <option value="Sports">Sports &amp; Athletics</option>
+                              <option value="Christian Ethos">Christian Ethos &amp; Mentorship</option>
+                              <option value="Arts & Choir">Arts &amp; Choir</option>
+                            </select>
+                          </div>
+                          <div className="form-group">
+                            <label style={{ fontSize: '11px', fontWeight: 700 }}>Video Description</label>
+                            <textarea name="description" defaultValue={v.description || ''} rows={2} style={{ fontSize: '12px', padding: '5px 7px' }} />
+                          </div>
+                          {scope ? (
+                            <input type="hidden" name="school_id" value={scope} />
+                          ) : (
+                            <div className="form-group">
+                              <label style={{ fontSize: '11px' }}>Campus Assignment</label>
+                              <select name="school_id" defaultValue={v.school_id || 0} style={{ fontSize: '11.5px', padding: '4px 6px' }}>
+                                <option value="0">All Campuses</option>
+                                {list.map(s => (
+                                  <option key={s.id} value={s.id}>{s.name}</option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+                          <FormSubmitButton
+                            label="✓ Save & Replace Video"
+                            pendingLabel="Replacing & Syncing..."
+                            successLabel="✓ Video Updated & Synced Live!"
+                            variant="secondary"
+                            style={{ width: '100%', fontSize: '12px', padding: '7px' }}
+                          />
+                        </form>
+                      </details>
                     </div>
                   </div>
                 </div>
@@ -2028,6 +2510,102 @@ export default async function Panel({ scope, edit }) {
                       <small style={{ color: '#888' }}>{h.sname || 'All Campuses'}</small>
                       <Del t="hero" id={h.id} />
                     </div>
+
+                    <div style={{ borderTop: '1px solid #edf2f7', marginTop: '10px', paddingTop: '10px' }}>
+                      <details>
+                        <summary style={{
+                          cursor: 'pointer',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          color: 'var(--primary-navy)',
+                          background: '#f8fafc',
+                          padding: '5px 10px',
+                          borderRadius: '4px',
+                          border: '1px solid #cbd5e1',
+                          listStyle: 'none',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px'
+                        }}>
+                          <i className="fa-solid fa-pen-to-square" style={{ color: 'var(--gold-accent)' }} />
+                          Replace Picture / Edit Slide
+                        </summary>
+                        <form
+                          action="/api/admin/action?action=updateHero"
+                          method="POST"
+                          data-admin-action="updateHero"
+                          style={{
+                            marginTop: '10px',
+                            padding: '12px',
+                            background: 'var(--soft-bg)',
+                            border: '1px solid #e2e8f0',
+                            borderRadius: '6px',
+                            display: 'grid',
+                            gap: '9px'
+                          }}
+                        >
+                          <input type="hidden" name="id" value={h.id} />
+                          <div className="form-group">
+                            <label style={{ fontSize: '11px', fontWeight: 700 }}>Headline</label>
+                            <input name="headline" defaultValue={h.headline} required style={{ fontSize: '12px', padding: '5px 7px' }} />
+                          </div>
+                          <div className="form-group">
+                            <label style={{ fontSize: '11px', fontWeight: 700 }}>Subtext</label>
+                            <textarea name="sub" defaultValue={h.sub} rows={2} required style={{ fontSize: '12px', padding: '5px 7px' }} />
+                          </div>
+                          <MediaFileInput
+                            name="image_file"
+                            accept="image/*"
+                            type="image"
+                            maxSizeMB={50}
+                            label="Upload Replacement Photo (Optional)"
+                            helpText="Upload a new high-res photo up to 50MB to replace current hero picture"
+                          />
+                          <div className="form-group">
+                            <label style={{ fontSize: '11px', fontWeight: 700 }}>Or Preset / Custom URL</label>
+                            <input name="image_url" defaultValue={h.image} style={{ fontSize: '12px', padding: '5px 7px' }} />
+                          </div>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                            <div className="form-group">
+                              <label style={{ fontSize: '10.5px' }}>Primary Button</label>
+                              <input name="button_text" defaultValue={h.button_text || 'Explore Our Schools'} style={{ fontSize: '11.5px', padding: '4px 6px' }} />
+                            </div>
+                            <div className="form-group">
+                              <label style={{ fontSize: '10.5px' }}>Primary Link</label>
+                              <input name="button_link" defaultValue={h.button_link || '/#schools'} style={{ fontSize: '11.5px', padding: '4px 6px' }} />
+                            </div>
+                            <div className="form-group">
+                              <label style={{ fontSize: '10.5px' }}>Secondary Button</label>
+                              <input name="button_alt_text" defaultValue={h.button_alt_text || 'Book a Campus Tour'} style={{ fontSize: '11.5px', padding: '4px 6px' }} />
+                            </div>
+                            <div className="form-group">
+                              <label style={{ fontSize: '10.5px' }}>Secondary Link</label>
+                              <input name="button_alt_link" defaultValue={h.button_alt_link || '/contact#visit'} style={{ fontSize: '11.5px', padding: '4px 6px' }} />
+                            </div>
+                          </div>
+                          {scope ? (
+                            <input type="hidden" name="school_id" value={scope} />
+                          ) : (
+                            <div className="form-group">
+                              <label style={{ fontSize: '11px' }}>Campus Assignment</label>
+                              <select name="school_id" defaultValue={h.school_id || 0} style={{ fontSize: '11.5px', padding: '4px 6px' }}>
+                                <option value="0">All Campuses</option>
+                                {list.map(s => (
+                                  <option key={s.id} value={s.id}>{s.name}</option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+                          <FormSubmitButton
+                            label="✓ Save & Replace Hero Picture"
+                            pendingLabel="Replacing & Syncing..."
+                            successLabel="✓ Hero Picture Replaced Live!"
+                            variant="gold"
+                            style={{ width: '100%', fontSize: '12px', padding: '7px' }}
+                          />
+                        </form>
+                      </details>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -2125,6 +2703,94 @@ export default async function Panel({ scope, edit }) {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <small style={{ color: '#888' }}>{p.sname || 'All Campuses'}</small>
                         <Del t="posts" id={p.id} />
+                      </div>
+
+                      <div style={{ borderTop: '1px solid #edf2f7', marginTop: '10px', paddingTop: '10px' }}>
+                        <details>
+                          <summary style={{
+                            cursor: 'pointer',
+                            fontSize: '12px',
+                            fontWeight: 700,
+                            color: 'var(--primary-navy)',
+                            background: '#f8fafc',
+                            padding: '5px 10px',
+                            borderRadius: '4px',
+                            border: '1px solid #cbd5e1',
+                            listStyle: 'none',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px'
+                          }}>
+                            <i className="fa-solid fa-pen-to-square" style={{ color: 'var(--gold-accent)' }} />
+                            Replace Picture / Edit Story
+                          </summary>
+                          <form
+                            action="/api/admin/action?action=updatePost"
+                            method="POST"
+                            data-admin-action="updatePost"
+                            style={{
+                              marginTop: '10px',
+                              padding: '12px',
+                              background: 'var(--soft-bg)',
+                              border: '1px solid #e2e8f0',
+                              borderRadius: '6px',
+                              display: 'grid',
+                              gap: '9px'
+                            }}
+                          >
+                            <input type="hidden" name="id" value={p.id} />
+                            <div className="form-group">
+                              <label style={{ fontSize: '11px', fontWeight: 700 }}>Story Headline *</label>
+                              <input name="title" defaultValue={p.title} required style={{ fontSize: '12px', padding: '5px 7px' }} />
+                            </div>
+                            <div className="form-group">
+                              <label style={{ fontSize: '11px', fontWeight: 700 }}>Category</label>
+                              <select name="category" defaultValue={p.category || 'School News'} style={{ fontSize: '12px', padding: '5px 7px' }}>
+                                <option value="Academic Distinction">Academic Distinction</option>
+                                <option value="Admissions Notice">Admissions Notice</option>
+                                <option value="Innovation & STEM">Innovation &amp; STEM</option>
+                                <option value="Sports & Athletics">Sports &amp; Athletics</option>
+                                <option value="School News">School News</option>
+                              </select>
+                            </div>
+                            <MediaFileInput
+                              name="image_file"
+                              accept="image/*"
+                              type="image"
+                              maxSizeMB={50}
+                              label="Upload Replacement Story Photo (Optional)"
+                              helpText="Select a new cover picture up to 50MB to replace current story image"
+                            />
+                            <div className="form-group">
+                              <label style={{ fontSize: '11px', fontWeight: 700 }}>Or Image URL</label>
+                              <input name="image_url" defaultValue={p.image || ''} style={{ fontSize: '12px', padding: '5px 7px' }} />
+                            </div>
+                            <div className="form-group">
+                              <label style={{ fontSize: '11px', fontWeight: 700 }}>Article Content / Body *</label>
+                              <textarea name="body" defaultValue={p.body || ''} rows={4} required style={{ fontSize: '12px', padding: '5px 7px' }} />
+                            </div>
+                            {scope ? (
+                              <input type="hidden" name="school_id" value={scope} />
+                            ) : (
+                              <div className="form-group">
+                                <label style={{ fontSize: '11px' }}>Campus Assignment</label>
+                                <select name="school_id" defaultValue={p.school_id || 0} style={{ fontSize: '11.5px', padding: '4px 6px' }}>
+                                  <option value="0">All Campuses</option>
+                                  {list.map(s => (
+                                    <option key={s.id} value={s.id}>{s.name}</option>
+                                  ))}
+                                </select>
+                              </div>
+                            )}
+                            <FormSubmitButton
+                              label="✓ Save & Replace Story Picture"
+                              pendingLabel="Replacing & Syncing..."
+                              successLabel="✓ Story Picture Replaced Live!"
+                              variant="gold"
+                              style={{ width: '100%', fontSize: '12px', padding: '7px' }}
+                            />
+                          </form>
+                        </details>
                       </div>
                     </div>
                   </div>
