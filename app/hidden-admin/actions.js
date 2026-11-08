@@ -292,6 +292,33 @@ export async function setSchoolLocation(fd) {
   return { ok: true, message: 'School location & map pin updated live!' };
 }
 
+export async function setSchoolFeesLink(fd) {
+  await init();
+  const sc = await A();
+  if (sc === null) throw new Error('Unauthorized');
+  const schoolId = sid(fd, sc);
+  let feesUrl = String(fd.get('fees_url') || '').trim();
+  const preUploaded = String(fd.get('fees_file_uploaded_url') || fd.get('fees_uploaded_url') || '').trim();
+  if (preUploaded) {
+    feesUrl = preUploaded;
+  }
+
+  if (schoolId > 0) {
+    await qWrite('UPDATE schools SET fees_url=? WHERE id=?', [feesUrl, schoolId]);
+  } else {
+    await qWrite(
+      'INSERT INTO settings(k,v) VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v',
+      ['fees_url', feesUrl]
+    );
+  }
+  done();
+  return {
+    ok: true,
+    fees_url: feesUrl,
+    message: schoolId > 0 ? 'Campus fees link updated successfully!' : 'Institution-wide school fees link updated successfully!'
+  };
+}
+
 export async function saveSchool(fd) {
   await init();
   const sc = await A(),

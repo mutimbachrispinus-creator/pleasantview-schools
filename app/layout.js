@@ -35,8 +35,8 @@ export const metadata = {
     images: [
       {
         url: 'https://pleasantviewschools.co.ke/logo.png',
-        width: 692,
-        height: 857,
+        width: 512,
+        height: 512,
         alt: 'Pleasant View Schools Logo'
       }
     ],
@@ -109,8 +109,8 @@ export default async function RootLayout({ children }) {
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
         <meta property="og:image" content="https://pleasantviewschools.co.ke/logo.png" />
         <meta property="og:image:type" content="image/png" />
-        <meta property="og:image:width" content="692" />
-        <meta property="og:image:height" content="857" />
+        <meta property="og:image:width" content="512" />
+        <meta property="og:image:height" content="512" />
         <meta property="og:image:alt" content="Pleasant View Schools Logo" />
         <meta name="twitter:image" content="https://pleasantviewschools.co.ke/logo.png" />
         <meta name="theme-color" content="#1E232A" />

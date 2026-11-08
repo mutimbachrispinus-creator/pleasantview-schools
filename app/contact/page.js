@@ -100,6 +100,81 @@ export default async function ContactPage({ searchParams }) {
         <div className="contact-layout-container">
           {/* COLUMN 1: INTERACTIVE BOOK CAMPUS TOUR & ENQUIRY FORMS */}
           <div className="contact-main-column">
+            {/* SCHOOL FEES & FEE STRUCTURE PANEL */}
+            <div id="fees" className="custom-form contact-entry-panel" style={{
+              background: '#ffffff',
+              borderRadius: '8px',
+              boxShadow: '0 8px 30px rgba(0,0,0,0.06)',
+              borderTop: '4px solid var(--primary-navy)',
+              marginBottom: '40px',
+              width: '100%',
+              maxWidth: '100%',
+              margin: '0 auto 40px auto'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                <i className="fa-solid fa-file-invoice-dollar" style={{ color: 'var(--gold-accent)', fontSize: '22px' }} />
+                <span style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--primary-navy)' }}>
+                  TUITION &amp; FEE SCHEDULE
+                </span>
+              </div>
+              <h3 style={{ fontSize: '24px', marginBottom: '10px' }}>Official School Fees &amp; Guidelines</h3>
+              <p style={{ fontSize: '14.5px', color: '#555', marginBottom: '20px', lineHeight: 1.6 }}>
+                Pleasant View Schools offers transparent and competitive fee schedules tailored for Early Learning, Primary CBE, Junior Secondary (JSS), and Senior Girls School. Our fee structures encompass quality academic instruction, modern labs, co-curricular sports, and holistic student care.
+              </p>
+
+              <div style={{ background: 'var(--soft-bg)', padding: '18px', borderRadius: '6px', border: '1px solid #dde2ec', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                  <div>
+                    <strong style={{ fontSize: '15px', color: 'var(--primary-navy)', display: 'block' }}>
+                      <i className="fa-solid fa-download" style={{ color: 'var(--gold-accent)', marginRight: '6px' }} />
+                      Current Academic Term Fees Schedule
+                    </strong>
+                    <span style={{ fontSize: '12.5px', color: '#666' }}>
+                      Download or review the official approved fees structure document online.
+                    </span>
+                  </div>
+                  <a
+                    href={st.fees_url || '#enquire'}
+                    target={st.fees_url?.startsWith('http') ? '_blank' : undefined}
+                    rel="noopener noreferrer"
+                    className="button button-gold"
+                    style={{ padding: '10px 18px', fontSize: '13.5px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                  >
+                    <i className="fa-solid fa-file-pdf" />
+                    Download / View Fees Schedule &rarr;
+                  </a>
+                </div>
+              </div>
+
+              {/* PER-CAMPUS FEES DIRECTORY */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px', marginBottom: '10px' }}>
+                {schList.map(s => {
+                  const campusFeeUrl = s.fees_url || st.fees_url || '#enquire';
+                  return (
+                    <div key={s.id} style={{ padding: '12px 14px', border: '1px solid #e2e8f0', borderRadius: '6px', background: '#ffffff', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                      <div>
+                        <strong style={{ fontSize: '13.5px', color: 'var(--primary-navy)', display: 'block', marginBottom: '3px' }}>
+                          {s.name.replace(/Pleasantview/gi, 'Pleasant View')}
+                        </strong>
+                        <span style={{ fontSize: '11px', color: '#64748b' }}>{s.category || 'School'} &bull; {s.level || 'CBE'}</span>
+                      </div>
+                      <div style={{ marginTop: '10px' }}>
+                        <a
+                          href={campusFeeUrl}
+                          target={campusFeeUrl.startsWith('http') ? '_blank' : undefined}
+                          rel="noopener noreferrer"
+                          style={{ fontSize: '12px', fontWeight: 700, color: 'var(--medium-blue)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                        >
+                          <i className="fa-solid fa-arrow-up-right-from-square" style={{ fontSize: '10px' }} />
+                          {s.fees_url ? 'View Campus Fees' : 'Standard Fee Structure'}
+                        </a>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* BOOK A CAMPUS TOUR CARD */}
             <div id="visit" className="custom-form contact-entry-panel" style={{
               background: '#ffffff',

@@ -133,6 +133,17 @@ export default async function SchoolHome({ params }) {
               <Link href={b + '/contact'} className="button button-gold">
                 Contact Admissions Desk
               </Link>
+              {(s.fees_url || st.fees_url) && (
+                <a
+                  href={s.fees_url || st.fees_url}
+                  target={(s.fees_url || st.fees_url).startsWith('http') ? '_blank' : undefined}
+                  rel="noopener noreferrer"
+                  className="button"
+                  style={{ background: 'var(--primary-navy)', color: '#fff', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                >
+                  <i className="fa-solid fa-file-invoice-dollar" style={{ color: 'var(--gold-accent)' }} /> School Fees Schedule
+                </a>
+              )}
               <a
                 href={schoolMapUrl}
                 target="_blank"

@@ -64,8 +64,9 @@ export default async function Panel({ scope, edit }) {
   const me = list.find(s => s.id === scope);
   const es = scope ? me : list.find(s => s.slug === edit);
 
+  const settings = await S();
   const keys = es ? SF : Object.keys(D);
-  const vals = es || (await S());
+  const vals = es || settings;
   const telecomCreds = await getTelecomCredentials();
 
   const w = scope ? ' WHERE school_id=' + Number(scope) : '';
@@ -166,6 +167,7 @@ export default async function Panel({ scope, edit }) {
             <a href="#events" style={{ color: 'var(--primary-red)', fontWeight: 700 }}>📅 Events ({eventsList.length})</a>
             <a href="#metrics" style={{ color: 'var(--primary-navy)' }}>📊 Distinction Metrics</a>
             <a href="#gallery" style={{ color: 'var(--primary-red)', fontWeight: 700 }}>📸 Pictorial ({schoolLifePhotos.length})</a>
+            <a href="#fees" style={{ color: 'var(--primary-navy)', fontWeight: 700 }}>💳 School Fees</a>
             <a href="#editor" style={{ color: 'var(--primary-navy)' }}>📝 Profile</a>
             <a href="#leadership" style={{ color: 'var(--primary-navy)' }}>🎙️ Leadership</a>
             <a href="#quicklinks" style={{ color: 'var(--primary-navy)' }}>⚡ Quick Links</a>
@@ -1711,6 +1713,150 @@ export default async function Panel({ scope, edit }) {
             </div>
           </section>
 
+          {/* SCHOOL FEES LINK & STRUCTURE MANAGEMENT */}
+          <section id="fees" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
+              <div>
+                <h2 style={{ fontSize: '22px', margin: 0, color: 'var(--primary-navy)' }}>
+                  <i className="fa-solid fa-file-invoice-dollar" style={{ color: 'var(--gold-accent)', marginRight: '8px' }} />
+                  School Fees Link &amp; Structure Management
+                </h2>
+                <p style={{ color: '#666', fontSize: '14px', margin: '4px 0 0' }}>
+                  Manage the official school fees link or PDF schedule. Parents can view or download this directly from the admissions page, headers, and school profiles.
+                </p>
+              </div>
+            </div>
+
+            {/* QUICK OVERVIEW TABLE */}
+            <div style={{ overflowX: 'auto', marginBottom: '24px' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13.5px' }}>
+                <thead>
+                  <tr style={{ background: 'var(--soft-bg)', textAlign: 'left', borderBottom: '2px solid #dde2ec' }}>
+                    <th style={{ padding: '10px 12px' }}>Institution / Campus</th>
+                    <th style={{ padding: '10px 12px' }}>Current Fees Link / Document</th>
+                    <th style={{ padding: '10px 12px' }}>Status</th>
+                    <th style={{ padding: '10px 12px' }}>Preview</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style={{ borderBottom: '1px solid #eee' }}>
+                    <td style={{ padding: '10px 12px', fontWeight: 700, color: 'var(--primary-navy)' }}>
+                      🏛️ Institution-Wide Default (All Schools)
+                    </td>
+                    <td style={{ padding: '10px 12px', wordBreak: 'break-all' }}>
+                      <code style={{ background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px', fontSize: '12px' }}>
+                        {settings.fees_url || '/contact#fees'}
+                      </code>
+                    </td>
+                    <td style={{ padding: '10px 12px' }}>
+                      <span style={{ background: '#ecfdf5', color: '#065f46', padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 700 }}>
+                        Active Default
+                      </span>
+                    </td>
+                    <td style={{ padding: '10px 12px' }}>
+                      <a
+                        href={settings.fees_url || '/contact#fees'}
+                        target={settings.fees_url?.startsWith('http') ? '_blank' : undefined}
+                        rel="noopener noreferrer"
+                        style={{ color: 'var(--medium-blue)', fontWeight: 700, textDecoration: 'none' }}
+                      >
+                        Open &rarr;
+                      </a>
+                    </td>
+                  </tr>
+                  {list.map(s => {
+                    const activeFeeUrl = s.fees_url || settings.fees_url || '/contact#fees';
+                    const hasCustom = !!s.fees_url;
+                    return (
+                      <tr key={s.id} style={{ borderBottom: '1px solid #eee' }}>
+                        <td style={{ padding: '10px 12px', fontWeight: 600 }}>
+                          {s.name} <small style={{ color: '#666' }}>({s.category || 'School'})</small>
+                        </td>
+                        <td style={{ padding: '10px 12px', wordBreak: 'break-all' }}>
+                          <code style={{ background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px', fontSize: '12px' }}>
+                            {activeFeeUrl}
+                          </code>
+                        </td>
+                        <td style={{ padding: '10px 12px' }}>
+                          {hasCustom ? (
+                            <span style={{ background: '#e0f2fe', color: '#0369a1', padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 700 }}>
+                              Custom Link
+                            </span>
+                          ) : (
+                            <span style={{ background: '#f1f5f9', color: '#64748b', padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 600 }}>
+                              Inherits Group Default
+                            </span>
+                          )}
+                        </td>
+                        <td style={{ padding: '10px 12px' }}>
+                          <a
+                            href={activeFeeUrl}
+                            target={activeFeeUrl.startsWith('http') ? '_blank' : undefined}
+                            rel="noopener noreferrer"
+                            style={{ color: 'var(--medium-blue)', fontWeight: 700, textDecoration: 'none' }}
+                          >
+                            Open &rarr;
+                          </a>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* FORM TO ADD OR UPDATE FEES LINK */}
+            <div style={{ background: 'var(--soft-bg)', padding: '20px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+              <h3 style={{ fontSize: '16px', margin: '0 0 12px 0', color: 'var(--primary-navy)' }}>
+                <i className="fa-solid fa-pen-clip" style={{ marginRight: '6px', color: 'var(--gold-accent)' }} />
+                Add / Update School Fees Link
+              </h3>
+              <form action="/api/admin/action?action=setSchoolFeesLink" method="POST" data-admin-action="setSchoolFeesLink" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+                <div className="form-group">
+                  <label>Apply Fees Link To:</label>
+                  <select name="school_id" defaultValue={scope || (es ? es.id : 0)} style={{ padding: '10px', fontSize: '14px', width: '100%', borderRadius: '4px', border: '1px solid #ccc', fontWeight: 600 }}>
+                    <option value="0">Institution-Wide (All Pleasant View Schools)</option>
+                    {list.map(s => (
+                      <option key={s.id} value={s.id}>
+                        {s.name} ({s.category || 'School'})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>School Fees Link / URL</label>
+                  <input
+                    name="fees_url"
+                    defaultValue={es ? (es.fees_url || '') : (settings.fees_url || '/contact#fees')}
+                    placeholder="https://... (e.g. PDF link, Google Drive, payment portal, or /contact#fees)"
+                    style={{ padding: '10px', fontSize: '14px', width: '100%' }}
+                  />
+                  <small style={{ color: '#666', marginTop: '4px', display: 'block', fontSize: '11.5px' }}>
+                    Paste a link to your PDF fee schedule, Google Drive document, or payment page.
+                  </small>
+                </div>
+
+                <MediaFileInput
+                  name="fees_file"
+                  accept="application/pdf,image/*"
+                  type="pdf"
+                  maxSizeMB={50}
+                  label="Or Upload Fee Schedule PDF Document"
+                  helpText="Upload an official fee schedule file up to 50MB (auto-syncs the link)"
+                />
+
+                <FormSubmitButton
+                  label="Save &amp; Publish School Fees Link Live"
+                  pendingLabel="Saving School Fees Link..."
+                  successLabel="✓ School Fees Link Saved Live!"
+                  variant="gold"
+                  style={{ gridColumn: '1 / -1', marginTop: '5px' }}
+                />
+              </form>
+            </div>
+          </section>
+
           {/* 2. EDIT DETAILS (GROUP OR SPECIFIC SCHOOL) */}
           <section id="editor" className="admin-section-panel" style={{ marginBottom: '45px', background: '#ffffff', border: '1px solid #dde2ec', borderRadius: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', flexWrap: 'wrap', gap: '10px' }}>
@@ -1750,7 +1896,9 @@ export default async function Panel({ scope, edit }) {
                       ? 'SCHOOL LOCATION / PHYSICAL ADDRESS'
                       : k === 'maps_url'
                         ? 'GOOGLE MAPS PIN / DIRECTIONS URL'
-                        : k.replace(/_/g, ' ').toUpperCase()}
+                        : k === 'fees_url'
+                          ? 'SCHOOL FEES LINK / STRUCTURE URL (PDF, Google Drive, or Payment Portal)'
+                          : k.replace(/_/g, ' ').toUpperCase()}
                   </label>
                   {k === 'color' ? (
                     <input name={k} type="color" defaultValue={vals[k] || '#8B1E2D'} style={{ height: '44px', width: '100%' }} />
@@ -1765,7 +1913,9 @@ export default async function Panel({ scope, edit }) {
                           ? 'e.g. Githunguri, Komothai Subcounty, Kiambu County'
                           : k === 'maps_url'
                             ? 'https://maps.app.goo.gl/... (leave blank to auto-map from location)'
-                            : undefined
+                            : k === 'fees_url'
+                              ? 'e.g. /contact#fees, or PDF link, or Google Drive link'
+                              : undefined
                       }
                     />
                   )}

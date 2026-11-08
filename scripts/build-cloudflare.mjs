@@ -65,6 +65,7 @@ const routesJson = {
     "/_next/static/*",
     "/images/*",
     "/favicon.ico",
+    "/logo.png",
     "/icon.png",
     "/apple-touch-icon.png",
     "/manifest.json",
@@ -79,6 +80,16 @@ fs.writeFileSync(
   JSON.stringify(routesJson, null, 2)
 );
 console.log('✅ Created .open-next/assets/_routes.json (Bypasses worker for static assets)');
+
+// 5b. Ensure logo.png and favicon.ico exist in Pages distribution output
+if (fs.existsSync('public/logo.png')) {
+  fs.copyFileSync('public/logo.png', path.join('.open-next', 'assets', 'logo.png'));
+  console.log('✅ Verified .open-next/assets/logo.png');
+}
+if (fs.existsSync('public/favicon.ico')) {
+  fs.copyFileSync('public/favicon.ico', path.join('.open-next', 'assets', 'favicon.ico'));
+  console.log('✅ Verified .open-next/assets/favicon.ico');
+}
 
 // 6. Ensure no conflicting index.html exists in assets so _worker.js handles the root path /
 try {

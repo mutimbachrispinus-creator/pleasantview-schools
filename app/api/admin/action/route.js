@@ -10,6 +10,7 @@ const ALLOWED_ACTIONS = new Set([
   'addSchool',
   'setSchoolAdmin',
   'setSchoolLocation',
+  'setSchoolFeesLink',
   'saveSchool',
   'addVideo',
   'updateVideo',

@@ -193,6 +193,7 @@ export default function HeaderNav({
                   <Link href="/contact">Admissions <i className="fa-solid fa-angle-down nav-arrow" /></Link>
                   <ul className="sub-menu">
                     <li><Link href="/contact">How to Apply</Link></li>
+                    <li><Link href={settings.fees_url || '/contact#fees'}><strong>Fee Guidelines &amp; Structure</strong></Link></li>
                     <li><Link href="/contact#visit">Book Campus Tour</Link></li>
                     <li><Link href="/about#academics">Curriculum &amp; Assessment Reports</Link></li>
                     <li><Link href="/quick-links/term-dates">Academic Term Dates</Link></li>
@@ -426,8 +427,9 @@ export default function HeaderNav({
               <Link href="/about#academics" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
                 Assessment Report (KPSEA, KJSEA, Senior)
               </Link>
-              <Link href="/contact#fees" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
-                Fee Guidelines &amp; Desk
+              <Link href={settings.fees_url || '/contact#fees'} onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                <i className="fa-solid fa-file-invoice-dollar" style={{ marginRight: '6px', color: 'var(--gold-accent)' }} />
+                Fee Guidelines &amp; Structure
               </Link>
             </div>
           </div>
