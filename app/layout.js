@@ -117,6 +117,33 @@ export default async function RootLayout({ children }) {
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'EducationalOrganization',
+              name: 'Pleasant View Schools',
+              alternateName: ['Pleasant View Academy', 'Pleasant View Senior School', 'Pleasant View JSS'],
+              url: 'https://pleasantviewschools.co.ke',
+              logo: 'https://pleasantviewschools.co.ke/logo.png',
+              image: 'https://pleasantviewschools.co.ke/images/hero_science_lab.jpg',
+              description: 'Leading Christian day and boarding schools in Githunguri, Kiambu County offering Early Learning, Primary, Junior Secondary (JSS), and Senior High School education.',
+              foundingDate: '1998',
+              slogan: 'Our Aim is Victory',
+              address: {
+                '@type': 'PostalAddress',
+                streetAddress: 'Githunguri, Komothai Subcounty',
+                addressLocality: 'Githunguri',
+                addressRegion: 'Kiambu County',
+                addressCountry: 'KE'
+              },
+              telephone: phone.replace(/\s+/g, ''),
+              email: email,
+              sameAs: socials.map(s => s.url)
+            })
+          }}
+        />
       </head>
       <body>
         {/* MAIN NAVIGATION (St Andrew's Turi Styling with Dynamic Animated Hamburger Drawer) */}
@@ -213,19 +240,21 @@ export default async function RootLayout({ children }) {
             </div>
 
             <div className="footer-col links">
-              <h5 className="column-title">Quick Links</h5>
+              <h5 className="column-title">Institutional Hubs</h5>
               <ul>
-                {quickLinks.map(l => (
-                  <li key={l.id}><Link href={l.url}>{l.title}</Link></li>
-                ))}
-                <li><Link href="/careers#tenders">Tenders and Bids</Link></li>
-                <li><Link href="/careers">Working at Pleasant View</Link></li>
-                <li><Link href={adminPath}>Staff Portal</Link></li>
+                <li><Link href="/academics"><strong>Academics &amp; CBE Eminence</strong></Link></li>
+                <li><Link href="/admissions"><strong>Admissions &amp; How to Apply</strong></Link></li>
+                <li><Link href="/facilities">Campus Facilities &amp; Labs</Link></li>
+                <li><Link href="/student-life">Student Life &amp; Boarding</Link></li>
+                <li><Link href="/co-curricular">Sports, Arts &amp; Clubs</Link></li>
+                <li><Link href="/alumni">Alumni Success Stories</Link></li>
+                <li><Link href="/history">{years} Years of History &amp; Heritage</Link></li>
+                <li><Link href="/leadership">Leadership &amp; Governance</Link></li>
               </ul>
             </div>
 
             <div className="footer-col links">
-              <h5 className="column-title">Our Schools</h5>
+              <h5 className="column-title">Our Schools &amp; Portals</h5>
               <ul>
                 {schList.map(s => {
                   const cleanName = String(s.name || '').replace(/pleasantview/gi, 'Pleasant View');
@@ -237,9 +266,10 @@ export default async function RootLayout({ children }) {
                   );
                 })}
                 <li><Link href="/pictorial">School Pictorial &amp; Gallery</Link></li>
-                <li><Link href="/about#legacy">{years} Years of Existence</Link></li>
                 <li><Link href="/news">Latest News &amp; Notices</Link></li>
-                <li><Link href="/contact#visit">Book Campus Visit</Link></li>
+                <li><Link href="/admissions#visit">Book Campus Tour</Link></li>
+                <li><Link href="/careers">Working at Pleasant View</Link></li>
+                <li><Link href={adminPath}>Staff Portal</Link></li>
               </ul>
             </div>
 

@@ -10,6 +10,26 @@ const nextConfig = {
         source: '/admin',
         destination: '/staff-portal',
         permanent: false
+      },
+      {
+        source: '/junior-secondary',
+        destination: '/s/pleasantview-jss',
+        permanent: true
+      },
+      {
+        source: '/senior-school',
+        destination: '/s/pleasantview-senior',
+        permanent: true
+      },
+      {
+        source: '/sports-and-arts',
+        destination: '/co-curricular',
+        permanent: true
+      },
+      {
+        source: '/sports',
+        destination: '/co-curricular',
+        permanent: true
       }
     ];
   },

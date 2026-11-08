@@ -72,6 +72,84 @@ export default function MobileBottomBar({
             <small>Dispatched straight to admin mobile phone</small>
           </Link>
 
+          {/* DIRECT ADMISSIONS HUB */}
+          <Link
+            href="/admissions"
+            onClick={closeDrawer}
+            className="drawer-item"
+            style={{ borderLeftColor: 'var(--primary-red)', background: '#fff5f5' }}
+          >
+            <div className="drawer-item-title" style={{ color: 'var(--primary-red)' }}>
+              <i className="fa-solid fa-file-signature" style={{ marginRight: '6px' }} /> Admissions &amp; How to Apply
+            </div>
+            <small>Step-by-step application, fees &amp; requirements</small>
+          </Link>
+
+          {/* ACADEMICS & CURRICULUM */}
+          <Link
+            href="/academics"
+            onClick={closeDrawer}
+            className="drawer-item"
+            style={{ borderLeftColor: 'var(--primary-red)' }}
+          >
+            <div className="drawer-item-title">
+              <i className="fa-solid fa-graduation-cap" style={{ marginRight: '6px', color: 'var(--primary-red)' }} /> Academics &amp; CBE Eminence
+            </div>
+            <small>KPSEA, KJSEA distinction &amp; modern STEM</small>
+          </Link>
+
+          {/* CAMPUS FACILITIES */}
+          <Link
+            href="/facilities"
+            onClick={closeDrawer}
+            className="drawer-item"
+            style={{ borderLeftColor: 'var(--dark-grey)' }}
+          >
+            <div className="drawer-item-title">
+              <i className="fa-solid fa-building-columns" style={{ marginRight: '6px' }} /> Campus Grounds &amp; Facilities
+            </div>
+            <small>Science labs, boarding hostels &amp; transport</small>
+          </Link>
+
+          {/* STUDENT LIFE */}
+          <Link
+            href="/student-life"
+            onClick={closeDrawer}
+            className="drawer-item"
+            style={{ borderLeftColor: 'var(--dark-grey)' }}
+          >
+            <div className="drawer-item-title">
+              <i className="fa-solid fa-heart" style={{ marginRight: '6px' }} /> Student Life &amp; Pastoral Care
+            </div>
+            <small>Christian ethos, boarding from Grade 4 &amp; daily rhythm</small>
+          </Link>
+
+          {/* CO-CURRICULAR */}
+          <Link
+            href="/co-curricular"
+            onClick={closeDrawer}
+            className="drawer-item"
+            style={{ borderLeftColor: 'var(--primary-red)' }}
+          >
+            <div className="drawer-item-title">
+              <i className="fa-solid fa-futbol" style={{ marginRight: '6px', color: 'var(--primary-red)' }} /> Sports, Arts &amp; Clubs
+            </div>
+            <small>Athletics, music, robotics &amp; scouting</small>
+          </Link>
+
+          {/* ALUMNI */}
+          <Link
+            href="/alumni"
+            onClick={closeDrawer}
+            className="drawer-item"
+            style={{ borderLeftColor: 'var(--dark-grey)' }}
+          >
+            <div className="drawer-item-title">
+              <i className="fa-solid fa-user-graduate" style={{ marginRight: '6px' }} /> Alumni Success Stories
+            </div>
+            <small>Where our graduates lead globally</small>
+          </Link>
+
           {!quickLinks.some(l => l.url === '/pictorial') && (
             <Link
               href="/pictorial"

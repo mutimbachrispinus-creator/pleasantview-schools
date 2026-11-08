@@ -157,17 +157,17 @@ export default async function Home({ searchParams }) {
       <section className="quick-overview-bar" aria-label="Key Gateways">
         <div className="wrapper" style={{ padding: 0 }}>
           <div className="overview-grid">
-            <Link href="/#schools" className="overview-card">
+            <Link href="/academics" className="overview-card">
               <div className="overview-icon-box">
                 <i className="fa-solid fa-graduation-cap" />
               </div>
               <div className="overview-meta">
-                <h4>Academic Stages</h4>
+                <h4>Academic Pathways</h4>
                 <p>Early Years &bull; Primary &bull; JSS &bull; High School</p>
               </div>
             </Link>
 
-            <Link href="/about#boarding" className="overview-card">
+            <Link href="/student-life#boarding" className="overview-card">
               <div className="overview-icon-box">
                 <i className="fa-solid fa-house-chimney-window" />
               </div>
@@ -177,7 +177,7 @@ export default async function Home({ searchParams }) {
               </div>
             </Link>
 
-            <Link href="/about#transport" className="overview-card">
+            <Link href="/facilities#transport" className="overview-card">
               <div className="overview-icon-box">
                 <i className="fa-solid fa-bus-simple" />
               </div>
@@ -187,7 +187,7 @@ export default async function Home({ searchParams }) {
               </div>
             </Link>
 
-            <Link href="/contact#visit" className="overview-card">
+            <Link href="/admissions#visit" className="overview-card">
               <div className="overview-icon-box">
                 <i className="fa-regular fa-calendar-check" />
               </div>
@@ -222,7 +222,7 @@ export default async function Home({ searchParams }) {
           }}>
             {/* 1. SCHOOL HEADS / DIRECTORS */}
             <Link
-              href="#leadership"
+              href="/leadership"
               className="voice-link-card panel-reveal"
               style={{
                 display: 'flex',
@@ -257,7 +257,7 @@ export default async function Home({ searchParams }) {
                   School Heads &amp; Leadership
                 </strong>
                 <small style={{ color: '#64748b', fontSize: '12.5px' }}>
-                  Remarks from Directors &rarr;
+                  Governance &amp; Remarks &rarr;
                 </small>
               </div>
             </Link>
@@ -306,7 +306,7 @@ export default async function Home({ searchParams }) {
 
             {/* 3. ALUMNI SUCCESS STORIES */}
             <Link
-              href="#alumni"
+              href="/alumni"
               className="voice-link-card panel-reveal"
               style={{
                 display: 'flex',
@@ -348,7 +348,7 @@ export default async function Home({ searchParams }) {
 
             {/* 4. LEARNER VOICES */}
             <Link
-              href="#student-voices"
+              href="/student-life"
               className="voice-link-card panel-reveal"
               style={{
                 display: 'flex',
@@ -383,7 +383,7 @@ export default async function Home({ searchParams }) {
                   Learner Perspectives
                 </strong>
                 <small style={{ color: '#64748b', fontSize: '12.5px' }}>
-                  Student Dreams &amp; Ambitions &rarr;
+                  Student Life &amp; Voices &rarr;
                 </small>
               </div>
             </Link>
@@ -458,7 +458,7 @@ export default async function Home({ searchParams }) {
                 <p>
                   Distinction averaging EE (Exceeding Expectations) in KPSEA and ME1 in KJSEA, with maiden Senior School B+ university transition and STEM mastery.
                 </p>
-                <Link href="/about#academics" className="pillar-link">
+                <Link href="/academics" className="pillar-link">
                   Academic Curriculum <i className="fa-solid fa-arrow-right-long" />
                 </Link>
               </div>
@@ -478,7 +478,7 @@ export default async function Home({ searchParams }) {
                 <p>
                   Family-style boarding from Grade 4 upwards with resident houseparents, dedicated mentors, and individualized emotional support ensuring every child feels valued.
                 </p>
-                <Link href="/about#boarding" className="pillar-link">
+                <Link href="/student-life#boarding" className="pillar-link">
                   Pastoral Boarding <i className="fa-solid fa-arrow-right-long" />
                 </Link>
               </div>
@@ -498,7 +498,7 @@ export default async function Home({ searchParams }) {
                 <p>
                   Competitive athletics, football, basketball, volleyball, and co-curricular outdoor exploration cultivating physical stamina, grit, and teamwork.
                 </p>
-                <Link href="/quick-links/sports-fixtures" className="pillar-link">
+                <Link href="/co-curricular" className="pillar-link">
                   Sports Fixtures &amp; Clubs <i className="fa-solid fa-arrow-right-long" />
                 </Link>
               </div>
@@ -586,7 +586,7 @@ export default async function Home({ searchParams }) {
                       <span>Explore School</span>
                       <i className="fa-solid fa-arrow-right" />
                     </Link>
-                    <Link href={`/contact?school=${s.slug}#visit`} className="program-action-apply">
+                    <Link href={`/admissions?school=${s.slug}#visit`} className="program-action-apply">
                       <i className="fa-regular fa-calendar-check" />
                       <span>Apply / Visit</span>
                     </Link>
@@ -1275,8 +1275,8 @@ export default async function Home({ searchParams }) {
                 <h5>SAFE &amp; RELIABLE COMMUTE</h5>
                 <h3>Taking School Transport?</h3>
                 <p>Our comprehensive fleet of modern, monitored school buses serves Githunguri, Ruiru, Kiambu, and nearby areas, ensuring timely, safe transit under caring staff supervision.</p>
-                <Link href="/contact" className="button button-gold">
-                  Enquire Transport Routes
+                <Link href="/facilities#transport" className="button button-gold">
+                  Explore Transport Fleet
                 </Link>
               </div>
             </div>
@@ -1287,11 +1287,71 @@ export default async function Home({ searchParams }) {
                 <h5>PASTORAL CARE &amp; COMMUNITY</h5>
                 <h3>Boarding Life from Grade 4</h3>
                 <p>A warm, secure home-away-from-home fostering independent study, Christian discipleship, healthy nutrition, and lifelong peer friendships in modern dormitories.</p>
-                <Link href="/contact#visit" className="button button-primary">
-                  Tour Our Boarding
+                <Link href="/student-life#boarding" className="button button-primary">
+                  Tour Our Boarding Life
                 </Link>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* GRAND ADMISSIONS CALL-TO-ACTION BANNER (St Andrew's Turi & Elite International School Standard) */}
+      <section className="admissions-cta-strip" style={{
+        background: 'linear-gradient(135deg, var(--dark-grey) 0%, #111419 60%, var(--dark-red) 100%)',
+        color: '#ffffff',
+        padding: '85px 0',
+        position: 'relative',
+        overflow: 'hidden',
+        borderTop: '4px solid var(--primary-red)'
+      }}>
+        <div className="wrapper" style={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
+          <span style={{
+            fontSize: '12.5px',
+            fontWeight: 800,
+            letterSpacing: '2.5px',
+            textTransform: 'uppercase',
+            color: '#fda4af',
+            display: 'inline-block',
+            marginBottom: '12px'
+          }}>
+            BECOME A PART OF OUR VICTORY STORY
+          </span>
+          <h2 style={{
+            color: '#ffffff',
+            fontSize: 'clamp(28px, 3.4vw, 46px)',
+            fontFamily: 'var(--font-serif)',
+            margin: '0 0 16px',
+            letterSpacing: '0.5px'
+          }}>
+            Admissions Open for {new Date().getFullYear()} – {new Date().getFullYear() + 1}
+          </h2>
+          <div className="gold-divider" style={{ margin: '0 auto 24px auto' }} />
+          <p style={{
+            fontSize: 'clamp(16px, 1.8vw, 18px)',
+            color: '#cbd5e1',
+            maxWidth: '720px',
+            margin: '0 auto 36px auto',
+            lineHeight: 1.8
+          }}>
+            Give your child the lifelong foundation of Christian character, rigorous academic scholarship, and holistic leadership. Applications are accepted for Playgroup through Senior High School.
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
+            <Link href="/admissions#visit" className="button button-gold" style={{ padding: '16px 36px', fontSize: '15px' }}>
+              <i className="fa-regular fa-calendar-check" style={{ marginRight: '8px' }} /> Book a Campus Walking Tour
+            </Link>
+            <Link href="/admissions" className="button button-primary" style={{ padding: '16px 36px', fontSize: '15px' }}>
+              Explore Admissions Journey &rarr;
+            </Link>
+            <a
+              href={st.whatsapp_url || "https://wa.me/254711689913?text=Hello%20Pleasant%20View%20Schools,%20I%20would%20like%20to%20inquire%20about%20admissions."}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="button button-tertiary"
+              style={{ padding: '16px 30px', fontSize: '15px', background: 'rgba(255,255,255,0.1)', color: '#ffffff', borderColor: 'rgba(255,255,255,0.2)' }}
+            >
+              <i className="fa-brands fa-whatsapp" style={{ marginRight: '8px', color: '#4ade80' }} /> Inquire via WhatsApp
+            </a>
           </div>
         </div>
       </section>

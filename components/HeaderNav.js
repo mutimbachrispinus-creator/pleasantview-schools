@@ -122,28 +122,27 @@ export default function HeaderNav({
               </ul>
             </div>
 
-            {/* BOTTOM MAIN MENU (DECONGESTED 6-ITEM LUXURY NAVIGATION) */}
+            {/* BOTTOM MAIN MENU (DECONGESTED 7-ITEM LUXURY NAVIGATION) */}
             <div className="bottom-nav">
               <ul>
                 {/* 1. ABOUT US */}
                 <li className="has-dropdown">
                   <Link href="/about">About Us <i className="fa-solid fa-angle-down nav-arrow" /></Link>
                   <ul className="sub-menu">
-                    <li><Link href="/about">About Pleasant View</Link></li>
+                    <li><Link href="/about"><strong>About Pleasant View</strong></Link></li>
+                    <li><Link href="/history">Our 28-Year History &amp; Heritage</Link></li>
+                    <li><Link href="/leadership">Leadership &amp; Governance</Link></li>
                     <li><Link href="/about#vision">Vision, Mission &amp; Values</Link></li>
-                    <li><Link href="/about#legacy">{years} Years of Existence</Link></li>
-                    <li><Link href="/about#academics">Curriculum &amp; Assessment Honors</Link></li>
-                    <li><Link href="/#leadership">Leadership &amp; Heads&apos; Remarks</Link></li>
+                    <li><Link href="/about#christian">Christian Ethos &amp; Mentorship</Link></li>
+                    <li><Link href="/student-life">Student Life &amp; Pastoral Care</Link></li>
+                    <li><Link href="/facilities">Campus Facilities &amp; Grounds</Link></li>
                     <li><Link href="/#parent-reviews">Parent Reviews &amp; Testimonials</Link></li>
-                    <li><Link href="/#alumni">Alumni Success Stories</Link></li>
-                    <li><Link href="/about#christian">Christian Ethos &amp; Faith</Link></li>
-                    <li><Link href="/about#boarding">Boarding &amp; Pastoral Care</Link></li>
                   </ul>
                 </li>
 
-                {/* 2. SCHOOLS */}
+                {/* 2. OUR SCHOOLS */}
                 <li className="has-dropdown">
-                  <Link href="/#schools">Schools <i className="fa-solid fa-angle-down nav-arrow" /></Link>
+                  <Link href="/#schools">Our Schools <i className="fa-solid fa-angle-down nav-arrow" /></Link>
                   <ul className="sub-menu">
                     {schools.length > 0 ? (
                       schools.map(s => {
@@ -171,56 +170,57 @@ export default function HeaderNav({
                   </ul>
                 </li>
 
-                {/* 3. SCHOOL LIFE */}
+                {/* 3. ACADEMICS */}
                 <li className="has-dropdown">
-                  <Link href="/pictorial">School Life <i className="fa-solid fa-angle-down nav-arrow" /></Link>
+                  <Link href="/academics">Academics <i className="fa-solid fa-angle-down nav-arrow" /></Link>
                   <ul className="sub-menu">
-                    <li><Link href="/pictorial"><strong>School Pictorial &amp; Gallery</strong></Link></li>
-                    <li><Link href="/about#boarding">Pastoral Boarding Life (Grade 4+)</Link></li>
-                    <li><Link href="/about#transport">Safe School Transport Fleet</Link></li>
-                    <li><Link href="/#parent-reviews">Parent Reviews &amp; Testimonials</Link></li>
-                    <li><Link href="/#student-voices">Learner Perspectives &amp; Voices</Link></li>
-                    <li><Link href="/#alumni">Alumni Success Stories</Link></li>
-                    <li><Link href="/quick-links/sports-fixtures">Sports Fixtures &amp; Athletics</Link></li>
+                    <li><Link href="/academics"><strong>Curriculum &amp; Academic Eminence</strong></Link></li>
+                    <li><Link href="/s/pleasantview-jss">Junior Secondary (JSS) &amp; STEM</Link></li>
+                    <li><Link href="/s/pleasantview-senior">Senior School &amp; KSSEA / KCSE</Link></li>
+                    <li><Link href="/facilities#laboratories">Science Laboratories &amp; Robotics</Link></li>
+                    <li><Link href="/academics#honors">National Examination Distinctions</Link></li>
+                  </ul>
+                </li>
+
+                {/* 4. SCHOOL LIFE */}
+                <li className="has-dropdown">
+                  <Link href="/student-life">School Life <i className="fa-solid fa-angle-down nav-arrow" /></Link>
+                  <ul className="sub-menu">
+                    <li><Link href="/student-life"><strong>Student Life &amp; Pastoral Care</strong></Link></li>
+                    <li><Link href="/facilities">Campus Grounds &amp; Facilities</Link></li>
+                    <li><Link href="/co-curricular">Sports, Arts &amp; Co-Curricular</Link></li>
+                    <li><Link href="/pictorial">School Pictorial &amp; Gallery</Link></li>
+                    <li><Link href="/facilities#transport">Monitored Transport Fleet</Link></li>
                     <li><Link href="/quick-links/term-dates">Term Dates &amp; VISOs</Link></li>
-                    <li><Link href="/about#sports">Co-Curricular Clubs &amp; Arts</Link></li>
-                    <li><Link href="/news">Campus News &amp; Events</Link></li>
                   </ul>
                 </li>
 
-                {/* 4. ADMISSIONS */}
+                {/* 5. ADMISSIONS */}
                 <li className="has-dropdown">
-                  <Link href="/contact">Admissions <i className="fa-solid fa-angle-down nav-arrow" /></Link>
+                  <Link href="/admissions">Admissions <i className="fa-solid fa-angle-down nav-arrow" /></Link>
                   <ul className="sub-menu">
-                    <li><Link href="/contact">How to Apply</Link></li>
-                    <li><Link href={settings.fees_url || '/contact#fees'}><strong>Fee Guidelines &amp; Structure</strong></Link></li>
-                    <li><Link href="/contact#visit">Book Campus Tour</Link></li>
-                    <li><Link href="/about#academics">Curriculum &amp; Assessment Reports</Link></li>
-                    <li><Link href="/quick-links/term-dates">Academic Term Dates</Link></li>
-                    <li><a href={mapsUrl} target="_blank" rel="noopener noreferrer">Campus Map &amp; Directions</a></li>
+                    <li><Link href="/admissions"><strong>Admissions Hub &amp; How to Apply</strong></Link></li>
+                    <li><Link href="/admissions#requirements">Entry Requirements by Stage</Link></li>
+                    <li><Link href={settings.fees_url || '/admissions#fees'}>Tuition &amp; Fee Schedule Guidelines</Link></li>
+                    <li><Link href="/admissions#visit">Book a Walking Campus Tour</Link></li>
+                    <li><Link href="/admissions#prospectus">Download Information Prospectus</Link></li>
+                    <li><Link href="/admissions#faqs">Frequently Asked Questions</Link></li>
                   </ul>
                 </li>
 
-                {/* 5. QUICK LINKS */}
-                <li className="has-dropdown">
-                  <Link href="/quick-links">Quick Links <i className="fa-solid fa-angle-down nav-arrow" /></Link>
-                  <ul className="sub-menu">
-                    {quickLinks.map(l => (
-                      <li key={l.id}><Link href={l.url}>{l.title}</Link></li>
-                    ))}
-                    <li><Link href="/careers">Careers &amp; Vacancies</Link></li>
-                    <li><Link href="/careers#tenders">Tenders and Bids</Link></li>
-                  </ul>
+                {/* 6. ALUMNI */}
+                <li>
+                  <Link href="/alumni">Alumni</Link>
                 </li>
 
-                {/* 6. CONTACT */}
+                {/* 7. CONTACT */}
                 <li>
                   <Link href="/contact">Contact</Link>
                 </li>
 
                 {/* PROMINENT GOLD CTA BUTTON */}
                 <li className="nav-cta-item">
-                  <Link href="/contact#visit" className="button button-gold nav-cta-btn">
+                  <Link href="/admissions#visit" className="button button-gold nav-cta-btn">
                     <i className="fa-regular fa-calendar-check" style={{ marginRight: '6px' }} />
                     Book Campus Tour
                   </Link>
@@ -348,26 +348,58 @@ export default function HeaderNav({
               <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
                 About Pleasant View Schools
               </Link>
+              <Link href="/history" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Our 28-Year History &amp; Heritage
+              </Link>
+              <Link href="/leadership" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Leadership &amp; Governance
+              </Link>
               <Link href="/about#vision" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
                 Vision, Mission &amp; Values
-              </Link>
-              <Link href="/about#legacy" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
-                {years} Years of Existence
               </Link>
               <Link href="/about#christian" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
                 Christian Ethos &amp; Mentorship
               </Link>
-              <Link href="/#leadership" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
-                Leadership &amp; Heads&apos; Remarks
+              <Link href="/student-life" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Student Life &amp; Pastoral Care
+              </Link>
+              <Link href="/facilities" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Campus Grounds &amp; Facilities
+              </Link>
+              <Link href="/alumni" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Alumni Success Stories
               </Link>
               <Link href="/#parent-reviews" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
                 Parent Reviews &amp; Testimonials
               </Link>
-              <Link href="/#alumni" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
-                Alumni Success Stories
+            </div>
+          </div>
+
+          {/* ACCORDION: ACADEMICS */}
+          <div className="drawer-accordion">
+            <button
+              type="button"
+              className={`accordion-trigger ${openAccordion === 'academics' ? 'active' : ''}`}
+              onClick={() => toggleAccordion('academics')}
+            >
+              <span><i className="fa-solid fa-book-open-reader" style={{ color: '#fda4af', marginRight: '10px' }} /> Academics</span>
+              <i className={`fa-solid fa-chevron-down acc-icon ${openAccordion === 'academics' ? 'rotated' : ''}`} />
+            </button>
+            <div className={`accordion-panel ${openAccordion === 'academics' ? 'expanded' : ''}`}>
+              <Link href="/academics" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Curriculum &amp; Academic Eminence
               </Link>
-              <Link href="/about#boarding" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
-                Boarding &amp; Pastoral Care
+              <Link href="/s/pleasantview-jss" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Junior Secondary (JSS) &amp; STEM
+              </Link>
+              <Link href="/s/pleasantview-senior" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Senior School &amp; KSSEA / KCSE
+              </Link>
+              <Link href="/facilities#laboratories" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Science &amp; Robotics Laboratories
+              </Link>
+              <Link href="/academics#honors" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                National Examination Distinctions
               </Link>
             </div>
           </div>
@@ -383,26 +415,23 @@ export default function HeaderNav({
               <i className={`fa-solid fa-chevron-down acc-icon ${openAccordion === 'life' ? 'rotated' : ''}`} />
             </button>
             <div className={`accordion-panel ${openAccordion === 'life' ? 'expanded' : ''}`}>
+              <Link href="/student-life" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Student Life &amp; Pastoral Care
+              </Link>
+              <Link href="/facilities" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Campus Grounds &amp; Facilities
+              </Link>
+              <Link href="/co-curricular" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Sports, Arts &amp; Co-Curricular
+              </Link>
               <Link href="/pictorial" onClick={() => setMobileMenuOpen(false)} className="accordion-item" style={{ fontWeight: 700, color: '#fda4af' }}>
                 School Pictorial &amp; Gallery
               </Link>
-              <Link href="/about#boarding" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
-                Pastoral Boarding Life (Grade 4+)
-              </Link>
-              <Link href="/about#transport" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
-                Safe School Transport Fleet
-              </Link>
-              <Link href="/#student-voices" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
-                Learner Perspectives &amp; Voices
-              </Link>
-              <Link href="/quick-links/sports-fixtures" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
-                Sports Fixtures &amp; Athletics
+              <Link href="/facilities#transport" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Monitored Transport Fleet
               </Link>
               <Link href="/quick-links/term-dates" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
                 Term Dates &amp; VISOs
-              </Link>
-              <Link href="/about#sports" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
-                Co-Curricular Clubs &amp; Arts
               </Link>
             </div>
           </div>
@@ -418,18 +447,24 @@ export default function HeaderNav({
               <i className={`fa-solid fa-chevron-down acc-icon ${openAccordion === 'admissions' ? 'rotated' : ''}`} />
             </button>
             <div className={`accordion-panel ${openAccordion === 'admissions' ? 'expanded' : ''}`}>
-              <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
-                How to Apply
+              <Link href="/admissions" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Admissions Hub &amp; How to Apply
               </Link>
-              <Link href="/contact#visit" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+              <Link href="/admissions#requirements" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Entry Requirements by Stage
+              </Link>
+              <Link href={settings.fees_url || '/admissions#fees'} onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                <i className="fa-solid fa-file-invoice-dollar" style={{ marginRight: '6px', color: 'var(--gold-accent)' }} />
+                Tuition &amp; Fee Schedule Guidelines
+              </Link>
+              <Link href="/admissions#visit" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
                 Book a Walking Campus Tour
               </Link>
-              <Link href="/about#academics" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
-                Assessment Report (KPSEA, KJSEA, Senior)
+              <Link href="/admissions#prospectus" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Download Information Prospectus
               </Link>
-              <Link href={settings.fees_url || '/contact#fees'} onClick={() => setMobileMenuOpen(false)} className="accordion-item">
-                <i className="fa-solid fa-file-invoice-dollar" style={{ marginRight: '6px', color: 'var(--gold-accent)' }} />
-                Fee Guidelines &amp; Structure
+              <Link href="/admissions#faqs" onClick={() => setMobileMenuOpen(false)} className="accordion-item">
+                Frequently Asked Questions
               </Link>
             </div>
           </div>
