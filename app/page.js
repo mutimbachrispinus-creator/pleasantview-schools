@@ -417,7 +417,7 @@ export default async function Home({ searchParams }) {
             ))}
           </div>
 
-          {/* INSTITUTIONAL POPULATION COHORT TALLY (MATHEMATICALLY SUMMED & VERIFIED) */}
+          {/* INSTITUTIONAL POPULATION COHORT TALLY */}
           <div className="population-tally-container" style={{
             marginTop: '36px',
             background: 'rgba(255, 255, 255, 0.05)',
@@ -429,13 +429,13 @@ export default async function Home({ searchParams }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px', marginBottom: '18px' }}>
               <div>
                 <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--gold-accent)', letterSpacing: '1.5px', textTransform: 'uppercase' }}>
-                  MATHEMATICALLY TALLIED ENROLMENT
+                  OUR VIBRANT LEARNER COMMUNITY
                 </span>
                 <h3 style={{ margin: '4px 0', fontSize: 'clamp(18px, 2vw, 24px)', color: '#ffffff', fontFamily: 'var(--font-serif)' }}>
-                  Total Population: {popSummary.totalPopulation.toLocaleString()} Scholars ({popSummary.badgeValue})
+                  Total Enrolment: {popSummary.totalPopulation.toLocaleString()}+ Scholars Across 4 Specialized Divisions
                 </h3>
                 <p style={{ margin: 0, fontSize: '13.5px', color: '#cbd5e1' }}>
-                  Exact dual-dimensional tally: <strong>{popSummary.totalBoarders.toLocaleString()} Boarding Scholars</strong> + <strong>{popSummary.totalDayScholars.toLocaleString()} Day Scholars</strong> = <strong>{popSummary.totalPopulation.toLocaleString()} Total Enrolled</strong>
+                  A flourishing community of <strong>{popSummary.totalBoarders.toLocaleString()} Boarding Scholars</strong> and <strong>{popSummary.totalDayScholars.toLocaleString()} Day Scholars</strong> growing together in Christian character and academic excellence.
                 </p>
               </div>
               <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
@@ -448,8 +448,8 @@ export default async function Home({ searchParams }) {
                   <small style={{ fontSize: '11px', color: '#f1f5f9' }}>Day Scholars</small>
                 </div>
                 <div style={{ background: 'rgba(212, 175, 55, 0.25)', border: '1px solid rgba(212, 175, 55, 0.4)', padding: '8px 16px', borderRadius: '6px', textAlign: 'center' }}>
-                  <span className="stat-num" style={{ display: 'block', fontSize: '20px', fontWeight: 800, color: 'var(--gold-accent)' }}>{popSummary.totalPopulation}</span>
-                  <small style={{ fontSize: '11px', color: '#f1f5f9' }}>Sum of 4 Schools</small>
+                  <span className="stat-num" style={{ display: 'block', fontSize: '20px', fontWeight: 800, color: 'var(--gold-accent)' }}>{popSummary.totalPopulation}+</span>
+                  <small style={{ fontSize: '11px', color: '#f1f5f9' }}>Total Enrolment</small>
                 </div>
               </div>
             </div>
@@ -463,28 +463,39 @@ export default async function Home({ searchParams }) {
               borderTop: '1px solid rgba(255, 255, 255, 0.1)'
             }}>
               {popSummary.schools.map((ps, idx) => (
-                <div key={ps.slug || idx} style={{
-                  background: 'rgba(0, 0, 0, 0.2)',
-                  borderRadius: '6px',
-                  padding: '12px 14px',
-                  borderLeft: `3px solid ${ps.color || 'var(--gold-accent)'}`
-                }}>
-                  <strong style={{ display: 'block', fontSize: '13.5px', color: '#ffffff', marginBottom: '4px' }}>
-                    {ps.name.replace(/Pleasant View /i, '')}
-                  </strong>
-                  <div style={{ fontSize: '12px', color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <Link
+                  key={ps.slug || idx}
+                  href={`/s/${ps.slug}`}
+                  style={{
+                    display: 'block',
+                    background: 'rgba(0, 0, 0, 0.22)',
+                    borderRadius: '8px',
+                    padding: '14px 16px',
+                    borderLeft: `4px solid ${ps.color || 'var(--gold-accent)'}`,
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    transition: 'all 0.2s ease',
+                    textDecoration: 'none',
+                    color: 'inherit'
+                  }}
+                  className="population-division-card"
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <strong style={{ fontSize: '14px', color: '#ffffff' }}>
+                      {ps.name.replace(/Pleasant View /i, '')}
+                    </strong>
+                    <span style={{ fontSize: '11px', color: 'var(--gold-accent)', fontWeight: 700 }}>
+                      Explore &rarr;
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: '3px' }}>
                     <span>&bull; Day Scholars: <strong style={{ color: '#93c5fd' }}>{ps.dayScholars}</strong></span>
                     <span>&bull; Boarders: <strong style={{ color: '#fda4af' }}>{ps.boarders > 0 ? ps.boarders : 'Day Only'}</strong></span>
-                    <span style={{ borderTop: '1px dashed rgba(255,255,255,0.15)', paddingTop: '4px', marginTop: '2px' }}>
+                    <span style={{ borderTop: '1px dashed rgba(255,255,255,0.15)', paddingTop: '5px', marginTop: '3px' }}>
                       &bull; Enrolled: <strong style={{ color: 'var(--gold-accent)' }}>{ps.totalLearners} {ps.unit}</strong> (Ratio {ps.ratio})
                     </span>
                   </div>
-                </div>
+                </Link>
               ))}
-            </div>
-
-            <div style={{ marginTop: '14px', fontSize: '12px', color: '#94a3b8', textAlign: 'center', fontStyle: 'italic' }}>
-              ✓ Mathematically Verified: Sum of Schools ({popSummary.formulaBySchools}) = Sum of Attendance ({popSummary.formulaByAttendance})
             </div>
           </div>
         </div>

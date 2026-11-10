@@ -82,6 +82,23 @@ export default function HeaderNav({
             <div className="top-nav">
               <ul>
                 <li>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (typeof window !== 'undefined') {
+                        window.dispatchEvent(new CustomEvent('open-quick-search'));
+                      }
+                    }}
+                    className="top-search-link"
+                    title="Quick Search & Resource Finder (Ctrl+K / ⌘K)"
+                    aria-label="Quick Search"
+                  >
+                    <i className="fa-solid fa-magnifying-glass" />
+                    <span>Search</span>
+                    <kbd className="search-kbd">⌘K</kbd>
+                  </button>
+                </li>
+                <li>
                   <Link href="/about#academics" className="top-honors-chip" title="View CBE & KPSEA Distinction Reports">
                     <i className="fa-solid fa-award" />
                     <span>Academic Honors</span>
@@ -231,6 +248,20 @@ export default function HeaderNav({
 
           {/* MOBILE FAST ACTIONS & HAMBURGER BUTTON (MOBILE ONLY) */}
           <div className="mobile-header-actions">
+            <button
+              type="button"
+              className="mobile-quick-search"
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  window.dispatchEvent(new CustomEvent('open-quick-search'));
+                }
+              }}
+              title="Quick Search"
+              aria-label="Search Pleasant View"
+            >
+              <i className="fa-solid fa-magnifying-glass" />
+            </button>
+
             <a
               href={whatsappUrl}
               target="_blank"

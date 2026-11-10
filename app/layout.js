@@ -7,6 +7,8 @@ import PwaInstallPrompt from '@/components/PwaInstallPrompt';
 import MobileBottomBar from '@/components/MobileBottomBar';
 import CookieConsent from '@/components/CookieConsent';
 import ScrollReveal from '@/components/ScrollReveal';
+import QuickSearchModal from '@/components/QuickSearchModal';
+import AccessibilityDrawer from '@/components/AccessibilityDrawer';
 
 export const metadata = {
   metadataBase: new URL('https://pleasantviewschools.co.ke'),
@@ -157,15 +159,11 @@ export default async function RootLayout({ children }) {
         {/* ROTATED HERO SIDE BUTTONS (ST ANDREW'S TURI SIGNATURE - School Red & Grey) */}
         <HeroButtons mapsUrl={mapsUrl} />
 
-        {/* FLOATING ACCESSIBILITY BUTTON */}
-        <button
-          type="button"
-          className="accessibility-floating-btn"
-          aria-label="Accessibility options"
-          title="Accessibility options"
-        >
-          <i className="fa-solid fa-universal-access" />
-        </button>
+        {/* INTERACTIVE ACCESSIBILITY & ASSIST DRAWER */}
+        <AccessibilityDrawer phone={phone} whatsappUrl={whatsappUrl} />
+
+        {/* GLOBAL QUICK SEARCH & COMMAND PALETTE (Ctrl+K / ⌘K) */}
+        <QuickSearchModal />
 
         {/* FLOATING WHATSAPP BUTTON */}
         <a
