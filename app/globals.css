@@ -3425,6 +3425,128 @@ main, .subpage-body, .director-welcome-section, .schools-overview, .video-showca
   line-height: 1.7;
 }
 
+/* 4B. ADMISSIONS DUAL FORM PANELS (BOOK A CAMPUS TOUR & GENERAL ENQUIRY) */
+.admissions-dual-panel-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+  align-items: stretch;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: 40px 0;
+  position: relative;
+  z-index: 5;
+}
+.admissions-form-panel {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  padding: clamp(24px, 2.5vw, 36px);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 1px solid #e2e8f0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+}
+.admissions-form-panel:hover {
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.09);
+}
+.admissions-form-panel.panel-tour {
+  border-top: 5px solid var(--primary-red);
+}
+.admissions-form-panel.panel-enquiry {
+  border-top: 5px solid var(--dark-grey);
+}
+.admissions-form-panel form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  flex: 1;
+}
+.admissions-form-panel .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.admissions-form-panel label {
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--dark-grey);
+}
+.admissions-form-panel input,
+.admissions-form-panel select,
+.admissions-form-panel textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 12px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 14.5px;
+  color: #1e293b;
+  background: #ffffff;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.admissions-form-panel input:focus,
+.admissions-form-panel select:focus,
+.admissions-form-panel textarea:focus {
+  border-color: var(--primary-red);
+  box-shadow: 0 0 0 3px rgba(139, 30, 45, 0.12);
+  outline: none;
+}
+.admissions-form-panel .routing-meta-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 14px;
+}
+.admissions-form-panel .routing-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 700;
+  color: var(--primary-red);
+}
+.admissions-form-panel .routing-badge.sms {
+  color: #047857;
+}
+.admissions-form-panel button[type="submit"] {
+  margin-top: auto;
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 14.5px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  box-sizing: border-box;
+}
+@media (max-width: 1024px) {
+  .admissions-dual-panel-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    max-width: 720px;
+    margin: 30px auto;
+  }
+}
+
 /* 5. HISTORY & HERITAGE TIMELINE */
 .timeline-container {
   position: relative;

@@ -316,15 +316,9 @@ export default async function AdmissionsPage({ searchParams }) {
         </div>
 
         {/* TWO-COLUMN APPLICATION FORMS: BOOK A CAMPUS TOUR & GENERAL ADMISSION ENQUIRY */}
-        <div className="contact-layout-container" style={{ margin: '40px 0' }}>
+        <div className="admissions-dual-panel-grid">
           {/* FORM 1: BOOK A CAMPUS TOUR */}
-          <div id="visit" className="custom-form contact-entry-panel" style={{
-            background: '#ffffff',
-            borderRadius: '10px',
-            boxShadow: '0 8px 30px rgba(0,0,0,0.06)',
-            borderTop: '4px solid var(--primary-red)',
-            padding: '32px'
-          }}>
+          <div id="visit" className="admissions-form-panel panel-tour">
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
               <i className="fa-regular fa-calendar-check" style={{ color: 'var(--primary-red)', fontSize: '24px' }} />
               <span style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--dark-grey)' }}>
@@ -332,9 +326,18 @@ export default async function AdmissionsPage({ searchParams }) {
               </span>
             </div>
             <h3 style={{ fontSize: '24px', marginBottom: '8px', color: 'var(--dark-grey)' }}>Book a Walking Campus Tour</h3>
-            <p style={{ fontSize: '14.5px', color: '#64748b', marginBottom: '24px', lineHeight: 1.6 }}>
+            <p style={{ fontSize: '14.5px', color: '#64748b', marginBottom: '16px', lineHeight: 1.6 }}>
               Walk through our science laboratories, modern classrooms, boarding houses, and athletics grounds. Tours are hosted Monday to Saturday.
             </p>
+
+            <div className="routing-meta-bar">
+              <span className="routing-badge">
+                <i className="fa-solid fa-paper-plane" /> Routes to: info@ &amp; admissions@
+              </span>
+              <span className="routing-badge sms">
+                <i className="fa-solid fa-comment-sms" /> Instant SMS Alerts
+              </span>
+            </div>
 
             <form action="/api/public/submit?action=book" method="POST" data-public-action="book">
               <div className="form-group">
@@ -382,20 +385,14 @@ export default async function AdmissionsPage({ searchParams }) {
 
               <input name="website" className="hp" tabIndex="-1" autoComplete="off" style={{ display: 'none' }} />
 
-              <button type="submit" className="button button-gold" style={{ width: '100%', padding: '14px', fontSize: '15px', fontWeight: 800 }}>
+              <button type="submit" className="button button-gold">
                 <i className="fa-regular fa-calendar-check" style={{ marginRight: '8px' }} /> Confirm Campus Visit Booking
               </button>
             </form>
           </div>
 
           {/* FORM 2: GENERAL ADMISSIONS ENQUIRY */}
-          <div id="enquire" className="custom-form contact-entry-panel" style={{
-            background: '#ffffff',
-            borderRadius: '10px',
-            boxShadow: '0 8px 30px rgba(0,0,0,0.06)',
-            borderTop: '4px solid var(--dark-grey)',
-            padding: '32px'
-          }}>
+          <div id="enquire" className="admissions-form-panel panel-enquiry">
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
               <i className="fa-regular fa-envelope" style={{ color: 'var(--dark-grey)', fontSize: '24px' }} />
               <span style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--dark-grey)' }}>
@@ -403,9 +400,18 @@ export default async function AdmissionsPage({ searchParams }) {
               </span>
             </div>
             <h3 style={{ fontSize: '24px', marginBottom: '8px', color: 'var(--dark-grey)' }}>General Admissions Enquiry</h3>
-            <p style={{ fontSize: '14.5px', color: '#64748b', marginBottom: '24px', lineHeight: 1.6 }}>
+            <p style={{ fontSize: '14.5px', color: '#64748b', marginBottom: '16px', lineHeight: 1.6 }}>
               Have questions regarding seat availability, interview schedules, transfers, or scholarship guidelines? Send an inquiry directly to our registrar.
             </p>
+
+            <div className="routing-meta-bar">
+              <span className="routing-badge">
+                <i className="fa-solid fa-paper-plane" /> Routes to: info@ &amp; admissions@
+              </span>
+              <span className="routing-badge sms">
+                <i className="fa-solid fa-comment-sms" /> Instant SMS Alerts
+              </span>
+            </div>
 
             <form action="/api/public/submit?action=enquire" method="POST" data-public-action="enquire">
               <div className="form-group">
@@ -448,7 +454,7 @@ export default async function AdmissionsPage({ searchParams }) {
 
               <input name="website" className="hp" tabIndex="-1" autoComplete="off" style={{ display: 'none' }} />
 
-              <button type="submit" className="button button-secondary" style={{ width: '100%', padding: '14px', fontSize: '15px', fontWeight: 800 }}>
+              <button type="submit" className="button button-secondary">
                 <i className="fa-regular fa-paper-plane" style={{ marginRight: '8px' }} /> Submit Admissions Enquiry
               </button>
             </form>

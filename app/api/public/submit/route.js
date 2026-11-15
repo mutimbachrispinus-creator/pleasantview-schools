@@ -82,7 +82,7 @@ export async function POST(req) {
     }
 
     const target = result.ok === false
-      ? `/contact?error=${encodeURIComponent(result.error || 'submission_failed')}`
+      ? (result.redirectTo || `/contact?error=${encodeURIComponent(result.error || 'submission_failed')}`)
       : (result.redirectTo || '/contact?ok=1');
 
     return NextResponse.redirect(new URL(target, req.url), 303);
