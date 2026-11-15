@@ -138,19 +138,18 @@ export default async function Home({ searchParams }) {
         }
       ];
 
-  const primaryLeader = leadMessages[0]
+  // If there is an explicit Director statement, prioritize it; otherwise use the first published leadership message
+  const directorLeader = leadMessages.find(m => /director/i.test(m.role || ''));
+  const rawPrimary = directorLeader || leadMessages[0] || null;
+  const primaryLeader = rawPrimary
     ? {
-        ...leadMessages[0],
-        message: syncHeritageYearsText(leadMessages[0].message)
+        ...rawPrimary,
+        message: syncHeritageYearsText(rawPrimary.message || '')
       }
-    : {
-        name: 'Board of Directors & Executive Principal',
-        title: 'Pleasant View Schools Group',
-        role: 'Director',
-        quote: 'Our aim is victory — not merely in examinations, but in shaping disciplined, visionary young people who lead with wisdom, faith, and purpose.',
-        message: `Welcome to Pleasant View Schools. Across ${years} years of existence, our community has stood as a beacon of academic excellence and character development in Kiambu County. We believe that true education nurtures the mind while fortifying the soul. Whether in our early learning centre, thriving primary school, modern Junior Secondary (JSS), or distinguished Senior School, we provide state-of-the-art science laboratories, extensive transport coverage, and world-class pastoral boarding.`,
-        image: '/images/banner_3_a.webp'
-      };
+    : null;
+  const secondaryLeaders = primaryLeader
+    ? leadMessages.filter(m => m.id !== primaryLeader.id)
+    : [];
 
   return (
     <>
@@ -722,87 +721,93 @@ export default async function Home({ searchParams }) {
         </section>
       )}
 
-      {/* EXECUTIVE & LEADERSHIP MESSAGE (DIRECTOR / HOI) */}
-      <section className="director-welcome-section" id="leadership">
-        <div className="wrapper">
-          <div className="director-container">
-            <div className="director-image-wrapper">
-              <img
-                src={primaryLeader.image || '/images/banner_3_a.webp'}
-                alt={primaryLeader.name}
-                className="director-portrait"
-              />
-              <div className="director-frame-badge">
-                <i className="fa-solid fa-award" style={{ marginRight: '8px', color: '#fda4af' }} />
-                {years} Years of Existence
-              </div>
-            </div>
-
-            <div className="director-content">
-              <h5>{primaryLeader.role ? primaryLeader.role.toUpperCase() : "EXECUTIVE LEADERSHIP MESSAGE"}</h5>
-              <h2 className="reveal-on-scroll">A Tradition of Victory &amp; Academic Eminence</h2>
-              <div className="gold-divider reveal-on-scroll" style={{ margin: '0 0 25px 0' }} />
-              {primaryLeader.quote && (
-                <div className="director-quote scroll-word-reveal">
-                  &ldquo;{primaryLeader.quote}&rdquo;
+      {/* EXECUTIVE & LEADERSHIP MESSAGE (DIRECTOR / HOI / DEAN / SPORTS MASTER) */}
+      {primaryLeader && (
+        <section className="director-welcome-section" id="leadership">
+          <div className="wrapper">
+            <div className="director-container">
+              <div className="director-image-wrapper">
+                <img
+                  src={primaryLeader.image || '/images/banner_3_a.webp'}
+                  alt={primaryLeader.name}
+                  className="director-portrait"
+                />
+                <div className="director-frame-badge">
+                  <i className="fa-solid fa-award" style={{ marginRight: '8px', color: '#fda4af' }} />
+                  {years} Years of Existence
                 </div>
-              )}
-              <p className="scroll-word-reveal" style={{ whiteSpace: 'pre-line' }}>
-                {primaryLeader.message}
-              </p>
-              <div className="director-signature">
-                {primaryLeader.name}
               </div>
-              <span className="director-title">{primaryLeader.title}</span>
-            </div>
-          </div>
 
-          {leadMessages.length > 1 && (
-            <div style={{ marginTop: '45px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-              {leadMessages.slice(1).map((lm) => (
-                <div
-                  key={lm.id}
-                  className="leadership-card panel-reveal"
-                  style={{
-                    background: '#ffffff',
-                    border: '1px solid #dde2ec',
-                    borderTop: '4px solid var(--primary-red)',
-                    borderRadius: '10px',
-                    padding: '24px',
-                    boxShadow: '0 8px 24px rgba(30, 35, 42, 0.06)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '14px'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                    <img
-                      src={lm.image || '/images/banner_3_a.webp'}
-                      alt={lm.name}
-                      style={{ width: '68px', height: '68px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary-red)', flexShrink: 0 }}
-                    />
-                    <div>
-                      <span style={{ display: 'inline-block', fontSize: '11px', fontWeight: 800, color: 'var(--primary-red)', background: 'rgba(139, 30, 45, 0.09)', padding: '3px 9px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '4px' }}>
-                        {lm.role || 'Leadership'}
-                      </span>
-                      <h4 style={{ margin: '2px 0', color: '#1E232A', fontSize: '17.5px', fontWeight: 800 }}>{lm.name}</h4>
-                      <small style={{ color: '#475569', fontSize: '13px', fontWeight: 600 }}>{lm.title}</small>
-                    </div>
+              <div className="director-content">
+                <h5>{primaryLeader.role ? primaryLeader.role.toUpperCase() : "EXECUTIVE LEADERSHIP MESSAGE"}</h5>
+                <h2 className="reveal-on-scroll">A Tradition of Victory &amp; Academic Eminence</h2>
+                <div className="gold-divider reveal-on-scroll" style={{ margin: '0 0 25px 0' }} />
+                {primaryLeader.quote && (
+                  <div className="director-quote scroll-word-reveal">
+                    &ldquo;{primaryLeader.quote}&rdquo;
                   </div>
-                  {lm.quote && (
-                    <blockquote style={{ margin: 0, padding: '10px 14px', background: 'var(--soft-bg)', borderLeft: '3px solid var(--primary-red)', borderRadius: '4px', fontStyle: 'italic', color: '#1E232A', fontSize: '14px', fontWeight: 600, lineHeight: 1.55 }}>
-                      &ldquo;{lm.quote}&rdquo;
-                    </blockquote>
-                  )}
-                  <p style={{ margin: 0, color: '#334155', fontSize: '14.5px', lineHeight: 1.7, whiteSpace: 'pre-line' }}>
-                    {lm.message}
+                )}
+                {primaryLeader.message && (
+                  <p className="scroll-word-reveal" style={{ whiteSpace: 'pre-line' }}>
+                    {primaryLeader.message}
                   </p>
+                )}
+                <div className="director-signature">
+                  {primaryLeader.name}
                 </div>
-              ))}
+                <span className="director-title">{primaryLeader.title}</span>
+              </div>
             </div>
-          )}
-        </div>
-      </section>
+
+            {secondaryLeaders.length > 0 && (
+              <div style={{ marginTop: '45px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                {secondaryLeaders.map((lm) => (
+                  <div
+                    key={lm.id}
+                    className="leadership-card panel-reveal"
+                    style={{
+                      background: '#ffffff',
+                      border: '1px solid #dde2ec',
+                      borderTop: '4px solid var(--primary-red)',
+                      borderRadius: '10px',
+                      padding: '24px',
+                      boxShadow: '0 8px 24px rgba(30, 35, 42, 0.06)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '14px'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                      <img
+                        src={lm.image || '/images/banner_3_a.webp'}
+                        alt={lm.name}
+                        style={{ width: '68px', height: '68px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary-red)', flexShrink: 0 }}
+                      />
+                      <div>
+                        <span style={{ display: 'inline-block', fontSize: '11px', fontWeight: 800, color: 'var(--primary-red)', background: 'rgba(139, 30, 45, 0.09)', padding: '3px 9px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '4px' }}>
+                          {lm.role || 'Leadership'}
+                        </span>
+                        <h4 style={{ margin: '2px 0', color: '#1E232A', fontSize: '17.5px', fontWeight: 800 }}>{lm.name}</h4>
+                        <small style={{ color: '#475569', fontSize: '13px', fontWeight: 600 }}>{lm.title}</small>
+                      </div>
+                    </div>
+                    {lm.quote && (
+                      <blockquote style={{ margin: 0, padding: '10px 14px', background: 'var(--soft-bg)', borderLeft: '3px solid var(--primary-red)', borderRadius: '4px', fontStyle: 'italic', color: '#1E232A', fontSize: '14px', fontWeight: 600, lineHeight: 1.55 }}>
+                        &ldquo;{lm.quote}&rdquo;
+                      </blockquote>
+                    )}
+                    {lm.message && (
+                      <p style={{ margin: 0, color: '#334155', fontSize: '14.5px', lineHeight: 1.7, whiteSpace: 'pre-line' }}>
+                        {lm.message}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* QUICK LINKS HUB RIBBON */}
       <section style={{ background: '#ffffff', padding: '50px 0', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>

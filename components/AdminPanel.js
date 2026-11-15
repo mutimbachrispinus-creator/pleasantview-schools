@@ -2018,7 +2018,7 @@ export default async function Panel({ scope, edit }) {
                     <form action="/api/admin/action?action=delLeadershipMessage" method="POST" data-admin-action="delLeadershipMessage">
                       <input type="hidden" name="id" value={m.id} />
                       <DeleteButton
-                        confirmMessage="Remove this leadership message?"
+                        confirmMessage={`Are you sure you want to permanently delete the statement and profile for ${m.name} (${m.role})? This will immediately remove it from the live website.`}
                         style={{ background: '#d9534f', color: '#fff', border: 0, padding: '4px 10px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
                       >
                         Remove Message
@@ -2061,15 +2061,46 @@ export default async function Panel({ scope, edit }) {
                       >
                         <input type="hidden" name="id" value={m.id} />
                         <div className="form-group">
-                          <label style={{ fontSize: '11px', fontWeight: 700 }}>Executive Role *</label>
+                          <label style={{ fontSize: '11px', fontWeight: 700 }}>Executive Role / Position *</label>
                           <select name="role" defaultValue={m.role || 'Director'} style={{ fontSize: '12px', padding: '5px 7px' }}>
                             <option value="Director">Director / Board of Directors</option>
                             <option value="Head of Institution (HOI)">Head of Institution (HOI)</option>
+                            <option value="Campus Principal">Campus Principal / Headteacher</option>
+                            <option value="Dean of Studies">Dean of Studies / Academic Registrar</option>
+                            <option value="Sports Master">Sports Master / Athletics &amp; Games Director</option>
                             <option value="Coordinator">Academic Coordinator / CBE Lead</option>
-                            <option value="Principal">Campus Principal</option>
                             <option value="Dean of Students">Dean of Students / Pastoral Care</option>
+                            <option value="Head of Curriculum">Head of Curriculum &amp; Assessment</option>
+                            <option value="Head of Boarding">Head of Boarding / Senior Housemaster / Matron</option>
+                            <option value="Senior Teacher">Senior Teacher / Departmental Lead</option>
                             <option value="Chaplain">Chaplain / Spiritual Life</option>
+                            <option value="Guidance &amp; Counseling">Guidance &amp; Counseling Coordinator</option>
+                            <option value="Board of Management (BOM)">Board of Management (BOM)</option>
+                            {m.role && ![
+                              'Director', 'Head of Institution (HOI)', 'Campus Principal', 'Dean of Studies',
+                              'Sports Master', 'Coordinator', 'Dean of Students', 'Head of Curriculum',
+                              'Head of Boarding', 'Senior Teacher', 'Chaplain', 'Guidance & Counseling', 'Board of Management (BOM)'
+                            ].includes(m.role) && (
+                              <option value={m.role}>{m.role}</option>
+                            )}
+                            <option value="Custom">Other / Custom Position (Type Below)...</option>
                           </select>
+                        </div>
+                        <div className="form-group">
+                          <label style={{ fontSize: '11px', fontWeight: 700 }}>Custom Position Title (Optional)</label>
+                          <input
+                            name="custom_role"
+                            defaultValue={![
+                              'Director', 'Head of Institution (HOI)', 'Campus Principal', 'Dean of Studies',
+                              'Sports Master', 'Coordinator', 'Dean of Students', 'Head of Curriculum',
+                              'Head of Boarding', 'Senior Teacher', 'Chaplain', 'Guidance & Counseling', 'Board of Management (BOM)'
+                            ].includes(m.role) ? (m.role || '') : ''}
+                            placeholder="e.g. Dean of Studies, Sports Master, Science Lead..."
+                            style={{ fontSize: '12px', padding: '5px 7px' }}
+                          />
+                          <small style={{ color: '#64748b', fontSize: '10.5px' }}>
+                            Leave blank to use selection above, or enter custom title.
+                          </small>
                         </div>
                         <div className="form-group">
                           <label style={{ fontSize: '11px', fontWeight: 700 }}>Leader Full Name *</label>
@@ -2078,6 +2109,15 @@ export default async function Panel({ scope, edit }) {
                         <div className="form-group">
                           <label style={{ fontSize: '11px', fontWeight: 700 }}>Official Title *</label>
                           <input name="title" defaultValue={m.title} required style={{ fontSize: '12px', padding: '5px 7px' }} />
+                        </div>
+                        <div className="form-group">
+                          <label style={{ fontSize: '11px', fontWeight: 700 }}>Display Priority / Sort (1 = Top)</label>
+                          <input
+                            name="sort"
+                            type="number"
+                            defaultValue={m.sort ?? 0}
+                            style={{ fontSize: '12px', padding: '5px 7px' }}
+                          />
                         </div>
                         <div className="form-group">
                           <label style={{ fontSize: '11px', fontWeight: 700 }}>Key Inspirational Quote</label>
@@ -2136,19 +2176,38 @@ export default async function Panel({ scope, edit }) {
                   <select name="role" defaultValue="Director" required>
                     <option value="Director">Director / Board of Directors</option>
                     <option value="Head of Institution (HOI)">Head of Institution (HOI)</option>
+                    <option value="Campus Principal">Campus Principal / Headteacher</option>
+                    <option value="Dean of Studies">Dean of Studies / Academic Registrar</option>
+                    <option value="Sports Master">Sports Master / Athletics &amp; Games Director</option>
                     <option value="Coordinator">Academic Coordinator / CBE Lead</option>
-                    <option value="Principal">Campus Principal</option>
                     <option value="Dean of Students">Dean of Students / Pastoral Care</option>
+                    <option value="Head of Curriculum">Head of Curriculum &amp; Assessment</option>
+                    <option value="Head of Boarding">Head of Boarding / Senior Housemaster / Matron</option>
+                    <option value="Senior Teacher">Senior Teacher / Departmental Lead</option>
                     <option value="Chaplain">Chaplain / Spiritual Life</option>
+                    <option value="Guidance &amp; Counseling">Guidance &amp; Counseling Coordinator</option>
+                    <option value="Board of Management (BOM)">Board of Management (BOM)</option>
+                    <option value="Custom">Other / Custom Position (Type Below)...</option>
                   </select>
                 </div>
                 <div className="form-group">
+                  <label>Custom Position Title (Optional)</label>
+                  <input name="custom_role" placeholder="e.g. Dean of Studies, Sports Master, Pre-Technical Lead..." />
+                  <small style={{ color: '#64748b', fontSize: '11px' }}>
+                    Leave blank to use dropdown, or type any unique position title.
+                  </small>
+                </div>
+                <div className="form-group">
                   <label>Leader Full Name *</label>
-                  <input name="name" placeholder="e.g. Dr. E. M. Kariuki / Mrs. J. W. Njenga" required />
+                  <input name="name" placeholder="e.g. Mr. Peter N. Kamau / Coach D. O. Otieno" required />
                 </div>
                 <div className="form-group">
                   <label>Official Title *</label>
-                  <input name="title" placeholder="e.g. Managing Director & Founder / Senior School Principal" required />
+                  <input name="title" placeholder="e.g. Dean of Studies — Senior School / Director of Athletics" required />
+                </div>
+                <div className="form-group">
+                  <label>Display Priority / Sort (1 = Top)</label>
+                  <input name="sort" type="number" defaultValue="0" placeholder="1" />
                 </div>
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                   <label>Key Inspirational Quote</label>
@@ -2156,7 +2215,7 @@ export default async function Panel({ scope, edit }) {
                 </div>
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                   <label>Full Message Body *</label>
-                  <textarea name="message" rows={4} placeholder="Write the leadership message, welcome statement, or academic address..." required />
+                  <textarea name="message" rows={4} placeholder="Write the leadership message, welcome statement, sports address, or academic guidance..." required />
                 </div>
                 <MediaFileInput
                   name="image_file"

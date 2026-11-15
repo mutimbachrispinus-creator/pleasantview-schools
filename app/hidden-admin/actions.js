@@ -45,13 +45,18 @@ const done = () => {
   try {
     revalidatePath('/', 'layout');
     revalidatePath('/', 'page');
-    revalidatePath('/about');
+    revalidatePath('/about', 'layout');
+    revalidatePath('/about', 'page');
+    revalidatePath('/leadership', 'layout');
+    revalidatePath('/leadership', 'page');
     revalidatePath('/pictorial');
     revalidatePath('/news');
     revalidatePath('/careers');
     revalidatePath('/contact');
     revalidatePath('/quick-links');
     revalidatePath('/staff-portal', 'page');
+    revalidatePath('/s/[school]', 'layout');
+    revalidatePath('/s/[school]', 'page');
   } catch (err) {
     console.warn('[revalidatePath Notice]:', err?.message);
   }
@@ -664,7 +669,9 @@ export async function updateEnquiryStatus(fd) {
 
 export async function addLeadershipMessage(fd) {
   await A();
-  const role = String(fd.get('role') || 'Director').trim();
+  const selectRole = String(fd.get('role') || '').trim();
+  const customRole = String(fd.get('custom_role') || '').trim();
+  const role = customRole || (selectRole && selectRole !== 'Custom' ? selectRole : 'Director');
   const name = String(fd.get('name') || 'School Leadership').trim();
   const title = String(fd.get('title') || 'Pleasant View Schools').trim();
   const quote = String(fd.get('quote') || '').trim();
@@ -716,11 +723,13 @@ export async function updateLeadershipMessage(fd) {
   const [existing] = await q('SELECT * FROM leadership_messages WHERE id=?', [id]);
   if (!existing) return { ok: false, error: 'Leadership message not found.' };
 
-  const role = String(fd.get('role') || existing.role || 'Director').trim();
+  const selectRole = String(fd.get('role') || '').trim();
+  const customRole = String(fd.get('custom_role') || '').trim();
+  const role = customRole || (selectRole && selectRole !== 'Custom' ? selectRole : existing.role || 'Director');
   const name = String(fd.get('name') || existing.name || 'School Leadership').trim();
   const title = String(fd.get('title') || existing.title || 'Pleasant View Schools').trim();
   const quote = fd.get('quote') != null ? String(fd.get('quote')).trim() : (existing.quote || '');
-  const message = fd.get('message') != null ? String(fd.get('message')).trim() : (existing.message || quote);
+  const message = fd.get('message') != null ? String(fd.get('message')).trim() : existing.message;
 
   const preImg = String(fd.get('image_file_uploaded_url') || fd.get('image_uploaded_url') || '').trim();
   const uploadedImg = preImg || (await saveImg(fd.get('image_file')));

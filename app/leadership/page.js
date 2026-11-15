@@ -34,30 +34,47 @@ export default async function LeadershipPage() {
 
         {/* LEADERSHIP ROSTER */}
         <div className="leadership-roster-grid">
-          {leaders.map((lm, idx) => (
-            <div key={lm.id || idx} className="leadership-profile-card">
-              <div
-                className="profile-img-header"
-                style={{ backgroundImage: `url('${lm.image || '/images/banner_3_a.webp'}')` }}
-              >
-                <span className="profile-role-badge">
-                  {lm.role || 'Leadership'}
-                </span>
-              </div>
-              <div className="profile-body">
-                <div>
-                  <h3>{lm.name}</h3>
-                  <span className="profile-title">{lm.title}</span>
-                  <p>{lm.message}</p>
-                </div>
-                {lm.quote && (
-                  <div className="profile-quote">
-                    &ldquo;{lm.quote}&rdquo;
-                  </div>
-                )}
-              </div>
+          {leaders.length === 0 ? (
+            <div style={{
+              textAlign: 'center',
+              padding: '48px 24px',
+              gridColumn: '1 / -1',
+              background: 'var(--soft-bg)',
+              borderRadius: '10px',
+              border: '1px dashed #cbd5e1'
+            }}>
+              <i className="fa-solid fa-users" style={{ fontSize: '32px', color: '#94a3b8', marginBottom: '12px', display: 'block' }} />
+              <h4 style={{ color: '#475569', marginBottom: '6px' }}>Leadership Updates in Progress</h4>
+              <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>
+                Executive statements and leadership profiles are currently being updated by the administration.
+              </p>
             </div>
-          ))}
+          ) : (
+            leaders.map((lm, idx) => (
+              <div key={lm.id || idx} className="leadership-profile-card">
+                <div
+                  className="profile-img-header"
+                  style={{ backgroundImage: `url('${lm.image || '/images/banner_3_a.webp'}')` }}
+                >
+                  <span className="profile-role-badge">
+                    {lm.role || 'Leadership'}
+                  </span>
+                </div>
+                <div className="profile-body">
+                  <div>
+                    <h3>{lm.name}</h3>
+                    <span className="profile-title">{lm.title}</span>
+                    {lm.message && <p>{lm.message}</p>}
+                  </div>
+                  {lm.quote && (
+                    <div className="profile-quote">
+                      &ldquo;{lm.quote}&rdquo;
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
         </div>
 
         {/* GOVERNANCE PRINCIPLES */}
